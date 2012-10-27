@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Popup</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="stylesheet" href="fonts\neuton\stylesheet.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/popup.css">
+        <link rel="stylesheet" href="css/example.css">
+        <link rel="stylesheet" href="css/prism.css">
+
+        <script src="js/vendor/jquery-1.8.0.min.js"></script>
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="js/vendor/jquery.toc.js"></script>
+        <script src="js/vendor/prism.js"></script>
+        <script src="js/popup.js" type="text/javascript"></script>
+        <script>
+       
+    </script>
+
+</head>
+<body>
+    <div id="toc"></div>
+    <div class="container">
+        <h1>Popup</h1>
+        <section>
+            <h2>Types</h2>
+            <section>
+                <h3>RegisterType</h3>
+                <p>参考 https://github.com/mnelson/diabox/blob/master/Source/diabox.js 的 register_renderable 实现</p>
+                <pre class="has-example"><code class="language-markup">
+&lt;a href=&quot;http://www.samplepdf.com/sample.pdf&quot; class=&quot;type-gdoc&quot;&gt;Open with Google doc&lt;/a&gt;
+&lt;script&gt;
+//gdoc extend remote(iframe) type
+Popup.RegisterType('gdoc', {
+    extends: 'iframe',
+    initialize : function(options){
+        options.url = &quot;http://docs.google.com/viewer?embedded=true&amp;url=&quot; + options.url;
+    }
+});
+jQuery(document).ready(function(){
+    $('.type-gdoc').Popup(
+        {type: 'gdoc',title:'This is Google Docs.'}
+    );
+});
+&lt;/script&gt;
+</code></pre>
+                <div class="example">
+                    <a href="http://www.samplepdf.com/sample.pdf" class="type-gdoc">Open with Google doc</a>
+<script>
+//gdoc extend remote(iframe) type
+$.Popup.RegisterType('gdoc', {
+    extends: 'iframe',
+    initialize : function(options){
+        options.url = "http://docs.google.com/viewer?embedded=true&url=" + options.url;
+    }
+});
+jQuery(document).ready(function(){
+    $('.type-gdoc').Popup(
+        {type: 'gdoc',title:'This is Google Docs.'}
+    );
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>Image</h3>
+                <p>If you have data-popup-options,you cant set data-popup-type, you need set this in data-popup-options,it is the collect of all options setting,it neglet other settings outside data-popup-options</p>
+                <pre class="has-example"><code class="language-markup">
+&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:this is a image,ui:inside,skin:white"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            <section>
+                <h3>Inline Content</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;#inline&quot;&gt;inline&lt;/a&gt;
+&lt;div id=&quot;inline&quot; style=&quot;display: none&quot;&gt;
+    Some Content
+&lt;/div&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="#inline">inline</a>
+                    <div id="inline" style="display:none">
+                        <h4>my first</h4>
+                        <p>this is my first Page,and this is my web</p>
+                        <p>my name is Leo, can you speak English!</p>
+                        <p>This is my first Page,and this is my web</p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3>Ajax Content</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot;href=&quot;ajax.txt&quot;&gt;ajax&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup"href="ajax.txt" data-popup-type="ajax">ajax</a>
+                </div>
+            </section>
+            <section>
+                <h3>Iframe</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;http://baidu.com&quot; data-popup-type=&quot;iframe&quot;&gt;iframe&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup" href="http://baidu.com" data-popup-type="iframe">iframe</a>
+                </div>
+            </section>
+            <section>
+                <h3>Videos</h3>
+                <pre class="has-example"><code class="language-markup">&lt;!-- SWF --&gt;
+&lt;a class=&quot;popup&quot; href=&quot;http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf&quot;&gt;swf&lt;/a&gt;
+
+&lt;!-- YouTube --&gt;
+&lt;a class=&quot;popup&quot; href=&quot;http://www.youtube.com/watch?v=AFA-rOls8YA&quot;&gt;Youtube&lt;/a&gt;
+
+&lt;!-- Vimeo --&gt;
+&lt;a class=&quot;popup&quot; href=&quot;http://vimeo.com/39251390&quot;&gt;Vimeo&lt;/a&gt;
+ 
+&lt;!-- Vid.ly --&gt;
+&lt;a class=&quot;popup&quot; href=&quot;http://vid.ly/5u4h3e&quot;&gt;Vid.ly&lt;/a&gt;
+
+&lt;!-- Local Video --&gt;
+&lt;a class=&quot;popup&quot;
+data-popup-video='{&quot;poster&quot;:&quot;video/poster.jpg&quot;,&quot;preload&quot;:&quot;auto&quot;,&quot;format&quot;:&quot;mp4&quot;}'
+href=&quot;video/video.mp4&quot;
+&gt;Local Video&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <!-- SWF -->
+                    <a class="popup" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf">SWF</a>
+                    <br />
+                    <!-- YouTube -->
+                    <a class="popup" href="http://www.youtube.com/watch?v=AFA-rOls8YA">Youtube</a>
+                    <br />
+                    <!-- Vimeo -->
+                    <a class="popup" href="http://vimeo.com/39251390">Vimeo</a>
+                    <br />
+                    <!-- Vid.ly -->
+                    <a class="popup" href="http://vid.ly/5u4h3e">Vid.ly</a>
+                    <br />
+                    <!-- Local Video -->
+                    <a class="popup"
+                    data-popup-vHtml5='{"poster":"video/poster.jpg","preload":"auto","format":"mp4"}'
+                    href="http://wearehugh.com/dih5/pr6.mp4"
+                    >Local Video</a>
+                </div>
+            </section>
+
+        </section>
+        <section>
+            <h2>Group</h2>
+            <section>
+                <h3>Gallery</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;img/5.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/6.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/6-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/7.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/7-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/5.jpg" data-popup-group="gallery"><img src="img/5-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/6.jpg" data-popup-group="gallery"><img src="img/6-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/7.jpg" data-popup-group="gallery"><img src="img/7-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            <section>
+                <h3>Mixed</h3>
+                <p>Our plugin also support mix content to show, what you need do is to set the same data-popup-group name</p>
+                <pre class="has-example"><code class="language-markup"> &lt;a class=&quot;popup&quot; data-popup-group=&quot;mixed&quot; href=&quot;img/4.jpg&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; data-popup-group=&quot;mixed&quot; href=&quot;http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; data-popup-group=&quot;mixed&quot; href=&quot;http://google.com&quot; data-popup-type=&quot;iframe&quot;&gt;&lt;img src=&quot;img/6-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" data-popup-group="mixed" href="img/4.jpg"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" data-popup-group="mixed" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf"><img src="img/5-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" data-popup-group="mixed" href="http://google.com" data-popup-type="iframe"><img src="img/6-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            </section>
+        </section>
+        <section>
+            <h2>Transition</h2>
+            <section>
+                <h3>Fade</h3>
+                <pre class="has-example"><code class="language-markup">
+&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/1.jpg" data-popup-transition="fade"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-transition="fade"><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-transition="fade"><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/4.jpg" data-popup-transition="fade"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            <section>
+                <h3>Elastic</h3>
+                <pre class="has-example"><code class="language-markup">
+&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/1.jpg" data-popup-transition="elastic"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-transition="elastic"><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-transition="elastic"><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/4.jpg" data-popup-transition="elastic"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+        </section>
+        <section>
+            <h2>Skin</h2>
+                <p>we previde four skins,and you can write your style skin, all your css style must be written with one class name ,and quote this in the data-popup-skin attribute</p>
+                <pre class="has-example"><code class="language-javascript">
+&lt;a class=&quot;popup&quot; data-popup-skin="white" href=&quot;img/1.jpg&quot;&gt;default&lt;/a&gt;
+&lt;a class=&quot;popup&quot; data-popup-skin="custom" href=&quot;img/1.jpg&quot;&gt;custom&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup" data-popup-skin="white" href="img/1.jpg">white</a><br />
+                    <a class="popup" data-popup-skin="custom" href="img/1.jpg">custom</a>
+                </div>
+            <section>
+                <h3>setDefaultSkin</h3>
+                <p>you can set all popup skin in the page useing this method,but it can be overrided by the setting in the element</p>
+                <pre class="has-example"><code class="language-javascript">
+&lt;a class=&quot;api-skin-default&quot; href=&quot;img/1.jpg&quot;&gt;default&lt;/a&gt;
+&lt;a class=&quot;api-skin-custom&quot; href=&quot;img/1.jpg&quot;&gt;custom&lt;/a&gt;
+&lt;script&gt;
+jQuery(document).ready(function(){
+    Popup.setDefaultSkin('custom');
+    $('.api-skin-custom').Popup();
+});
+&lt;/script&gt;
+</code></pre>
+                <div class="example">
+                    <a class="api-skin-custom" href="img/1.jpg">custom</a>
+<script>
+jQuery(document).ready(function(){
+    $.Popup.setDefaultSkin('custom');
+    $('.api-skin-custom').Popup();
+});
+</script>
+                </div>
+            </section> 
+
+        </section>
+        <section>
+            <h2>Component</h2>
+            <section>
+                <h3>registerComponent</h3>
+                <pre class="has-example"><code class="language-javascript">
+&lt;a class=&quot;api-skin-small&quot; href=&quot;img/1.jpg&quot;&gt;use the new register skin&lt;/a&gt;
+&lt;script&gt;
+jQuery(document).ready(function(){
+    $.Popup.registerComponent('rotate',{
+        html: "&lt;div class="rotate"&gt;&lt;span class="left"&gt;&lt;/span&gt;&lt;span class='right'&gt;&lt;/span&gt;&lt;/div&gt;",
+        func: function() {
+            $('.rotate').find('.left').on('click',function() {
+                $.Popup.rotate(-90);
+            });
+            $('.rotate').find('.right').on('click',function() {
+                $.Popup.rotate(90);
+            });
+        }
+    });
+});
+&lt;/script&gt;
+</code></pre>
+            <div class="example">
+                    <a class="api-skin-small" data-popup-component="rotate" href="img/1.jpg">use registered Component</a>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        $.Popup.registerComponent('rotate',{
+            html: "<div class='rotate'><span class='left'>left</span><span class='right'>right</span></div>",
+            func: function() {
+                $('.rotate').find('.left').on('click',function() {
+                    $.Popup.rotate(-90);
+                });
+                $('.rotate').find('.right').on('click',function() {
+                    $.Popup.rotate(90);
+                });
+            }
+        });
+        $('.api-skin-small').Popup();
+
+    });
+</script>
+            </div>
+            </section>
+        </section>
+        <section>
+            <h2>API Method</h2>
+            <p>The alternative to using the HTML based approach is using the Javascript API. The API has all the options of the HTML approach and provides some useful extra functions.</p>
+            <section>
+                <h3>show</h3>
+                <pre class="has-example"><code class="language-javascript">
+Popup.show([{
+    url: 'img/1.jpg'
+},{
+    url: 'img/2.jpg',
+    title: 'captions'
+}],
+{
+    height: '400px',
+    width: '400px',
+    fullscreen: false
+});
+</code></pre>
+                <div class="example">
+                    <a class="api-show-1">click to show popup</a>
+<script>
+jQuery(".api-show-1").on('click',function(){
+    $.Popup.show([{
+        url: 'img/1.jpg'
+    },{
+        url: 'img/2.jpg',
+        title: 'captions'
+    }],
+    {
+        height: '400px',
+        width: '400px',
+        fullscreen: false
+    });
+});
+</script>
+                </div><!-- end example -->
+
+
+                <pre class="has-example"><code class="language-javascript">
+Popup.show(['img/1.jpg', 'img/2.jpg'], {
+    height: '400px',
+    width: '400px',
+    fullscreen: false
+});
+</code></pre>
+                <div class="example">
+                    <a class="api-show-2">click to show popup</a>
+<script>
+$(".api-show-2").on('click',function(){
+    $.Popup.show(['img/1.jpg', 'img/2.jpg'], {
+        height: '400px',
+        width: '400px',
+        fullscreen: false
+    });
+});
+</script>
+                </div><!-- end example -->
+
+                <pre class="has-example"><code class="language-javascript">
+Popup.show({
+    url: 'img/1.jpg',
+    optons: {
+        height: '400px',
+        width: '400px',
+        fullscreen: false,
+        autoSize: true
+    }
+});
+</code></pre>
+                <div class="example">
+                    <a class="api-show-3">click to show popup</a>
+    <script>
+$(".api-show-3").on('click',function(){
+    $.Popup.show({
+        url: 'img/1.jpg',
+        optons: {
+            height: '400px',
+            width: '400px',
+            fullscreen: false,
+            autoSize: true
+        }
+    });
+});
+</script>
+                </div><!-- end example -->
+
+                <pre class="has-example"><code class="language-javascript">
+Popup.show(['image1.jpg', 'image2.jpg', 'image3.jpg'], 2); // opens at 3th position
+</code></pre>
+                <div class="example">
+                    <a class="api-show-4">show image3 first</a>
+<script>
+$(".api-show-4").on('click',function(){
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2); // opens at 3th position
+});
+</script>
+                </div><!-- end example -->
+
+            </section>
+            <section>
+                <h3>close</h3>
+                <pre class="has-example"><code class="language-javascript">
+Popup.close();
+</code></pre>
+                <div class="example">
+                    <a class="api-close">click to close</a>
+<script>
+$(".api-close").on('click',function(){
+    $.Popup.close();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>update</h3>
+                <p></p>
+                <pre class="has-example"><code class="language-javascript">
+$.Popup.update();
+</code></pre>
+                <div class="example">
+                    <a class="api-update">click to update element</a>
+<script>
+$(".api-update").on('click',function(){
+    $.Popup.update();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>destory</h3>
+                <p>Removes all traces of Popup from the document. Not the same as Popup.close(), which tucks popup away for future use.</p>
+                <pre class="has-example"><code class="language-javascript">
+Popup.destory();
+</code></pre>
+                <div class="example">
+                    <a class="api-destory">click to destory</a>
+<script>
+$(".api-destory").on('click',function(){
+    Popup.destory();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>isOpened</h3>
+                <p>Returns <var>true</var> if the popup is opened.</p>
+                <pre class="has-example"><code class="language-javascript">
+alert(Popup.isOpened());
+</code></pre>
+                <div class="example">
+                    <a class="api-isOpened">click to check if opened</a>
+<script>
+$(".api-isOpened").on('click',function(){
+   alert(Popup.isOpened());
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>current</h3>
+                <p>This method is used to fetch the current HTML element that Popup is associated with. Returns a jQuery object containing the element.</p>
+                <pre class="has-example"><code class="language-javascript">
+var $current = Popup.current();
+alert($current.html());
+</code></pre>
+                <div class="example">
+                    <a class="api-current">click to get current</a>
+<script>
+$(".api-current").on('click',function(){
+    var $current = $.Popup.current();
+    alert($current.html());
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>hasNext</h3>
+                <p>Returns true if there is another item to display in the current gallery. Note that this will always be true in galleries that are continuous.</p>
+                <pre class="has-example"><code class="language-javascript">
+alert(Popup.hasNext());
+</code></pre>
+                <div class="example">
+                    <a class="api-hasNext">click to check if hasNext</a>
+<script>
+$(".api-hasNext").on('click',function(){
+    alert(Popup.hasNext());
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>next</h3>
+                <pre class="has-example"><code class="language-javascript">
+Popup.next();
+</code></pre>
+                <div class="example">
+                    <a class="api-next">click to see next</a>
+<script>
+$(".api-next").on('click',function(){
+    $.Popup.next();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>prev</h3>
+                <pre class="has-example"><code class="language-javascript">
+Popup.prev();
+</code></pre>
+                <div class="example">
+                    <a class="api-prev">click to see prev</a>
+<script>
+$(".api-prev").on('click',function(){
+    $.Popup.prev();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>play</h3>
+                <p>Resumes the current slideshow (if there is one).</p>
+                <pre class="has-example"><code class="language-javascript">
+$.Popup.play();
+</code></pre>
+                <div class="example">
+                    <a class="api-play">click to play slideshow</a>
+<script>
+$(".api-play").on('click',function(){
+    $.Popup.play();
+});
+</script>
+                </div>
+            </section>
+             <section>
+                <h3>pause</h3>
+                <p>Pauses the current slideshow (if there is one).</p>
+                <pre class="has-example"><code class="language-javascript">
+$.Popup.pause();
+</code></pre>
+                <div class="example">
+                    <a class="api-pause">click to pause slideshow</a>
+<script>
+$(".api-pause").on('click',function(){
+    $.Popup.pause();
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>isPaused</h3>
+                <p>Returns <var>true</var> if the popup is currently in a paused state. This can happen if pause is invoked in the middle of a slideshow.</p>
+                <pre class="has-example"><code class="language-javascript">
+alert(Popup.isPaused());
+</code></pre>
+                <div class="example">
+                    <a class="api-isPaused">click to check if opened</a>
+<script>
+$(".api-isPaused").on('click',function(){
+   alert(Popup.isPaused());
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>jumpto</h3>
+                <pre class="has-example"><code class="language-javascript">
+Popup.jumpto([index]);
+</code></pre>
+                <div class="example">
+                    <a class="api-jumpto-1">click to jumpto first one</a><br />
+                    <a class="api-jumpto-3">click to jumpto third one</a>
+<script>
+$(".api-play-1").on('click',function(){
+    $.Popup.jumpto(0);
+});
+$(".api-play-1").on('click',function(){
+    $.Popup.jumpto(2);
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>dimensions</h3>
+                <p>Return an object containing the current dimensions of the popup.</p>
+                <pre class="has-example"><code class="language-javascript">
+alert(Popup.dimensions());
+</code></pre>
+                <div class="example">
+                    <a class="api-dimensions">click to get dimensions</a>
+<script>
+$(".api-dimensions").on('click',function(){
+    alert($.Popup.dimensions());
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>resize</h3>
+                <pre class="has-example"><code class="language-javascript">
+$.Popup.resize({
+    width:'300px',
+    height:'200px'
+});
+</code></pre>
+                <div class="example">
+                    <a class="api-prev">click to resize</a>
+<script>
+$(".api-prev").on('click',function(){
+    $.Popup.resize({
+        width:'300px',
+        height:'200px'
+    });
+});
+</script>
+                </div>
+            </section>
+            <section>
+                <h3>reposition</h3>
+                <p>Will reposition the popup.</p>
+                <pre class="has-example"><code class="language-javascript">
+$.Popup.reposition();
+</code></pre>
+                <div class="example">
+                    <a class="api-reposition">click to reposition</a>
+<script>
+$(".api-reposition").on('click',function(){
+    $.Popup.reposition();
+});
+</script>
+                </div>
+            </section>
+
+            
+        </section>
+    </div>
+           
+    <script src="js/main.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        (function(){
+          $('#toc').toc();
+        })();
+        $(document).ready(function() {
+          $('.popup').Popup();           
+        });
+    </script>
+</body>
+</html>

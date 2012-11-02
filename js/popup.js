@@ -185,7 +185,6 @@
                     Popup.group.push(obj);
                 });
             }
-
         },
         _afterLoad: function() {
             alert('afterload')
@@ -252,13 +251,15 @@
                 Popup._trigger('onReady');
 
                 //adding container to overlay or body
-                $container.appendTo( Popup.$overlay || 'body' ); alert('events');
+                $container.appendTo( Popup.$overlay || 'body' );
 
                 //binding event
                 bindEvents();
 
                 //trigger open transition
                 Popup.transitions[Popup.current.transition]['openEffect'](Popup.current); 
+
+                alert('afterload4');
                 
                 Popup.isOpen = true;
             }
@@ -509,33 +510,35 @@
             Popup.types[type].load();          
         },
         close: function() {
-            var component;
 
             //if already closed ,return
             if (!Popup.isOpen) {
                 return
             }
 
+            //trigger close transition
+            if (Popup.closeAnimate == null ) {
+               Popup.closeAnimate = true; 
+               return Popup.transitions[Popup.current.transition]['closeEffect']();               
+            }  
+
             Popup.cancel();
 
             //unbind event
             $(window).unbind('resize');
-            $(document).unbind('keypress.popup');
-
-            //trigger close transition
-            Popup.transitions[Popup.current.transition]['closeEffect']();
+            $(document).unbind('keypress.popup');         
 
             //trigger to remove the component registered on helper object
             Popup._trigger('close');
             Popup.$container.remove();
 
             Popup.slider = false;
+            Popup.closeAnimate = null;
             Popup.current.isPaused = null;
             
             Popup.isOpen = false;
             Popup.current = {};
             Popup.settings = null; //如果设置为{}，！{}值为false，{}也代表存在
-            Popup.options = {};
             Popup.group = {}; //好处在于slider中，不会保留上一次的group信息。  
         },
         next: function() {
@@ -592,17 +595,15 @@
             Popup.defaultSkin = name;
         },
         registerComponent:function(name,options) {
-            components[name] = function() {
-
-                $('.popup-custom').append($(options.html).css({
-                    'position': 'absolute',
-                    'display': 'block'
-                }));
-
-                if (typeof options.func == "function") {
-                    options.func();
-                }
-            }
+            // Popup.helper[name] = function() {
+            //     $('.popup-custom').append($(options.html).css({
+            //         'position': 'absolute',
+            //         'display': 'block'
+            //     }));
+            //     if (typeof options.func == "function") {
+            //         options.func();
+            //     }
+            // }
         },
         update: function() {
             Popup.show({},Popup.current.index);
@@ -908,15 +909,17 @@
                 Popup.$container.fadeIn(opts.openSpeed);
             }
         },
+        // closeEffect need callback function to close popup
         closeEffect: function() {
             var opts = $.extend({},this.defaults,Popup.current.transitionEffect);
             if (!Popup.isOpen) {
                 return
             }
+
             if (Popup.$overlay) {
-                Popup.$overlay.fadeOut(opts.closeSpeed);
+                Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
             } else {
-                Popup.$container.fadeOut(opts.closeSpeed);
+                Popup.$container.fadeOut(opts.closeSpeed,Popup.close);
             }
         },
     };
@@ -1016,6 +1019,12 @@
                     Popup.close();
                     return false;
                 }                             
+            }).css({
+                'position': 'fixed',
+                'top': 0,
+                'left': 0,
+                'width': '100%',
+                'height': '100%',
             });
             Popup.$overlay = $overlay;
         },

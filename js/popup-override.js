@@ -48,227 +48,6 @@
         }
     },
 
-    defaults = {
-        width: 960,
-        height: 600,
-        minWidth: 400,
-        minHeight: 200,
-        maxWidth: 9999,
-        maxHeight: 9999,
-
-        playSpeed: 1500,
-
-        autoSize: false,
-        autoPlay: false, //open autoplay
-        action: false, // taggle to autoplay by click
-
-        isPaused: false,
-
-        tuning: {
-            width: 0,
-            height: 0
-        },
-
-        keyboard: {
-            left: true,
-            right: true,
-            esc: false
-        },
-
-        keys: true,
-        initialTypeOptions: false,
-        loop: true,
-        overlay: {
-            close: false
-        },
-        preload: false,
-
-        thumbnail: 'thumbnail.jpg',
-        thumbnails: false,
-
-        touchEffects: {
-            ui: {
-                show: 175,
-                hide: 175,
-                delay: 5000
-            }
-        },
-
-        ui: 'inside',
-        skin: 'none',
-
-        ajax: {
-            dataType: 'text',
-        },
-
-        vimeo: {
-            autoplay: 1,
-            title: 1,
-            byline: 1,
-            portrait: 0,
-            loop: 0
-        },
-        youtube: {
-            autohide: 1,
-            autoplay: 1,
-            controls: 1,
-            enablejsapi: 1,
-            hd: 1,
-            iv_load_policy: 3,
-            loop: 0,
-            modestbranding: 1,
-            rel: 0
-        },
-        vhtml5: {
-            preload: "load",
-            controls: "controls",
-            width: "320",
-            height: "240",
-            mp4: {
-                type: "video/mp4; codecs=avc1.42E01E, mp4a.40.2",
-            },
-            webm: {
-                type: "video/webm; codecs=vp8, vorbis",
-            },
-            ogv: {
-                type: "video/ogg; codecs=theora, vorbis",
-            }
-        },  
-
-        // Properties for each animation type
-        // Opening 
-        openEffect  : 'fade', // 'elastic', 'fade' or 'none'
-        openSpeed   : 250,
-        openEasing  : 'swing',
-        openOpacity : true,
-        openMethod  : 'zoomIn',
-
-        // Closing 
-        closeEffect  : 'fade', // 'elastic', 'fade' or 'none'
-        closeSpeed   : 250,
-        closeEasing  : 'swing',
-        closeOpacity : true,
-        closeMethod  : 'zoomOut',
-
-        // Changing next gallery item
-        nextEffect : 'elastic', // 'elastic', 'fade' or 'none'
-        nextSpeed  : 250,
-        nextEasing : 'swing',
-        nextMethod : 'changeIn',
-
-        // Changing previous gallery item
-        prevEffect : 'elastic', // 'elastic', 'fade' or 'none'
-        prevSpeed  : 250,
-        prevEasing : 'swing',
-        prevMethod : 'changeOut',
-
-        // Callbacks
-        onCancel     : $.noop, // If canceling
-        beforeLoad   : $.noop, // Before loading
-        afterLoad    : $.noop, // After loading
-        beforeShow   : $.noop, // Before changing in current item
-        afterShow    : $.noop, // After opening
-        beforeChange : $.noop, // Before changing gallery item
-        beforeClose  : $.noop, // Before closing
-        afterClose   : $.noop  // After closing
-    };
-
-
-    // var components = {
-    //     overlay: function() {
-    //         var $popup;
-    //         $popup = Popup.current.$overlay? Popup.current.$overlay:makeEls('div', 'popup-overlay');
-    //         $popup.on('click', function(event) {
-    //             if($(event.target).is('.popup-overlay')) {
-    //                 Popup.close();
-    //                 return false;
-    //             }                             
-    //         }).css({
-    //             'position':'fixed',
-    //             'top': 0,
-    //             'left': 0,
-    //             'width': '100%',
-    //             'height': '100%'
-    //         });
-    //         Popup.$overlay = $popup;
-    //     },
-    //     container: function() {
-    //         var $container, $content, $custom, $controls, $infos;
-    //         $container = Popup.current.$container? Popup.current.$container:makeEls('div', 'popup-container');
-    //         $content = Popup.current.$content? Popup.current.$content:makeEls('div', 'popup-content');
-    //         $controls = Popup.current.$controls? Popup.current.$controls:makeEls('div', 'popup-controls');
-    //         $infos = Popup.current.$infos? Popup.current.$infos:makeEls('div', 'popup-info');
-    //         $custom = makeEls('div','popup-custom');
-
-    //         $container.append($content, $infos, $controls,$custom).appendTo(Popup.$overlay);
-    //         $container.css({
-    //             'position': 'absolute',
-    //         });
-
-    //         $.extend(Popup, {
-    //             $container: $container,
-    //             $content: $content,
-    //             $controls: $controls,
-    //             $custom: $custom,
-    //             $infos: $infos
-    //         });
-    //     },
-    //     controls: {
-    //         slider: {
-    //             prev: function() {
-    //                 var $prev = Popup.current.$prev? Popup.current.$prev:makeEls('div', 'popup-controls-prev', {
-    //                     'display': "none"
-    //                 });
-    //                 $prev.on('click', function() {
-    //                     Popup.prev();
-    //                     return false;
-    //                 });
-    //                 Popup.$controls.append($prev);
-    //                 Popup.$prev = $prev;
-    //             },
-
-    //             next: function() {
-    //                 var $next = Popup.current.$next? Popup.current.$next:makeEls('div', 'popup-controls-next', {
-    //                     'display': "none"
-    //                 });
-    //                 $next.on('click', function() {
-    //                     Popup.next();
-    //                     return false;
-    //                 });
-    //                 Popup.$controls.append($next);
-    //                 Popup.$next = $next;
-    //             }
-    //         },
-    //         close: function() {
-    //             var $close = Popup.current.$close? Popup.current.$close:makeEls('div', 'popup-controls-close');
-    //             $close.on('click', function() {
-    //                 Popup.close();
-    //                 return false;
-    //             });
-    //             Popup.$controls.append($close);
-    //             Popup.$close = $close;
-    //         },
-    //     },
-    //     infos: {
-    //         title: function() {
-    //             var $title = Popup.current.$title? Popup.current.$title:makeEls('div', 'popup-infos-title');
-    //             Popup.$infos.append($title);
-    //             Popup.$title = $title;
-    //         }
-    //     },
-    //     register: function(name) { //可以用到模式。
-    //         var self = arguments[1] || this,
-    //             i;
-    //         for (i in self) {
-    //             if (i == name) {
-    //                 return self[name]();
-    //             } else if (Object.prototype.toString.apply(self[i]) === '[object Object]') {
-    //                 this.register(name, self[i]);
-    //             }
-    //         }
-    //     }
-    // };
-
     // Plugin constructor
     var Popup = $.Popup = function(element, options) {
 
@@ -326,6 +105,7 @@
         //privite method
         //
         _init: function(element,options) {
+            alert('init');
             var self = element,
                 $self = $(element),
                 url, index, group, count,metas = {};
@@ -366,10 +146,10 @@
             }
 
             Popup.options = {};
-            $.extend(true,Popup.options,defaults, options, metas.options || metas); //要修改
+            $.extend(true,Popup.options,Popup.defaults, options, metas.options || metas); //要修改
 
             //build Popup.group object
-            index = count>=2? group.index(self):0;
+            index = count>=2 ? group.index(self) : 0;
             url = $self.attr('href');
 
             Popup.settings = $.extend({}, Popup.options, {
@@ -397,8 +177,9 @@
             }
         },
         _afterLoad: function() {
-            var aspect = Popup.current.aspect, 
-                type = Popup.current.type,
+            var $container,$content,
+                aspect     = Popup.current.aspect, 
+                type       = Popup.current.type,
                 bindEvents = function() {
                     //binding resize event on window
                     $(window).on('resize',function() {
@@ -446,6 +227,15 @@
 
             if (!Popup.isOpen) {
                 console.log('transitions');
+
+                //create container and adding to body
+                $container = makeEls('div', 'popup-container');
+                $content = makeEls('div', 'popup-content').appendTo($container);
+                Popup.$contaner = $container;
+                Popup.$content = $content;
+
+                $container.appendTo('body');
+
                 
                 //trigger the component registered on helper object
                 trigger('onReady');
@@ -454,7 +244,7 @@
                 bindEvents();
 
                 //trigger open transition
-                Popup.current.transition && Popup.transitions[Popup.current.transition]('onOpen'); 
+                Popup.current.transition && Popup.transitions[Popup.current.transition]['onOpen'](Popup.current); 
             }
 
             if (Popup.group && Popup.group[1] && Popup.current.autoPlay) {
@@ -599,6 +389,25 @@
                 helps[help][event]();
             }
         },
+        _showLoading: function() {
+            var $loading;
+            Popup._hideLoading();
+
+            // If user will press the escape-button, the request will be canceled
+            $(document).on('keypress.loading',function() {
+                if ((e.which || e.keyCode) === 27) {
+                    Popup.cancel();
+                    return false;
+                }
+            });
+
+            $loading = makeEls('div','popup-loading');
+            $loading.appendTo(Popup.$container);
+        },
+        _hideLoading: function() {
+            $(document).unbind('keypress.loading');
+            $('.popup-loading').remove();
+        }
 
         //
         //adding public Method
@@ -611,11 +420,11 @@
 
             if (!Popup.settings || Popup.isOpen) { //slider中每一张的切换也要重新读取默认值再做判断。
                 Popup.settings = {};
-                $.extend(true,Popup.settings, defaults);
+                $.extend(true,Popup.settings, Popup.defaults);
                 console.log(Popup.settings);
 
             }
-            console.log(defaults);
+            console.log(Popup.defaults);
             if (toString.apply(options) === '[object Object]' || options == undefined) {
                 options = options || {};
             } else if (!isNaN(options)) {
@@ -646,7 +455,7 @@
                     Popup.current = {};
                 }
 
-                $.extend(true,Popup.current,defaults, Popup.group[index]);
+                $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);
 
                 Popup.current.index = index;
 
@@ -677,15 +486,6 @@
                 }
                 Popup.slider = true;
             }
-
-            //create container and adding to body
-            $container = makeEls('div', 'popup-container');
-            $content = makeEls('div', 'popup-content').appendTo($container);
-            Popup.$contaner = $container;
-            Popup.$content = $content;
-
-            $container.appendTo('body');
-
 
             // trigger types verifaction.
             for (var i in Popup.types) {
@@ -905,24 +705,21 @@
     });
 
     //
-    //below object contains basic method 
+    //below object contains basic method  and defaults.
     //
     Popup.transitions = {
-        fadeIn: function() {
-            Popup.$overlay.css({
-                "display": "none"
-            }).appendTo($(document.body)).fadeIn('slow');
+        defaults: {
+            openSpeed: 250,
+            openEasing: 'swing',
+            openMethod: 'zoom',
 
+            closeSpeed: 250,
+            closeSpeed: 'swing',
+            closeSpeed: 'zoom',
         },
-        easeIn: function() {},
-        custom: function() {},
-        register: function(name) {
-            this[name]();
-            this.transitionsName = name;
-            Popup.isOpen = true;
-        },
-        get: function() {
-            return this.transitionsName;
+        step: function(now,fx) {},
+        getPosition: function(x,y) {
+
         }
     };
 
@@ -1111,6 +908,12 @@
     };
 
     Popup.sliderEffect = {
+        defaults: {
+            sliderSpeed: 250,
+            sliderSpeed: 'swing',
+            sliderSpeed: 'zoom',
+        },
+
     };
 
     //
@@ -1120,24 +923,37 @@
         defaults: {
             openSpeed: 150,
             closeSpeed: 150,
-        }
-        init: function(opts) {
-            opts = $.extend({},this.defaults,opts);
-
-            if (Popup.isOpen) {
-                openEffect(opts);
-            } else {
-                closeEffect(opts);
-            }
+        },       
+        openEffect: function(opts) {
+            
+            console.log(Popup.current.element);
+            alert('openEffect')
         },
-        openEffect: function() {},
         closeEffect: function() {},
     };
     Popup.sliderEffect.fade = {
-        defaults = {           
-        }
+
     }; 
     Popup.types.gDoc = {
+        match: function() {},
+        load: function() {},
+    };
+    Popup.types.vhtml5 = {
+        defaults: {
+            preload: "load",
+            controls: "controls",
+            width: "320",
+            height: "240",
+            mp4: {
+                type: "video/mp4; codecs=avc1.42E01E, mp4a.40.2",
+            },
+            webm: {
+                type: "video/webm; codecs=vp8, vorbis",
+            },
+            ogv: {
+                type: "video/ogg; codecs=theora, vorbis",
+            }
+        },
         match: function() {},
         load: function() {},
     };

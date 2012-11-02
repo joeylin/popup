@@ -4,765 +4,432 @@
     "use strict";
 
     var
-
-    defaults = {
-        width: 960,
-        height: 600,
-        minWidth: 400,
-        minHeight: 200,
-        maxWidth: 9999,
-        maxHeight: 9999,
-
-        playSpeed: 1500,
-
-        autoSize: false,
-        autoPlay: false, //open autoplay
-        action: false, // taggle to autoplay by click
-
-        isPaused: false,
-
-        tuning: {
-            width: 0,
-            height: 0
-        },
-
-        keyboard: {
-            left: true,
-            right: true,
-            esc: false
-        },
-
-        keys: true,
-        initialTypeOptions: false,
-        loop: true,
-        overlay: {
-            close: false
-        },
-        preload: false,
-
-        thumbnail: 'thumbnail.jpg',
-        thumbnails: false,
-
-        touchEffects: {
-            ui: {
-                show: 175,
-                hide: 175,
-                delay: 5000
-            }
-        },
-
-        ui: 'inside',
-        skin: 'none',
-
-        ajax: {
-            dataType: 'text',
-        },
-
-        vimeo: {
-            autoplay: 1,
-            title: 1,
-            byline: 1,
-            portrait: 0,
-            loop: 0
-        },
-        youtube: {
-            autohide: 1,
-            autoplay: 1,
-            controls: 1,
-            enablejsapi: 1,
-            hd: 1,
-            iv_load_policy: 3,
-            loop: 0,
-            modestbranding: 1,
-            rel: 0
-        },
-        vhtml5: {
-            preload: "load",
-            controls: "controls",
-            width: "320",
-            height: "240",
-            mp4: {
-                type: "video/mp4; codecs=avc1.42E01E, mp4a.40.2",
-            },
-            webm: {
-                type: "video/webm; codecs=vp8, vorbis",
-            },
-            ogv: {
-                type: "video/ogg; codecs=theora, vorbis",
-            }
-        },  
-
-        // Properties for each animation type
-        // Opening 
-        openEffect  : 'fade', // 'elastic', 'fade' or 'none'
-        openSpeed   : 250,
-        openEasing  : 'swing',
-        openOpacity : true,
-        openMethod  : 'zoomIn',
-
-        // Closing 
-        closeEffect  : 'fade', // 'elastic', 'fade' or 'none'
-        closeSpeed   : 250,
-        closeEasing  : 'swing',
-        closeOpacity : true,
-        closeMethod  : 'zoomOut',
-
-        // Changing next gallery item
-        nextEffect : 'elastic', // 'elastic', 'fade' or 'none'
-        nextSpeed  : 250,
-        nextEasing : 'swing',
-        nextMethod : 'changeIn',
-
-        // Changing previous gallery item
-        prevEffect : 'elastic', // 'elastic', 'fade' or 'none'
-        prevSpeed  : 250,
-        prevEasing : 'swing',
-        prevMethod : 'changeOut',
-
-        // Callbacks
-        onCancel     : $.noop, // If canceling
-        beforeLoad   : $.noop, // Before loading
-        afterLoad    : $.noop, // After loading
-        beforeShow   : $.noop, // Before changing in current item
-        afterShow    : $.noop, // After opening
-        beforeChange : $.noop, // Before changing gallery item
-        beforeClose  : $.noop, // Before closing
-        afterClose   : $.noop  // After closing
-    };
-
-    function makeEls(tag, className, style) {
-        var element = document.createElement(tag),
-            $element = $(element);
-        if (arguments[1]) {
-            $element.addClass(className);
+    //waiting to use
+    singleTon = function(fn) {
+        var result;
+        return function() {
+            return result || (result=fn.apply(this,arguments));
         }
-        if (arguments[2]) {
-            $element.css(style);
-        }
-        return $element;
-    }
-
-    function string2obj(string) {
-        var obj = {},
-            arr, subArr, count, i = 0;
-        arr = string.split(',');
-        count = arr.length;
-        for (i = 0; i < count; i++) {
-            subArr = arr[i].split(':');
-            obj[subArr[0]] = subArr[1];//.replace("\'","").replace("\"","")
-        }
-        return obj;
-    }
-
-    function trigger() {}
-
-    function showLoading() {
-        var $loading;
-
-        hideLoading();
-
-        // If user will press the escape-button, the request will be canceled
-        $(document).on('keypress.loading',function() {
-            if ((e.which || e.keyCode) === 27) {
-                Popup.cancel();
-                return false;
-            }
-        });
-
-        $loading = makeEls('div','popup-loading');
-        $loading.appendTo(Popup.$container);
-    }
-
-    function hideLoading() {
-        $(document).unbind('keypress.loading');
-        $('.popup-loading').remove();
-    }
-
-    function resize() {
-        var current = Popup.current,
-            maxWidth = $(window).width(),
-            maxHeight = $(window).height(),
-            tuningWidth = parseInt(Popup.current.tuning.width),
-            tuningHeight = parseInt(Popup.current.tuning.height),
-            // minWidth = Popup.current.minWidth,
-            // minHeight = Popup.current.minHeight,
-            width, height, obj,top,left;
-
-        width = parseInt(current.width);
-        height = parseInt(current.height);
-
-        if (current.aspect) {
-
-            if (width > maxWidth * 0.8 - tuningWidth) {
-                width = maxWidth * 0.8 - tuningWidth;
-                height = width / current.aspect;
-            }
-            if (height > maxHeight * 0.8 -tuningHeight) {
-                height = maxHeight * 0.8 - tuningHeight;
-                width = height * current.aspect;
-            }
-        } else {
-            if (width > maxWidth * 0.8 - tuningWidth) {
-                width = maxWidth * 0.8 - tuningWidth;
-            }
-            if (height > maxHeight * 0.8 - tuningHeight) {
-                height = maxHeight * 0.8 - tuningHeight;
-            }
-        }
-
-        obj = {
-            'width': width,
-            'height': height,
+    },
+    events = function() {
+        var listen,log,one,remove,trigger,self,
+            obj = {};
+        self = this;
+        listen = function(key,eventfn) {
+            var stack,_ref;
+            stack = (_ref = obj[key])!=null? _ref : obj[key]=[];
+            return stack.push(eventfn);
         };
-
-        Popup.$content.css(obj);
-
-        left = (maxWidth - width - tuningWidth) / 2;
-        top = (maxHeight - height - tuningHeight) / 2;
-
-        if (top < 0) {
-            top = 0;
-        }
-        if (left < 0) {
-            left = 0;
-        }
-
-        Popup.$container.css({
-            'top': top,
-            'left': left
-        });
-    }
-
-    function init(element,options) {
-        
-        var self = element,
-            $self = $(element),
-            url, index, group, count,metas = {};
-   
-        $.each($self.data(), function(k, v) {
-            if (/^popup/i.test(k)) {
-                metas[k.toLowerCase().replace(/^popup/i, '')] = v;
-            }
-        });
-
-
-        group = Popup.elements.filter(function() {
-            var data = $(this).data('popup-group');
-            if (metas.group) {
-                return data == metas.group;
-            }
-        });
-        
-        count = group.length;
-        if (count >= 2) {
-            $.each(group, function(i, v) {
-                if ($(v).data('popup-group-options')) {
-                    metas.groupoptions = $(v).data('popup-group-options');
-                }
-            });
-        }
-
-        if (metas.options) {
-            metas.options = string2obj(metas.options);
-        }
-
-        if (metas.groupoptions) {
-            $.extend(true,metas.options,string2obj(metas.groupoptions));
-        } 
-
-        if(!options) {
-            options = {};
-        }
-
-        Popup.options = {};
-        $.extend(true,Popup.options,defaults, options, metas.options || metas); //要修改
-
-        //build Popup.group object
-        index = count>=2? group.index(self):0;
-        url = $self.attr('href');
-
-        Popup.settings = $.extend({}, Popup.options, {
-            index: index,
-            url: url,
-            element: element
-        });
-
-        if (count >= 2) {
-            Popup.group = [];
-            group.each(function(i, v) {
-                var $url, $type, obj = {};
-
-                $url = $(v).attr('href');
-                $type = $(v).data('popup-type');
-
-                $.extend(obj, {
-                    index: i,
-                    url: $url,
-                    type: $type,
-                    element: v
-                });
-                Popup.group.push(obj);
-            });
-        }
-    }
-
-    function afterLoad() {
-        var width, height, aspect, type = Popup.current.type; 
-
-        if(arguments.length !== 0) {
-            Popup.current.type = arguments[0];
-            if (arguments[0] in loader) {
-                loader[arguments[0]]();
-                return;
-            } else {
-                this.load();
-                return;
-            }
-        } 
-
-
-        if (Popup.group && Popup.group[1] && Popup.current.autoPlay) {
-            slider.play();
-        } 
-
-        if (Popup.slider == true) { //这是通过display = block 来开启注册的，所以slider点击时不会重复添加。
-            Popup.$prev.add(Popup.$next).css({
-                display: 'block'
-            });  
-        }
-
-        // Key Bindings
-        if(Popup.current.keys && !Popup.isOpen) {               
-            $(document).bind('keypress.popup',function(e){
-                var key = e.keyCode;
-                console.log(e);
-                if (key === 27) {
-                    Popup.close();
+        one = function(key,eventfn) {
+            remove(key);
+            return listen(key,eventfn);
+        };
+        remove = function(key) {
+            var _ref;
+            return (_ref = obj[key])!=null? _ref.length=0: void 0;
+        };
+        trigger = function() {
+            var fn,stack,i,_len,_ref,key;
+            key = Array.prototype.shift.call(arguments);
+            stack = (_ref = obj[key])!=null? _ref: obj[key]=[];
+            _len = stack.length;
+            for (i=0;i<_en;i++) {
+                fn = stack[i];
+                if (fn.apply(self,arguments) == false) {
                     return false;
                 }
-                if(Popup.slider==true && key === 37) {
-                    Popup.prev();
-                    return false;
-                } else if (Popup.slider==true && key === 39) {
-                    Popup.next();
-                    return false;
-                }
-            });
-        } 
-
-        if (Popup.current.autoSize) {
-            width = Popup.photo.width; //set to image width;
-            height = Popup.photo.height; // set to image height;
-            aspect = width / height;
-        } else {
-            width = Popup.current.width;
-            height = Popup.current.height;
-            aspect = null;
-        }
-
-        $.extend(Popup.current, {
-            width: width,
-            height: height,
-            aspect: aspect
-        });
-
-        if (!Popup.isOpen) {
-            console.log('transitions');
-            transitions.register('fadeIn'); //display overlay and  set isOpen true
-
-            $(window).on('resize',function() {
-                resize();
-                return false;
-            });
-
-
-            //registerComponent 
-
-            $.each(['overlay','container','prev','close','next','title','info','content','control'],function(i,v) {
-                if (Popup.current.component == v) {
-                    alert('you cant use inset component name, pls change another one!')
-                }
-            });
-            if (Popup.current.component in components) {
-                components[Popup.current.component]();
-            }    
-
-
-            //use to custom skin,there are four skins in default.
-            // custom
-            // white
-            // black
-            // shadow
-            Popup.$overlay.removeClass();
-            Popup.$overlay.addClass('popup-overlay');
-            Popup.$overlay.addClass( Popup.current.skin =='none'? Popup.defaultSkin : Popup.current.skin);  
-        }
-
-        if (Popup.current.title) {
-            Popup.$title.text(Popup.current.title);
-        }
-          
-        Popup.$content.append(Popup.current.content);
-
-        if (type=="image" && Popup.group && Popup.group.length >= 2) {
-            types.image.imgPreLoad();
-        }
-       
-
-        //根据载入的css样式，重新计算需要定位的大小
-        Popup.current.tuning.width = Popup.$container.outerWidth() - Popup.$content.width();
-        Popup.current.tuning.height = Popup.$container.outerHeight() - Popup.$content.height();
-        
-        resize();
-        hideLoading();
-
-        console.log(Popup.current);
-
-        Popup.current.autoSize = false;
-        Popup.current.title = null;
-        Popup.current.type = null;
-        Popup.angle = null; //可以放在这里是因为旋转是在用户点击的时候才执行，因此在旋转期间没有执行到这里，变量不会被销毁。
-
-        Popup.settings = {};
-        // Popup.photo = null;
-    }
-
-    var slider = {
-        timer: {},
-        clear: function() {
-            clearTimeout(this.timer);
-        },
-        set: function() {
-            this.clear();
-            if(Popup.group && Popup.group[1]) {
-                this.timer = setTimeout(Popup.next,Popup.current.playSpeed);
-            }  
-        },
-        play: function() {
-            Popup.current.isPaused = false;
-            this.set();
-        },
-        pause: function() {
-            this.clear();
-            Popup.current.isPaused = true;
-        }
-    }
-
-    var transitions = {
-        fadeIn: function() {
-            Popup.$overlay.css({
-                "display": "none"
-            }).appendTo($(document.body)).fadeIn('slow');
-
-        },
-        easeIn: function() {},
-        custom: function() {},
-        register: function(name) {
-            this[name]();
-            this.transitionsName = name;
-            Popup.isOpen = true;
-        },
-        get: function() {
-            return this.transitionsName;
-        }
-    };
-
-    var types = {
-        image: {
-            match: function(url) {
-                return url.match(/\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF)$/i);
-            },
-            load: function() {
-                var img = Popup.photo = new Image();
-
-                img.onload = function() {
-                    this.onload = this.onerror = null;
-                    Popup.current.content = img;
-                    hideLoading();
-
-                    afterLoad();
-                };
-                img.onerror = function() {
-                    alert('error');
-                    this.onload = this.onerror = null;
-                    return "can't find Image !";
-                };
-                img.src = Popup.current.url;
-
-                if (img.complete === undefined || !img.complete) {
-                   showLoading();
-                }
-            },
-            imgPreLoad: function() {
-                var group = Popup.group,
-                    count = group.length,
-                    obj;
-                for (var i = 0; i < count; i += 1) {
-                    obj = group[i];
-                    new Image().src = obj.url;
-                }
             }
-        },
-        iframe: {
-            match: function(url) {
-                if (url.match(/youtube\.com\/watch\?v\=(\w+)(&|)/i)||url.match(/vimeo\.com\/(\d+)/i)||url.match(/vid\.ly\/(\d+)/i)||url.match(/\.(ppt|PPT|tif|TIF|pdf|PDF)$/i)) {
-                    return true;
-                }
-            },
-            load: function() {
-                var $iframe, iframe = {
-                    'width': '100%',
-                    'height': '100%',
-                    'border': 'none'
-                };
-                $iframe = makeEls('iframe', 'popup-content-iframe', iframe);
-
-                Popup.$iframe = $iframe.attr('src', Popup.current.url);
-                Popup.current.content = Popup.$iframe;
-
-                afterLoad();
-            }
-        },
-        swf: {
-            match: function(url) {               
-                return url.match(/\.(swf)((\?|#).*)?$/i);
-            },
-            load: function() {
-                var $object, $swf, object = {
-                    'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
-                    'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
-                    'width': '100%',
-                    'height': '100%'
-                },
-                swf = {
-                    'allowscriptaccess': 'always',
-                    'allowfullscreen': 'true',
-                    'wmode': 'transparent',
-                    'type': 'application/x-shockwave-flash',
-                    'src': Popup.current.url
-                };
-
-                $object = makeEls('object', 'popup-content-object', swf);
-                $object.append($('<param value="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf" name="movie"><param value="transparent" name="wmode"><param value="true" name="allowfullscreen"><param value="always" name="allowscriptaccess">'))
-
-                $swf = $('<embed></embed>').css({
-                    'width': '100%',
-                    'height': '100%'
-                }).attr(swf);
-                $swf.appendTo($object);
-
-                Popup.current.content = Popup.$swf = $object;
-
-                afterLoad();
-            }
-        },
-        //ajax need user to set type and dataType manually
-        ajax: {
-            load: function() {
-                var current = Popup.current;
-                Popup.ajax = $.ajax($.extend({},current.ajax,{
-                    url: current.url,
-                    error: function() {
-                        alert('ajax load fail !');
-                        hideLoading();
-                    },
-                    success: function(data,textStatus) {
-                        if (textStatus === 'success') {
-                            hideLoading();
-                            current.content = $('<div>').addClass('popup-content-inner').html(data);
-                            afterLoad();
-                        }
-                    }
-                }));
-            }
-        },
-        inline: {
-            match: function(url) {
-                return url.charAt(0) == "#";
-            },
-            load: function() {
-                var $inline = $(Popup.current.url).clone().css({
-                    'display': 'block'
-                });
-
-                Popup.current.content = $('<div>').addClass('popup-content-inner').html($inline);
-                afterLoad();
-            }
-        },
-        vhtml5: {
-            match: function(url) {
-                return url.match(/\.(mp4|webm|ogv)$/i);
-            },
-            load: function() {
-                var $video,$source,$object,url,index,type;
-                $video = makeEls('video','popup-content-video');
-                $video.attr({
-                    'width': Popup.current.vhtml5.width,
-                    'height': Popup.current.vhtml5.height,
-                    'preload':Popup.current.vhtml5.preload,
-                    'controls':Popup.current.vhtml5.controls,
-                    'poster': Popup.current.vhtml5.poster, 
-                });
-
-
-                url = Popup.current.url.toLowerCase().split(',');
-
-                for(var i=0;i<url.length;i++) {
-
-                    index = url[i].lastIndexOf(".")+1;
-                    type = url[i].slice(index);
-
-                    $source = makeEls('source');
-                    $source.attr({
-                        'type':Popup.current.vhtml5[type].type,
-                        'src': url[i]
-                    }); //不可以的话，去掉type。
-                    $source.appendTo($video);
-                }
-
-                $object = makeEls('object');
-                $object.attr({
-                    'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
-                    'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
-                    'width': '100%',
-                    'height': '100%'
-                });
-
-                // url = Popup.current.url.toLowerCase();
-                // index = url.lastIndexOf(".")+1;
-                // type = url.slice(index);
-                // $source = makeEls('source');
-                // $source.attr({
-                //     'type': Popup.current.vhtml5.format || Popup.current.vhtml5[type].type,
-                //     'src': url,
-                // });
-                // $source.appendTo($video);
-                Popup.current.content = $video;
-                afterLoad();
-            }
-        }      
-    };
-
-    var components = {
-        overlay: function() {
-            var $popup;
-            $popup = Popup.current.$overlay? Popup.current.$overlay:makeEls('div', 'popup-overlay');
-            $popup.on('click', function(event) {
-                if($(event.target).is('.popup-overlay')) {
-                    Popup.close();
-                    return false;
-                }                             
-            }).css({
-                'position':'fixed',
-                'top': 0,
-                'left': 0,
-                'width': '100%',
-                'height': '100%'
-            });
-            Popup.$overlay = $popup;
-        },
-        container: function() {
-            var $container, $content, $custom, $controls, $infos;
-            $container = Popup.current.$container? Popup.current.$container:makeEls('div', 'popup-container');
-            $content = Popup.current.$content? Popup.current.$content:makeEls('div', 'popup-content');
-            $controls = Popup.current.$controls? Popup.current.$controls:makeEls('div', 'popup-controls');
-            $infos = Popup.current.$infos? Popup.current.$infos:makeEls('div', 'popup-info');
-            $custom = makeEls('div','popup-custom');
-
-            $container.append($content, $infos, $controls,$custom).appendTo(Popup.$overlay);
-            $container.css({
-                'position': 'absolute',
-            });
-
-            $.extend(Popup, {
-                $container: $container,
-                $content: $content,
-                $controls: $controls,
-                $custom: $custom,
-                $infos: $infos
-            });
-        },
-        controls: {
-            slider: {
-                prev: function() {
-                    var $prev = Popup.current.$prev? Popup.current.$prev:makeEls('div', 'popup-controls-prev', {
-                        'display': "none"
-                    });
-                    $prev.on('click', function() {
-                        Popup.prev();
-                        return false;
-                    });
-                    Popup.$controls.append($prev);
-                    Popup.$prev = $prev;
-                },
-
-                next: function() {
-                    var $next = Popup.current.$next? Popup.current.$next:makeEls('div', 'popup-controls-next', {
-                        'display': "none"
-                    });
-                    $next.on('click', function() {
-                        Popup.next();
-                        return false;
-                    });
-                    Popup.$controls.append($next);
-                    Popup.$next = $next;
-                }
-            },
-            close: function() {
-                var $close = Popup.current.$close? Popup.current.$close:makeEls('div', 'popup-controls-close');
-                $close.on('click', function() {
-                    Popup.close();
-                    return false;
-                });
-                Popup.$controls.append($close);
-                Popup.$close = $close;
-            },
-        },
-        infos: {
-            title: function() {
-                var $title = Popup.current.$title? Popup.current.$title:makeEls('div', 'popup-infos-title');
-                Popup.$infos.append($title);
-                Popup.$title = $title;
-            }
-        },
-        register: function(name) { //可以用到模式。
-            var self = arguments[1] || this,
-                i;
-            for (i in self) {
-                if (i == name) {
-                    return self[name]();
-                } else if (Object.prototype.toString.apply(self[i]) === '[object Object]') {
-                    this.register(name, self[i]);
-                }
-            }
+        };
+        return {
+            listen: listen,
+            one: one,
+            remove: remove,
+            trigger: trigger
         }
     };
 
     // Plugin constructor
     var Popup = $.Popup = function(element, options) {
-
         $(element).on('click', function(e) {
-            init(this,options);
+
+            Popup._init(this,options);
             Popup.show();
             return false;
         });
     };
-    //公共函数只接收自定义的的options.
+    
     $.extend(Popup, {
+        //properties
+        defaults: {
+            width: 960,
+            height: 600,
+            minWidth: 400,
+            minHeight: 200,
+            maxWidth: 9999,
+            maxHeight: 9999,
+
+            playSpeed: 1500,
+
+            closeBtn: false,
+
+            transition: 'fade',
+            transitionEffect: {},
+
+            autoSize: false,
+            autoPlay: false, //open autoplay
+            action: false, // taggle to autoplay by click
+
+            isPaused: false,
+
+            tuning: {
+                width: 0,
+                height: 0
+            },
+
+            keyboard: {
+                left: true,
+                right: true,
+                esc: false
+            },
+
+            keys: true,
+            initialTypeOptions: false,
+            loop: true,
+            overlay: {
+                close: false
+            },
+            preload: false,
+        },
+        current: {},
+        previous: {},
+        coming: {},
+
+        settings: {},
+
+        helper: {},
+
+        //
+        //privite method
+        //
+        _init: function(element,options) {
+
+            var self = element,
+                $self = $(element),
+                url, index, group, count,metas = {};
+       
+            $.each($self.data(), function(k, v) {
+                if (/^popup/i.test(k)) {
+                    metas[k.toLowerCase().replace(/^popup/i, '')] = v;
+                }
+            });
+
+
+            group = Popup.elements.filter(function() {
+                var data = $(this).data('popup-group');
+                if (metas.group) {
+                    return data == metas.group;
+                }
+            });
+            
+            count = group.length;
+            if (count >= 2) {
+                $.each(group, function(i, v) {
+                    if ($(v).data('popup-group-options')) {
+                        metas.groupoptions = $(v).data('popup-group-options');
+                    }
+                });
+            }
+
+            if (metas.options) {
+                metas.options = Popup._string2obj(metas.options);
+            }            
+
+            if (metas.groupoptions) {
+                $.extend(true,metas.options,Popup._string2obj(metas.groupoptions));
+            } 
+
+            if(!options) {
+                options = {};
+            }
+
+            Popup.settings = {};
+            $.extend(true,Popup.settings,Popup.defaults, options, metas.options , metas); //要修改
+
+            
+            //build Popup.group object
+            index = count>=2 ? group.index(self) : 0;
+            url = $self.attr('href');
+
+            Popup.settings = $.extend({}, Popup.settings, {
+                index: index,
+                url: url,
+                element: element
+            });
+
+            
+
+            if (count >= 2) {
+                Popup.group = [];
+                group.each(function(i, v) {
+                    var $url, $type, obj = {};
+
+                    $url = $(v).attr('href');
+                    $type = $(v).data('popup-type');
+
+                    $.extend(obj, {
+                        index: i,
+                        url: $url,
+                        type: $type,
+                        element: v
+                    });
+                    Popup.group.push(obj);
+                });
+            }
+
+        },
+        _afterLoad: function() {
+            alert('afterload')
+            var $container,$content,$controls,$close,
+                aspect     = Popup.current.aspect, 
+                type       = Popup.current.type,
+                bindEvents = function() {
+                    //binding resize event on window
+                    $(window).on('resize',function() {
+                        Popup._resize();
+                        Popup._rePosition();
+                        return false;
+                    });
+
+                    //bind close button event
+                    if (Popup.current.closeBtn) {
+                        $close.on('click', function() {
+                            Popup.close();
+                            return false;
+                        });
+                    }
+                                   
+                    // Key Bindings
+                    if(Popup.current.keys && !Popup.isOpen) { 
+                        $(document).bind('keypress.popup',function(e){
+                            var key = e.keyCode;
+
+                            if (key === 27) {
+                                Popup.close();
+                                return false;
+                            }
+                            if(Popup.slider==true && key === 37) {
+                                Popup.prev();
+                                return false;
+                            } else if (Popup.slider==true && key === 39) {
+                                Popup.next();
+                                return false;
+                            }
+                        });
+                    }
+                };
+
+            if (!Popup.isOpen) {
+                console.log('transitions');
+
+                //create container 
+                $container = Popup._makeEls('div', 'popup-container');
+                $container.css({
+                    'position': 'absolute',
+                    'display': 'block',
+                });
+                $content = Popup._makeEls('div', 'popup-content').appendTo($container);
+                $controls = Popup._makeEls('div', 'popup-controls').appendTo($container);
+                Popup.$container = $container;
+                Popup.$content = $content;
+                Popup.$controls = $controls;
+
+                if (Popup.current.closeBtn) {
+                    $close = Popup._makeEls('div','popup-close');
+                    $close.css({'position': 'absolute'}).appendTo($controls);
+                }
+                
+                //trigger the component registered on helper object
+                Popup._trigger('onReady');
+
+                //adding container to overlay or body
+                $container.appendTo( Popup.$overlay || 'body' ); alert('events');
+
+                //binding event
+                bindEvents();
+
+                //trigger open transition
+                Popup.transitions[Popup.current.transition]['openEffect'](Popup.current); 
+                
+                Popup.isOpen = true;
+            }
+
+            
+
+            Popup.$content.append(Popup.current.content);
+
+            if (type=="image" && Popup.group && Popup.group[1]) {
+                Popup.types.image.imgPreLoad();
+            }
+           
+
+            //根据载入的css样式，重新计算需要定位的大小
+            Popup.current.tuning.width = Popup.$container.outerWidth() - Popup.$content.width();
+            Popup.current.tuning.height = Popup.$container.outerHeight() - Popup.$content.height();
+            
+            Popup._resize();
+            Popup._hideLoading();
+
+            console.log(Popup.current);
+
+            Popup.current.autoSize = false;
+            Popup.current.title = null;
+            Popup.current.type = null;
+            Popup.current.aspect = null;
+            Popup.angle = null; //可以放在这里是因为旋转是在用户点击的时候才执行，因此在旋转期间没有执行到这里，变量不会被销毁。
+
+            Popup.settings = {};
+            // Popup.photo = null;
+        },
+        _slider: {
+            timer: {},
+            clear: function() {
+                clearTimeout(this.timer);
+            },
+            set: function() {
+                this.clear();
+                if(Popup.group && Popup.group[1]) {
+                    this.timer = setTimeout(Popup.next,Popup.current.playSpeed);
+                }  
+            },
+            play: function() {
+                Popup.current.isPaused = false;
+                this.set();
+            },
+            pause: function() {
+                this.clear();
+                Popup.current.isPaused = true;
+            }
+        },
+        _resize: function() {
+            var current = Popup.current,
+                maxWidth = $(window).width(),
+                maxHeight = $(window).height(),
+                tuningWidth = parseInt(Popup.current.tuning.width),
+                tuningHeight = parseInt(Popup.current.tuning.height),
+                // minWidth = Popup.current.minWidth,
+                // minHeight = Popup.current.minHeight,
+                width, height, obj,top,left;
+
+            width = parseInt(current.width);
+            height = parseInt(current.height);
+
+            if (current.aspect) {
+
+                if (width > maxWidth * 0.8 - tuningWidth) {
+                    width = maxWidth * 0.8 - tuningWidth;
+                    height = width / current.aspect;
+                }
+                if (height > maxHeight * 0.8 -tuningHeight) {
+                    height = maxHeight * 0.8 - tuningHeight;
+                    width = height * current.aspect;
+                }
+            } else {
+                if (width > maxWidth * 0.8 - tuningWidth) {
+                    width = maxWidth * 0.8 - tuningWidth;
+                }
+                if (height > maxHeight * 0.8 - tuningHeight) {
+                    height = maxHeight * 0.8 - tuningHeight;
+                }
+            }
+
+            obj = {
+                'width': width,
+                'height': height,
+            };
+
+            Popup.$content.css(obj);
+
+            left = (maxWidth - width - tuningWidth) / 2;
+            top = (maxHeight - height - tuningHeight) / 2;
+
+            if (top < 0) {
+                top = 0;
+            }
+            if (left < 0) {
+                left = 0;
+            }
+
+            Popup.$container.css({
+                'top': top,
+                'left': left
+            });
+        },
+        _rePosition: function() {
+        },
+        _makeEls: function(tag, className, style) {
+            var element = document.createElement(tag),
+                $element = $(element);
+            if (arguments[1]) {
+                $element.addClass(className);
+            }
+            if (arguments[2]) {
+                $element.css(style);
+            }
+            return $element;
+        },
+        _string2obj: function(string) {
+            var obj = {},
+                arr, subArr, count, i = 0;
+            arr = string.split(',');
+            count = arr.length;
+            for (i = 0; i < count; i++) {
+                subArr = arr[i].split(':');
+                obj[subArr[0]] = subArr[1];//.replace("\'","").replace("\"","")
+            }
+            return obj;
+        },
+        _trigger: function(event) {
+            var help, helpers = Popup.helper;
+            for (var help in helpers) {
+                helpers[help][event] && helpers[help][event]();
+            }
+        },
+        _showLoading: function() {
+            var $loading;
+            Popup._hideLoading();
+
+            // If user will press the escape-button, the request will be canceled
+            $(document).on('keypress.loading',function() {
+                if ((e.which || e.keyCode) === 27) {
+                    Popup.cancel();
+                    return false;
+                }
+            });
+
+            $loading = makeEls('div','popup-loading');
+            $loading.appendTo(Popup.$container);
+        },
+        _hideLoading: function() {
+            $(document).unbind('keypress.loading');
+            $('.popup-loading').remove();
+        },
+
+        //
         //adding public Method
+        //
         show: function(contents, options) {
             var previous = Popup.current,
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type;
+                
 
-            console.log(Popup.settings);
             if (!Popup.settings || Popup.isOpen) { //slider中每一张的切换也要重新读取默认值再做判断。
                 Popup.settings = {};
-                $.extend(true,Popup.settings, defaults);
+                $.extend(true,Popup.settings, Popup.defaults);
                 console.log(Popup.settings);
 
             }
-            console.log(defaults);
+            console.log(Popup.defaults);
             if (toString.apply(options) === '[object Object]' || options == undefined) {
                 options = options || {};
             } else if (!isNaN(options)) {
@@ -793,7 +460,7 @@
                     Popup.current = {};
                 }
 
-                $.extend(true,Popup.current,defaults, Popup.group[index]);
+                $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);
 
                 Popup.current.index = index;
 
@@ -806,7 +473,7 @@
                     console.log(options);
                     console.log(Popup.current); 
                 }
-            }
+            }           
 
             Popup.current.aspect = null;
             current = Popup.current;
@@ -825,61 +492,29 @@
                 Popup.slider = true;
             }
 
-            $.each(['image','iframe','swf','ajax','vhtml5','inline'],function(i,v) {
-                if (types[v].match && types[v].match(current.url)) {
-                    type = v;
+            // trigger types verifaction.
+            $.each(Popup.types,function(key,value) {
+                if (Popup.types[key].match && Popup.types[key].match(current.url)) {
+                    type = key;
                     return false;
                 }
             });
                         
             type = current.type || type;
-
             Popup.current.type = type;
 
-            if (!Popup.isOpened) {
-                components.register('overlay');
-                components.register('container');
-                components.register('close');
-                components.register('prev');
-                components.register('next');
-                components.register('title');
+            //initialize custom type register
+            Popup.types[type].initialize && Popup.types[type].initialize();
 
-                if(Popup.current.action || Popup.current.autoPlay) {
-                    Popup.$content.on('click',function() {
-                        if (Popup.current.isPaused === true) {
-                            slider.play();
-                        }
-                        if (Popup.current.isPaused === false) {
-                            slider.pause();
-                        }
-                    });
-                }
-
-                if(Popup.current.action) {
-                    Popup.$content.on('click',function() {
-                        play();
-                    });
-                }
-
-                Popup.isOpened = true; //这个标签只设置一次，只有在重载的时候才会不为true.
-            }
-
-            Popup.$title.empty();
-            Popup.$content.empty();
-
-            if (types[type].initialize) {
-                types[type].initialize();
-            }
-
-            if (type == "image") {
-                Popup.current.autoSize = true;
-                types.image.load();
-            } else {
-                types[type].load();
-            }
+            Popup.types[type].load();          
         },
         close: function() {
             var component;
+
+            //if already closed ,return
+            if (!Popup.isOpen) {
+                return
+            }
 
             Popup.cancel();
 
@@ -887,24 +522,21 @@
             $(window).unbind('resize');
             $(document).unbind('keypress.popup');
 
-            //define close effect
-            Popup.$overlay.fadeOut();
+            //trigger close transition
+            Popup.transitions[Popup.current.transition]['closeEffect']();
 
-            Popup.$content.empty();
+            //trigger to remove the component registered on helper object
+            Popup._trigger('close');
+            Popup.$container.remove();
+
             Popup.slider = false;
             Popup.current.isPaused = null;
-            Popup.$prev.add(Popup.$next).css({
-                display: 'none'
-            });
             
             Popup.isOpen = false;
             Popup.current = {};
             Popup.settings = null; //如果设置为{}，！{}值为false，{}也代表存在
             Popup.options = {};
             Popup.group = {}; //好处在于slider中，不会保留上一次的group信息。  
-
-            //每次关闭的时候，取消移除registerComeponent注册的组件
-            $('.popup-custom').empty();
         },
         next: function() {
             var index = Popup.current.index,
@@ -933,7 +565,7 @@
         },
         //cancel iamge loading or abort ajax request
         cancel: function(){
-            hideLoading();
+            Popup._hideLoading();
             if (Popup.photo) {
                 Popup.photo.onload = Popup.photo.onerror = null;
             }
@@ -943,14 +575,14 @@
             Popup.ajax = null;
         },
         RegisterType: function(name,options) {
-            types[name] = {};
-            types[name].initialize = function() {
+            Popup.types[name] = {};
+            Popup.types[name].initialize = function() {
                 options.initialize(Popup.current);
             };
 
-            types[name].load = function() {
+            Popup.types[name].load = function() {
                 if(options.extends) {
-                    types[options.extends].load();
+                    Popup.types[options.extends].load();
                 } else {
                     alert('you need set extends for options');
                 }
@@ -980,7 +612,7 @@
             $(window).unbind('resize');
             Popup = null;
         },
-        currentIndex: function() {
+        getCurrent: function() {
             return Popup.current.index;
         },
         hasNext: function() {
@@ -1076,6 +708,418 @@
         }
     });
 
+    //
+    //below object contains basic method  and defaults.
+    //
+    Popup.transitions = {
+        defaults: {
+            openSpeed: 250,
+            openEasing: 'swing',
+            openMethod: 'zoom',
+
+            closeSpeed: 250,
+            closeEasing: 'swing',
+            closeMethod: 'zoom',
+        },
+        step: function(now,fx) {},
+        getPosition: function(x,y) {
+
+        }
+    };
+
+    Popup.types = {
+        image: {
+            match: function(url) {
+                return url.match(/\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF)$/i);
+            },
+            load: function() {
+                var img = Popup.photo = new Image();
+
+                img.onload = function() {
+                    var width = img.width,
+                        height = img.height;
+                    this.onload = this.onerror = null;
+
+                    Popup.current.width = width;
+                    Popup.current.height = height;
+                    Popup.current.aspect = width / height;
+
+                    Popup.current.content = img;
+
+                    Popup._hideLoading();
+
+                    Popup._afterLoad();
+                };
+                img.onerror = function() {
+                    alert('error');
+                    this.onload = this.onerror = null;
+                    return "can't find Image !";
+                };
+                img.src = Popup.current.url;
+
+                if (img.complete === undefined || !img.complete) {
+                   showLoading();
+                }
+            },
+            imgPreLoad: function() {
+                var group = Popup.group,
+                    count = group.length,
+                    obj;
+                for (var i = 0; i < count; i += 1) {
+                    obj = group[i];
+                    new Image().src = obj.url;
+                }
+            }
+        },
+        iframe: {
+            match: function(url) {
+                alert('iframe')
+                if (url.match(/youtube\.com\/watch\?v\=(\w+)(&|)/i)||url.match(/vimeo\.com\/(\d+)/i)||url.match(/vid\.ly\/(\d+)/i)||url.match(/\.(ppt|PPT|tif|TIF|pdf|PDF)$/i)) {
+                    return true;
+                }
+            },
+            load: function() {
+                var $iframe, iframe = {
+                    'width': '100%',
+                    'height': '100%',
+                    'border': 'none'
+                };
+                $iframe = makeEls('iframe', 'popup-content-iframe', iframe);
+
+                Popup.$iframe = $iframe.attr('src', Popup.current.url);
+                Popup.current.content = Popup.$iframe;
+
+                afterLoad();
+            }
+        },
+        swf: {
+            match: function(url) {   
+                alert('swf')            
+                return url.match(/\.(swf)((\?|#).*)?$/i);
+            },
+            load: function() {
+                var $object, $swf, object = {
+                    'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
+                    'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
+                    'width': '100%',
+                    'height': '100%'
+                },
+                swf = {
+                    'allowscriptaccess': 'always',
+                    'allowfullscreen': 'true',
+                    'wmode': 'transparent',
+                    'type': 'application/x-shockwave-flash',
+                    'src': Popup.current.url
+                };
+
+                $object = makeEls('object', 'popup-content-object', swf);
+                $object.append($('<param value="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf" name="movie"><param value="transparent" name="wmode"><param value="true" name="allowfullscreen"><param value="always" name="allowscriptaccess">'))
+
+                $swf = $('<embed></embed>').css({
+                    'width': '100%',
+                    'height': '100%'
+                }).attr(swf);
+                $swf.appendTo($object);
+
+                Popup.current.content = Popup.$swf = $object;
+
+                afterLoad();
+            }
+        },
+        //ajax need user to set type and dataType manually
+        ajax: {
+            load: function() {
+                var current = Popup.current;
+                Popup.ajax = $.ajax($.extend({},current.ajax,{
+                    url: current.url,
+                    error: function() {
+                        alert('ajax load fail !');
+                        hideLoading();
+                    },
+                    success: function(data,textStatus) {
+                        if (textStatus === 'success') {
+                            hideLoading();
+                            current.content = $('<div>').addClass('popup-content-inner').html(data);
+                            afterLoad();
+                        }
+                    }
+                }));
+            }
+        },
+        inline: {
+            match: function(url) {
+                alert('inline')
+                return url.charAt(0) == "#";
+            },
+            load: function() {
+                var $inline = $(Popup.current.url).clone().css({
+                    'display': 'block'
+                });
+
+                Popup.current.content = $('<div>').addClass('popup-content-inner').html($inline);
+                afterLoad();
+            }
+        },   
+    };
+
+    Popup.sliderEffect = {
+        defaults: {
+            sliderSpeed: 250,
+            sliderEasing: 'swing',
+            sliderMethod: 'zoom',
+        },
+    };
+
+    //
+    // here you can add your custom transition & slider effect and types
+    //
+
+    //transitions
+    Popup.transitions.zoom = {
+        defaults: {
+            openSpeed: 150,
+            closeSpeed: 150,
+        },       
+        openEffect: function(opts) {            
+            console.log(Popup.current.element);
+            alert('openEffect');
+
+            var el = Popup.current.element,
+                origin, startPos,endPos;
+            origin = $(el).find('img').filter(':first');
+            console.log(origin);
+        },
+        closeEffect: function() {},
+    };
+    Popup.transitions.fade = {
+        defaults: {
+            openSpeed: 500,
+            closeSpeed: 500,
+        },
+        openEffect: function(){
+            var opts = $.extend({},this.defaults,Popup.current.transitionEffect);
+            if (Popup.isOpen) {
+                return
+            }
+            if (Popup.$overlay) {
+                Popup.$container.css({'display': 'block'});
+                Popup.$overlay.fadeIn(opts.openSpeed);
+            } else {
+                Popup.$container.fadeIn(opts.openSpeed);
+            }
+        },
+        closeEffect: function() {
+            var opts = $.extend({},this.defaults,Popup.current.transitionEffect);
+            if (!Popup.isOpen) {
+                return
+            }
+            if (Popup.$overlay) {
+                Popup.$overlay.fadeOut(opts.closeSpeed);
+            } else {
+                Popup.$container.fadeOut(opts.closeSpeed);
+            }
+        },
+    };
+    //slider
+    Popup.sliderEffect.fade = {
+    }; 
+    //types
+    Popup.types.gDoc = {
+        match: function() {},
+        load: function() {},
+    };
+    Popup.types.vhtml5 = {
+        defaults: {
+            preload: "load",
+            controls: "controls",
+            width: "320",
+            height: "240",
+            mp4: {
+                type: "video/mp4; codecs=avc1.42E01E, mp4a.40.2",
+            },
+            webm: {
+                type: "video/webm; codecs=vp8, vorbis",
+            },
+            ogv: {
+                type: "video/ogg; codecs=theora, vorbis",
+            }
+        },
+        match: function(url) {
+            return url.match(/\.(mp4|webm|ogv)$/i);
+        },
+        load: function() {
+            var $video,$source,$object,url,index,type;
+            $video = makeEls('video','popup-content-video');
+            $video.attr({
+                'width': Popup.current.vhtml5.width,
+                'height': Popup.current.vhtml5.height,
+                'preload':Popup.current.vhtml5.preload,
+                'controls':Popup.current.vhtml5.controls,
+                'poster': Popup.current.vhtml5.poster, 
+            });
+
+
+            url = Popup.current.url.toLowerCase().split(',');
+
+            for(var i=0;i<url.length;i++) {
+
+                index = url[i].lastIndexOf(".")+1;
+                type = url[i].slice(index);
+
+                $source = makeEls('source');
+                $source.attr({
+                    'type':Popup.current.vhtml5[type].type,
+                    'src': url[i]
+                }); //不可以的话，去掉type。
+                $source.appendTo($video);
+            }
+
+            $object = makeEls('object');
+            $object.attr({
+                'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
+                'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
+                'width': '100%',
+                'height': '100%'
+            });
+
+            // url = Popup.current.url.toLowerCase();
+            // index = url.lastIndexOf(".")+1;
+            // type = url.slice(index);
+            // $source = makeEls('source');
+            // $source.attr({
+            //     'type': Popup.current.vhtml5.format || Popup.current.vhtml5[type].type,
+            //     'src': url,
+            // });
+            // $source.appendTo($video);
+            Popup.current.content = $video;
+            afterLoad();
+        }
+    };
+
+    //
+    //helper function used to extend components
+    //
+    Popup.helper.overlay = {
+        defaults: {            
+        },
+        onReady: function(opts) {
+            alert('overlay');   
+            if (!this.$overlay) {
+                this.create();
+            }
+            this.open(opts);
+        },
+        create: function() {
+            var $overlay = Popup._makeEls('div', 'popup-overlay').appendTo('body');
+            $overlay.on('click', function(event) {
+                if($(event.target).is('.popup-overlay')) {
+                    Popup.close();
+                    return false;
+                }                             
+            });
+            Popup.$overlay = $overlay;
+        },
+        open: function(opts) {
+            Popup.$overlay.css({
+
+                'display': 'none',
+
+                'position': 'fix',
+                'top': 0,
+                'left': 0,
+
+                'width': '100%',
+                'height': '100%',                
+            });
+        },
+        close: function() {
+            Popup.$overlay.remove();
+        }
+    };   
+    Popup.helper.controls = {
+        defaults: {
+            slider: true,
+            ui: 'inside',
+            autoPlay: false,
+        },
+        onReady: function(opts) {
+            opts = $.extend({},this.defaults,opts);
+
+            if (!Popup.group) {
+                //return
+            }
+
+            if (!this.controls) {
+                this.create();
+            }
+
+            this.open(opts);
+        },
+        create: function() {
+            var $prev = Popup._makeEls('div','popup-controls-prev'),
+                $next = Popup._makeEls('div','popup-controls-next'),
+                $close = Popup._makeEls('div','popup-controls-close'),
+                $play = Popup._makeEls('div','popup-controls-play'),
+                bindEvents = function() {
+                    if(Popup.current.action || Popup.current.autoPlay) {
+                        Popup.$content.on('click',function() {
+                            if (Popup.current.isPaused === true) {
+                                slider.play();
+                            }
+                            if (Popup.current.isPaused === false) {
+                                slider.pause();
+                            }
+                        });
+                    }
+                    if(Popup.current.action) {
+                        Popup.$content.on('click',function() {
+                            play();
+                        });
+                    }
+
+                    //bind slider button event
+                    $prev.on('click', function() {
+                        Popup.prev();
+                        return false;
+                    });
+                    $next.on('click', function() {
+                        Popup.next();
+                        return false;
+                    }); 
+
+                    //bind close button event
+                    $close.on('click', function() {
+                        Popup.close();
+                        return false;
+                    });
+                }
+
+            Popup.$controls.append($prev,$play,$next,$close);
+
+            $.extend(Popup,{
+                $prev: $prev,
+                $next: $next,
+                $close: $close,
+                $play: $play,
+            });
+
+            bindEvents();
+        },
+        open: function(opts) {
+            if (Popup.current.autoPlay) {
+                Popup.$play.css({'display': 'block'});
+                Popup._slider.play();
+            }
+        },
+        close: function() {
+            Popup.$controls.remove();
+        }
+    };
+    Popup.helper.thumbnails = {};
+    Popup.helper.title = {};
+
+    
+    // jQuery plugin initialization 
     $.fn.Popup = function(options) {
         var self = this;
         Popup.elements = $(self);

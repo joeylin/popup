@@ -279,6 +279,7 @@ jQuery(document).ready(function(){
             html: "<div class='rotate'><span class='left'>left</span><span class='right'>right</span></div>",
             func: function() {
                 $('.rotate').find('.left').on('click',function() {
+                    alert('rotate');
                     $.Popup.rotate(-90);
                 });
                 $('.rotate').find('.right').on('click',function() {

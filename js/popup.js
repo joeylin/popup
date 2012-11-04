@@ -68,6 +68,9 @@
             maxWidth: 9999,
             maxHeight: 9999,
 
+            minTop: 20,
+            minLeft: 20,
+
             playSpeed: 1500,
 
             closeBtn: false,
@@ -75,15 +78,15 @@
             transition: 'fade',
             transitionEffect: {},
 
-            autoSize: false,
+            autoSize: true,
             autoPlay: false, //open autoplay
             action: false, // taggle to autoplay by click
 
             isPaused: false,
 
-            tuning: {
-                width: 0,
-                height: 0
+            selector: null,
+            ajax: {
+                dataType: 'text',
             },
 
             keyboard: {
@@ -166,8 +169,6 @@
                 element: element
             });
 
-            
-
             if (count >= 2) {
                 Popup.group = [];
                 group.each(function(i, v) {
@@ -187,15 +188,13 @@
             }
         },
         _afterLoad: function() {
-            alert('afterload')
-            var $container,$content,$controls,$close,
+            var $container,$content,$controls,$close,$custom,
                 aspect     = Popup.current.aspect, 
                 type       = Popup.current.type,
                 bindEvents = function() {
                     //binding resize event on window
                     $(window).on('resize',function() {
                         Popup._resize();
-                        Popup._rePosition();
                         return false;
                     });
 
@@ -228,7 +227,6 @@
                 };
 
             if (!Popup.isOpen) {
-                console.log('transitions');
 
                 //create container 
                 $container = Popup._makeEls('div', 'popup-container');
@@ -236,11 +234,17 @@
                     'position': 'absolute',
                     'display': 'block',
                 });
-                $content = Popup._makeEls('div', 'popup-content').appendTo($container);
-                $controls = Popup._makeEls('div', 'popup-controls').appendTo($container);
-                Popup.$container = $container;
-                Popup.$content = $content;
-                Popup.$controls = $controls;
+                $content = Popup._makeEls('div', 'popup-content');
+                $controls = Popup._makeEls('div', 'popup-controls');
+                $custom = Popup._makeEls('div','popup-custom');
+                $container.append($content,$controls,$custom);
+
+                $.extend(Popup,{
+                    $container: $container,
+                    $content: $content,
+                    $controls: $controls,
+                    $custom: $custom,
+                });
 
                 if (Popup.current.closeBtn) {
                     $close = Popup._makeEls('div','popup-close');
@@ -250,46 +254,44 @@
                 //trigger the component registered on helper object
                 Popup._trigger('onReady');
 
-                //adding container to overlay or body
+                //add container to overlay or body
                 $container.appendTo( Popup.$overlay || 'body' );
+
+                //set skin
+                Popup.current.skin = Popup.current.skin == null? Popup.defaultSkin || 'custom' : Popup.current.skin;
+                if (Popup.$overlay) {
+                    Popup.$overlay.addClass(Popup.current.skin);
+                } else {
+                    Popup.$container.addClass(Popup.current.skin);
+                }
 
                 //binding event
                 bindEvents();
 
                 //trigger open transition
                 Popup.transitions[Popup.current.transition]['openEffect'](Popup.current); 
-
-                alert('afterload4');
                 
                 Popup.isOpen = true;
             }
 
-            
-
+            //remove old content before loading new content
+            Popup.$content.empty();
             Popup.$content.append(Popup.current.content);
 
             if (type=="image" && Popup.group && Popup.group[1]) {
                 Popup.types.image.imgPreLoad();
             }
-           
 
-            //根据载入的css样式，重新计算需要定位的大小
-            Popup.current.tuning.width = Popup.$container.outerWidth() - Popup.$content.width();
-            Popup.current.tuning.height = Popup.$container.outerHeight() - Popup.$content.height();
+                      
             
             Popup._resize();
-            Popup._hideLoading();
 
-            console.log(Popup.current);
-
-            Popup.current.autoSize = false;
+            //reset some properties after load
             Popup.current.title = null;
             Popup.current.type = null;
-            Popup.current.aspect = null;
             Popup.angle = null; //可以放在这里是因为旋转是在用户点击的时候才执行，因此在旋转期间没有执行到这里，变量不会被销毁。
 
             Popup.settings = {};
-            // Popup.photo = null;
         },
         _slider: {
             timer: {},
@@ -312,60 +314,83 @@
             }
         },
         _resize: function() {
-            var current = Popup.current,
+            var obj,top,left,
+                current = Popup.current,
+
+                aspect = current.aspect,
+
+                width = Popup.$container.outerWidth(true),
+                height = Popup.$container.outerHeight(true),
+
+                //save original image dimension,
+                originWidth = Popup.current.width,
+                originHeight = Popup.current.height,
+
                 maxWidth = $(window).width(),
                 maxHeight = $(window).height(),
-                tuningWidth = parseInt(Popup.current.tuning.width),
-                tuningHeight = parseInt(Popup.current.tuning.height),
-                // minWidth = Popup.current.minWidth,
-                // minHeight = Popup.current.minHeight,
-                width, height, obj,top,left;
+                minWidth = Popup.current.minWidth,
+                minHeight = Popup.current.minHeight,
 
-            width = parseInt(current.width);
-            height = parseInt(current.height);
+                minTop = current.minTop,
+                minLeft = current.minLeft,
 
-            if (current.aspect) {
+                //s = container.padding + container.margin + content.padding + content.margin + others
+                ws = width - Popup.$content.width(),
+                hs = height - Popup.$content.height();  
 
-                if (width > maxWidth * 0.8 - tuningWidth) {
-                    width = maxWidth * 0.8 - tuningWidth;
-                    height = width / current.aspect;
-                }
-                if (height > maxHeight * 0.8 -tuningHeight) {
-                    height = maxHeight * 0.8 - tuningHeight;
-                    width = height * current.aspect;
+            if (!originWidth || !originHeight) {
+                originWidth = Popup.$content.width();
+                originHeight = Popup.$content.height();
+            }
+
+            console.info(Popup.$content.width());
+            console.info(current.autoSize);
+            
+
+            //resize the container when autosize setting to true. 
+            if (current.autoSize) {
+                if (aspect) {
+                    if (maxWidth - 2 * minLeft < originWidth + ws) {
+                        width = maxWidth - 2 * minLeft;
+                        if (width < minWidth + ws) {
+                            width = minWidth + ws;
+                        }
+                        height = width / aspect;                       
+                    } 
+
+                    if (maxHeight - 2 * minTop < originHeight + hs) {
+                        height = maxHeight - 2 * minTop;
+                        if (height < minHeight + hs) {
+                            height = minHeight + hs;
+                        }
+                        width = height * aspect;                    
+                    } 
+                } else {
+                    width  = (maxWidth - 2 * minLeft- ws) > originWidth ? (originWidth+ws) : (maxWidth - 2 * minLeft)<minWidth? minWidth : (maxWidth - 2 * minLeft);
+                    height = (maxHeight - 2 * minTop- hs) > originHeight ? (originHeight+hs) : (maxHeight - 2 * minTop)<minHeight? minHeight : (maxHeight - 2 * minTop); 
                 }
             } else {
-                if (width > maxWidth * 0.8 - tuningWidth) {
-                    width = maxWidth * 0.8 - tuningWidth;
-                }
-                if (height > maxHeight * 0.8 - tuningHeight) {
-                    height = maxHeight * 0.8 - tuningHeight;
-                }
+                // pass default dimension to content for iframe,inline,ajax
+                width = originWidth + ws;
+                height = originHeight + hs;   
             }
 
-            obj = {
-                'width': width,
-                'height': height,
-            };
-
-            Popup.$content.css(obj);
-
-            left = (maxWidth - width - tuningWidth) / 2;
-            top = (maxHeight - height - tuningHeight) / 2;
-
-            if (top < 0) {
-                top = 0;
-            }
-            if (left < 0) {
-                left = 0;
-            }
-
+                 
+            
+            //centered the container
+            top  = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
+            left = (maxWidth - width)/2 < minLeft ? minLeft : (maxWidth - width)/2;   
+            
+            //reposition set on container
             Popup.$container.css({
-                'top': top,
-                'left': left
+                top: top,
+                left: left,
             });
-        },
-        _rePosition: function() {
+            //resize set on content
+            Popup.$content.css({
+                width: width-ws,
+                height: height-hs, 
+            });            
         },
         _makeEls: function(tag, className, style) {
             var element = document.createElement(tag),
@@ -407,7 +432,7 @@
                 }
             });
 
-            $loading = makeEls('div','popup-loading');
+            $loading = Popup._makeEls('div','popup-loading');
             $loading.appendTo(Popup.$container);
         },
         _hideLoading: function() {
@@ -428,7 +453,6 @@
                 Popup.settings = {};
                 $.extend(true,Popup.settings, Popup.defaults);
                 console.log(Popup.settings);
-
             }
             console.log(Popup.defaults);
             if (toString.apply(options) === '[object Object]' || options == undefined) {
@@ -526,7 +550,14 @@
 
             //unbind event
             $(window).unbind('resize');
-            $(document).unbind('keypress.popup');         
+            $(document).unbind('keypress.popup');
+
+            //delete skin
+            if (Popup.$overlay) {
+                Popup.$overlay.removeClass(Popup.current.skin);
+            } else {
+                Popup.$container.removeClass(Popup.current.skin);
+            }         
 
             //trigger to remove the component registered on helper object
             Popup._trigger('close');
@@ -595,15 +626,18 @@
             Popup.defaultSkin = name;
         },
         registerComponent:function(name,options) {
-            // Popup.helper[name] = function() {
-            //     $('.popup-custom').append($(options.html).css({
-            //         'position': 'absolute',
-            //         'display': 'block'
-            //     }));
-            //     if (typeof options.func == "function") {
-            //         options.func();
-            //     }
-            // }
+            alert('componennt');
+            Popup.helper[name] = {};
+            Popup.helper[name]['isUse'] = false;
+            Popup.helper[name].onReady = function() {
+                Popup.$custom.append($(options.html).css({
+                    'position': 'absolute',
+                    'display': 'block'
+                }));
+                if (typeof options.func == "function") {
+                    options.func();
+                }
+            }
         },
         update: function() {
             Popup.show({},Popup.current.index);
@@ -614,7 +648,7 @@
             Popup = null;
         },
         getCurrent: function() {
-            return Popup.current.index;
+            return Popup.current.index;     
         },
         hasNext: function() {
             if(Popup.group && Popup.current.index < Popup.group.length-1) {
@@ -710,7 +744,7 @@
     });
 
     //
-    //below object contains basic method  and defaults.
+    //below object contains basic method and defaults for extending effect.
     //
     Popup.transitions = {
         defaults: {
@@ -743,7 +777,9 @@
 
                     Popup.current.width = width;
                     Popup.current.height = height;
+
                     Popup.current.aspect = width / height;
+                    Popup.current.autoSize = true;
 
                     Popup.current.content = img;
 
@@ -759,7 +795,7 @@
                 img.src = Popup.current.url;
 
                 if (img.complete === undefined || !img.complete) {
-                   showLoading();
+                   Popup._showLoading();
                 }
             },
             imgPreLoad: function() {
@@ -785,12 +821,12 @@
                     'height': '100%',
                     'border': 'none'
                 };
-                $iframe = makeEls('iframe', 'popup-content-iframe', iframe);
+                $iframe = Popup._makeEls('iframe', 'popup-content-iframe', iframe);
 
                 Popup.$iframe = $iframe.attr('src', Popup.current.url);
                 Popup.current.content = Popup.$iframe;
 
-                afterLoad();
+                Popup._afterLoad();
             }
         },
         swf: {
@@ -813,7 +849,7 @@
                     'src': Popup.current.url
                 };
 
-                $object = makeEls('object', 'popup-content-object', swf);
+                $object = Popup._makeEls('object', 'popup-content-object', swf);
                 $object.append($('<param value="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf" name="movie"><param value="transparent" name="wmode"><param value="true" name="allowfullscreen"><param value="always" name="allowscriptaccess">'))
 
                 $swf = $('<embed></embed>').css({
@@ -824,24 +860,32 @@
 
                 Popup.current.content = Popup.$swf = $object;
 
-                afterLoad();
+                Popup._afterLoad();
             }
         },
         //ajax need user to set type and dataType manually
         ajax: {
             load: function() {
-                var current = Popup.current;
+                var content,current = Popup.current;
                 Popup.ajax = $.ajax($.extend({},current.ajax,{
                     url: current.url,
                     error: function() {
                         alert('ajax load fail !');
-                        hideLoading();
+                        Popup._hideLoading();
                     },
                     success: function(data,textStatus) {
                         if (textStatus === 'success') {
-                            hideLoading();
-                            current.content = $('<div>').addClass('popup-content-inner').html(data);
-                            afterLoad();
+                            Popup._hideLoading();
+
+                            // proceed data
+                            if (current.selector) {
+                               content = $('<div>').html(data).find(current.selector); 
+                            } else {
+                                content = data;
+                            }
+
+                            current.content = $('<div>').addClass('popup-content-inner').css({'width':'100%','height':'100%','overflow':'scroll'}).html(content);
+                            Popup._afterLoad();
                         }
                     }
                 }));
@@ -857,8 +901,8 @@
                     'display': 'block'
                 });
 
-                Popup.current.content = $('<div>').addClass('popup-content-inner').html($inline);
-                afterLoad();
+                Popup.current.content = $('<div>').addClass('popup-content-inner').css({'width':'100%','height': '100%'}).html($inline);
+                Popup._afterLoad();
             }
         },   
     };
@@ -915,7 +959,6 @@
             if (!Popup.isOpen) {
                 return
             }
-
             if (Popup.$overlay) {
                 Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
             } else {
@@ -927,10 +970,6 @@
     Popup.sliderEffect.fade = {
     }; 
     //types
-    Popup.types.gDoc = {
-        match: function() {},
-        load: function() {},
-    };
     Popup.types.vhtml5 = {
         defaults: {
             preload: "load",
@@ -1005,8 +1044,7 @@
     Popup.helper.overlay = {
         defaults: {            
         },
-        onReady: function(opts) {
-            alert('overlay');   
+        onReady: function(opts) {  
             if (!this.$overlay) {
                 this.create();
             }

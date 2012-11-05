@@ -76,6 +76,8 @@
 
             closeBtn: false,
 
+            helper: {},
+
             transition: 'fade',
             transitionEffect: {},
 
@@ -189,7 +191,7 @@
             }
         },
         _afterLoad: function() {
-            var $container,$content,$controls,$close,$custom,
+            var $container,$content,$controls,$close,$custom,$info,
                 aspect     = Popup.current.aspect, 
                 type       = Popup.current.type,
                 bindEvents = function() {
@@ -236,13 +238,15 @@
                     'display': 'block',
                 });
                 $content = Popup._makeEls('div', 'popup-content');
+                $info = Popup._makeEls('div','popup-info');
                 $controls = Popup._makeEls('div', 'popup-controls');
                 $custom = Popup._makeEls('div','popup-custom');
-                $container.append($content,$controls,$custom);
+                $container.append($content,$info,$controls,$custom);
 
                 $.extend(Popup,{
                     $container: $container,
                     $content: $content,
+                    $info: $info,
                     $controls: $controls,
                     $custom: $custom,
                 });
@@ -279,11 +283,12 @@
             Popup.$content.empty();
             Popup.$content.append(Popup.current.content);
 
+            //give a chance to reset some infos,
+            Popup._trigger('afterLoad');
+
             if (type=="image" && Popup.group && Popup.group[1]) {
                 Popup.types.image.imgPreLoad();
-            }
-
-                      
+            }                      
             
             Popup._resize();
 
@@ -982,9 +987,11 @@
             }
         },
     };
+
     //slider
     Popup.sliderEffect.fade = {
     }; 
+
     //types
     Popup.types.vhtml5 = {
         defaults: {
@@ -1109,7 +1116,7 @@
         active: false,
 
         onReady: function() {
-            this.opts = $.extend({},this.defaults,Popup.helper.controls);
+            this.opts = $.extend({},this.defaults,Popup.current.helper.controls);
 
             if (!Popup.group) {
                 return
@@ -1198,7 +1205,6 @@
                 'right': left,
             });
         }
-
     };
     Popup.helper.thumbnails = {
         defaults: {},
@@ -1248,11 +1254,76 @@
         },
         open: function() {
         },
-        resize: function(width,height) {
-        },
     };
-    Popup.helper.title = {};
+    Popup.helper.title = {
+        $title: null,
+        onReady: function() {
+            if (!Popup.current.title) {
+                return
+            }
+            this.create();
+        },
+        create: function() {
+            var $title = $('<span>').text(Popup.current.title);
+            $title.appendTo(Popup.$container);
+            this.$title = $title;
+        },
+        afterLoad: function() {
+            if (!this.$title) {
+                this.create();
+            } else {
+                this.$title.text(Popup.current.title);
+            }           
+        }
+    };
+    Popup.helper.count = {
+        $count: null,
+        total: null,
+        onReady: function() {
+            if (!Popup.group) {
+                return
+            }
+            this.create();
+        },
+        create: function() {
+            var $count = $('<span>'),
+                total = Popup.group.length,
+                current = Popup.current.index+1;
+            $count.appendTo(Popup.$info).text(current+"/"+total);
+            this.$count = $count;   
+            this.total = total; 
+        },
+        afterLoad: function() {
+            var current = Popup.current.index+1;
+            if (!this.$count) {
+                this.create();
+            } else {
+                this.$count.text(current+"/"+this.total);
+            }            
+        }
+    };
+    Popup.helper.social = {
+        defaults: {
+            facebook: true,
+            twitter: true,
+        },
+        opts: {},
+        onReady: function() {
+            this.opts = $.extend({},Popup.defaults,Popup.current.helper.social);
+            this.create();
+        },
+        create: function() {
+            var $social = $('<div>').addClass('popup-info-social');
+            for(var i in this.opts) {
+                if (this.opts[i] == true) {
 
+                }
+            }
+        },
+        afterLoad: function() {},
+        fackbook: function() {},
+        twitter: function() {},
+    };
     
     // jQuery plugin initialization 
     $.fn.Popup = function(options) {

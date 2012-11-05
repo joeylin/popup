@@ -65,11 +65,12 @@
             height: 600,
             minWidth: 400,
             minHeight: 200,
-            maxWidth: 9999,
-            maxHeight: 9999,
 
-            minTop: 20,
-            minLeft: 20,
+            holderWidth: 0,
+            holderHeight: 0,
+
+            minTop: 40,
+            minLeft: 80,
 
             playSpeed: 1500,
 
@@ -315,6 +316,8 @@
         },
         _resize: function() {
             var obj,top,left,
+                rez = {},
+
                 current = Popup.current,
 
                 aspect = current.aspect,
@@ -326,8 +329,8 @@
                 originWidth = Popup.current.width,
                 originHeight = Popup.current.height,
 
-                maxWidth = $(window).width(),
-                maxHeight = $(window).height(),
+                maxWidth = $(window).width() - current.holderWidth,
+                maxHeight = $(window).height() - current.holderHeight,
                 minWidth = Popup.current.minWidth,
                 minHeight = Popup.current.minHeight,
 
@@ -373,9 +376,7 @@
                 // pass default dimension to content for iframe,inline,ajax
                 width = originWidth + ws;
                 height = originHeight + hs;   
-            }
-
-                 
+            }                 
             
             //centered the container
             top  = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
@@ -390,7 +391,22 @@
             Popup.$content.css({
                 width: width-ws,
                 height: height-hs, 
-            });            
+            });
+
+            //give a chance for helper component resize.
+            rez = {
+                winWidth: maxWidth + current.holderWidth,
+                winHeight: maxHeight + current.holderHeight,
+                containerWidth: width,
+                containerHeight: height,
+                holderWidth: current.holderWidth,
+                holderHeight: current.holderHeight,
+                top: top,
+                left: left,
+            };
+
+            //here pass dimension info as a argument to helper
+            Popup._trigger('resize',rez);
         },
         _makeEls: function(tag, className, style) {
             var element = document.createElement(tag),
@@ -417,7 +433,7 @@
         _trigger: function(event) {
             var help, helpers = Popup.helper;
             for (var help in helpers) {
-                helpers[help][event] && helpers[help][event]();
+                helpers[help][event] && helpers[help][event](arguments[1]);
             }
         },
         _showLoading: function() {
@@ -569,8 +585,8 @@
             
             Popup.isOpen = false;
             Popup.current = {};
-            Popup.settings = null; //如果设置为{}，！{}值为false，{}也代表存在
-            Popup.group = {}; //好处在于slider中，不会保留上一次的group信息。  
+            Popup.settings = null; 
+            Popup.group = null;  
         },
         next: function() {
             var index = Popup.current.index,
@@ -1042,13 +1058,13 @@
     //helper function used to extend components
     //
     Popup.helper.overlay = {
-        defaults: {            
-        },
-        onReady: function(opts) {  
+        defaults: {},
+        opts: {},
+        onReady: function() {  
             if (!this.$overlay) {
                 this.create();
             }
-            this.open(opts);
+            this.open();
         },
         create: function() {
             var $overlay = Popup._makeEls('div', 'popup-overlay').appendTo('body');
@@ -1066,7 +1082,7 @@
             });
             Popup.$overlay = $overlay;
         },
-        open: function(opts) {
+        open: function() {
             Popup.$overlay.css({
 
                 'display': 'none',
@@ -1086,21 +1102,22 @@
     Popup.helper.controls = {
         defaults: {
             slider: true,
-            ui: 'inside',
+            nav: 'outside',
             autoPlay: false,
         },
-        onReady: function(opts) {
-            opts = $.extend({},this.defaults,opts);
+        opts: {},
+        active: false,
+
+        onReady: function() {
+            this.opts = $.extend({},this.defaults,Popup.helper.controls);
 
             if (!Popup.group) {
-                //return
+                return
             }
 
-            if (!this.controls) {
-                this.create();
-            }
-
-            this.open(opts);
+            this.create();           
+            this.open();
+            this.active = true;
         },
         create: function() {
             var $prev = Popup._makeEls('div','popup-controls-prev'),
@@ -1152,7 +1169,7 @@
 
             bindEvents();
         },
-        open: function(opts) {
+        open: function() {
             if (Popup.current.autoPlay) {
                 Popup.$play.css({'display': 'block'});
                 Popup._slider.play();
@@ -1160,9 +1177,80 @@
         },
         close: function() {
             Popup.$controls.remove();
+            this.active = false;
+        },
+        resize: function(rez) {
+            var top,left;
+            if (!this.active || this.opts.nav !== 'outside') {
+                return
+            }
+            top = (rez.winHeight - rez.holderHeight)/2;
+            left = (rez.winWidth -rez.containerWidth)/4;
+
+            Popup.$prev.css({
+                'position': 'fixed',
+                'top': top,
+                'left': left,
+            });
+            Popup.$next.css({
+                'position': 'fixed',
+                'top': top,
+                'right': left,
+            });
         }
+
     };
-    Popup.helper.thumbnails = {};
+    Popup.helper.thumbnails = {
+        defaults: {},
+        opts: {},
+        $thumbnails: null,
+
+        onReady: function() {
+            if (!Popup.group || Popup.current.type !== 'image') {
+                return
+            }
+            
+            this.opts = $.extend({},this.defaults,Popup.helper.thumbnails);
+
+            //reset holderHeight to give space for thumbnails
+            Popup.current.holderWidth = 0;
+            Popup.current.holderHeight = 100;
+           
+            this.create();
+            
+            this.open();
+        },
+        create: function() {
+            var top,
+                gallery = [],
+                group = Popup.group,
+                $thumbnails = $('<div>').addClass('popup-thumbnails'),
+                $leftButtom = $('<a href="#">').addClass('popup-thumbnails-left'),
+                $rightButtom = $('<a href="#">').addClass('popup-thumbnails-right'),
+                $thumHolder = $('<div>').addClass('popup-thumbnails-holder').css({'display':'inline-block'}),
+                count = group.length > 5? 5 : group.length;
+
+            for (var i=0; i<count; i++) {
+                gallery[i] = new Image();
+                gallery[i].src = group[i].url;
+                $('<a href="#">').addClass('popup-thumbnails-img').append(gallery[i]).appendTo($thumHolder);
+            }
+
+            $thumbnails.css({
+                'position': 'fixed',
+                'bottom': 16,
+                'left': 0,
+                'text-align': 'center',
+            }).append($leftButtom,$thumHolder,$rightButtom);
+
+            this.$thumbnails = $thumbnails;
+            $thumbnails.appendTo(Popup.$container);
+        },
+        open: function() {
+        },
+        resize: function(width,height) {
+        },
+    };
     Popup.helper.title = {};
 
     

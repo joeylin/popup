@@ -274,22 +274,22 @@ jQuery(document).ready(function(){
             <div class="example">
                     <a class="api-skin-small" data-popup-component="rotate" href="img/1.jpg">use registered Component</a>
 <script type="text/javascript">
-    jQuery(document).ready(function(){
-        $.Popup.registerComponent('rotate',{
-            html: "<div class='rotate'><span class='left'>left</span><span class='right'>right</span></div>",
-            func: function() {
-                $('.rotate').find('.left').on('click',function() {
-                    alert('rotate');
-                    $.Popup.rotate(-90);
-                });
-                $('.rotate').find('.right').on('click',function() {
-                    $.Popup.rotate(90);
-                });
-            }
-        });
-        $('.api-skin-small').Popup();
+    // jQuery(document).ready(function(){
+    //     $.Popup.registerComponent('rotate',{
+    //         html: "<div class='rotate'><span class='left'>left</span><span class='right'>right</span></div>",
+    //         func: function() {
+    //             $('.rotate').find('.left').on('click',function() {
+    //                 alert('rotate');
+    //                 $.Popup.rotate(-90);
+    //             });
+    //             $('.rotate').find('.right').on('click',function() {
+    //                 $.Popup.rotate(90);
+    //             });
+    //         }
+    //     });
+    //     $('.api-skin-small').Popup();
 
-    });
+    // });
 </script>
             </div>
             </section>
@@ -624,7 +624,22 @@ $(".api-reposition").on('click',function(){
 });
 </script>
                 </div>
-            </section>           
+            </section>  
+            <section>
+                <h3>test</h3>
+                <div class="popup-thumbnails">
+                    <a href="#" class="popup-thumbnails-left"></a>
+                    <div class="popup-thumbnails-holder">
+                        <a href="#"><img src="img/1.jpg"></a>
+                        <a href="#"><img src="img/2.jpg"></a>
+                        <a href="#"><img src="img/3.jpg"></a>
+                        <a href="#"><img src="img/4.jpg"></a>
+                        <a href="#"><img src="img/5.jpg"></a>
+                    </div>
+                    <a href="#" class="popup-thumbnails-right"></a>
+                </div>
+               
+            </section>         
         </section>
     </div>
            

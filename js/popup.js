@@ -2,52 +2,6 @@
 (function($, document, window, undefined) {
     // Optional, but considered best practice by some
     "use strict";
-
-    var
-    //waiting to use
-    singleTon = function(fn) {
-        var result;
-        return function() {
-            return result || (result=fn.apply(this,arguments));
-        }
-    },
-    events = function() {
-        var listen,log,one,remove,trigger,self,
-            obj = {};
-        self = this;
-        listen = function(key,eventfn) {
-            var stack,_ref;
-            stack = (_ref = obj[key])!=null? _ref : obj[key]=[];
-            return stack.push(eventfn);
-        };
-        one = function(key,eventfn) {
-            remove(key);
-            return listen(key,eventfn);
-        };
-        remove = function(key) {
-            var _ref;
-            return (_ref = obj[key])!=null? _ref.length=0: void 0;
-        };
-        trigger = function() {
-            var fn,stack,i,_len,_ref,key;
-            key = Array.prototype.shift.call(arguments);
-            stack = (_ref = obj[key])!=null? _ref: obj[key]=[];
-            _len = stack.length;
-            for (i=0;i<_en;i++) {
-                fn = stack[i];
-                if (fn.apply(self,arguments) == false) {
-                    return false;
-                }
-            }
-        };
-        return {
-            listen: listen,
-            one: one,
-            remove: remove,
-            trigger: trigger
-        }
-    };
-
     // Plugin constructor
     var Popup = $.Popup = function(element, options) {
         $(element).on('click', function(e) {
@@ -70,13 +24,13 @@
             holderHeight: 0,
 
             minTop: 40,
-            minLeft: 80,
+            minLeft: 10,
 
             playSpeed: 1500,
 
             closeBtn: false,
 
-            helper: {},
+            components: {},
 
             transition: 'fade',
             transitionEffect: {},
@@ -112,11 +66,19 @@
 
         settings: {},
 
-        helper: {},
+        components: {},
+
+        skins: {
+            custom:{},
+            white: {},
+        },
+
+        isMobile: false,
 
         //
         //privite method
         //
+
         _init: function(element,options) {
 
             var self = element,
@@ -227,7 +189,7 @@
                             }
                         });
                     }
-                };
+                };   
 
             if (!Popup.isOpen) {
 
@@ -252,11 +214,11 @@
                 });
 
                 if (Popup.current.closeBtn) {
-                    $close = Popup._makeEls('div','popup-close');
+                    $close = Popup._makeEls('div','popup-controls-close');
                     $close.css({'position': 'absolute'}).appendTo($controls);
                 }
                 
-                //trigger the component registered on helper object
+                //trigger the component registered on components object
                 Popup._trigger('onReady');
 
                 //add container to overlay or body
@@ -286,18 +248,16 @@
             //give a chance to reset some infos,
             Popup._trigger('afterLoad');
 
+            //set postion every loading
+            Popup._resize();
+
             if (type=="image" && Popup.group && Popup.group[1]) {
                 Popup.types.image.imgPreLoad();
             }                      
-            
-            Popup._resize();
 
             //reset some properties after load
-            Popup.current.title = null;
             Popup.current.type = null;
             Popup.angle = null; //可以放在这里是因为旋转是在用户点击的时候才执行，因此在旋转期间没有执行到这里，变量不会被销毁。
-
-            Popup.settings = {};
         },
         _slider: {
             timer: {},
@@ -320,15 +280,12 @@
             }
         },
         _resize: function() {
-            var obj,top,left,
+            var obj,top,left, width, height,
+                result = {},
                 rez = {},
 
                 current = Popup.current,
-
                 aspect = current.aspect,
-
-                width = Popup.$container.outerWidth(true),
-                height = Popup.$container.outerHeight(true),
 
                 //save original image dimension,
                 originWidth = Popup.current.width,
@@ -342,50 +299,40 @@
                 minTop = current.minTop,
                 minLeft = current.minLeft,
 
-                //s = container.padding + container.margin + content.padding + content.margin + others
-                ws = width - Popup.$content.width(),
-                hs = height - Popup.$content.height();  
+                scale = function(x,y,rate) {
+                    var w,h;
 
-            if (!originWidth || !originHeight) {
-                originWidth = Popup.$content.width();
-                originHeight = Popup.$content.height();
-            }
+                    w = y * rate;
+                    h = x / rate;
 
-            console.info(Popup.$content.width());
-            console.info(current.autoSize);
-            
+                    if (w > x) {
+                        w = x;
+                    }
+                    if (h > y) {
+                        h = y;
+                    }
 
-            //resize the container when autosize setting to true. 
+                    return {
+                        w: w,
+                        h: h,
+                    }
+                };
+
+
             if (current.autoSize) {
-                if (aspect) {
-                    if (maxWidth - 2 * minLeft < originWidth + ws) {
-                        width = maxWidth - 2 * minLeft;
-                        if (width < minWidth + ws) {
-                            width = minWidth + ws;
-                        }
-                        height = width / aspect;                       
-                    } 
+                width = (maxWidth - 2 * minLeft)>originWidth? originWidth: (maxWidth - 2 * minLeft)<minWidth? minWidth: (maxWidth - 2 * minLeft);
+                height = (maxHeight - 2 * minTop)>originHeight? originHeight: (maxHeight - 2 * minTop)<minHeight? minHeight: (maxHeight - 2 * minTop);
 
-                    if (maxHeight - 2 * minTop < originHeight + hs) {
-                        height = maxHeight - 2 * minTop;
-                        if (height < minHeight + hs) {
-                            height = minHeight + hs;
-                        }
-                        width = height * aspect;                    
-                    } 
-                } else {
-                    width  = (maxWidth - 2 * minLeft- ws) > originWidth ? (originWidth+ws) : (maxWidth - 2 * minLeft)<minWidth? minWidth : (maxWidth - 2 * minLeft);
-                    height = (maxHeight - 2 * minTop- hs) > originHeight ? (originHeight+hs) : (maxHeight - 2 * minTop)<minHeight? minHeight : (maxHeight - 2 * minTop); 
+                if (aspect) {
+                    result = scale(width,height,aspect);
+                    width = result.w;
+                    height = result.h;
                 }
-            } else {
-                // pass default dimension to content for iframe,inline,ajax
-                width = originWidth + ws;
-                height = originHeight + hs;   
-            }                 
+            }            
             
             //centered the container
-            top  = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
-            left = (maxWidth - width)/2 < minLeft ? minLeft : (maxWidth - width)/2;   
+            top = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
+            left = (maxWidth - width)/2 < minLeft ? minLeft : (maxWidth - width)/2;
             
             //reposition set on container
             Popup.$container.css({
@@ -394,11 +341,12 @@
             });
             //resize set on content
             Popup.$content.css({
-                width: width-ws,
-                height: height-hs, 
+                width: width,
+                height: height,
             });
 
-            //give a chance for helper component resize.
+            //give a chance for components component resize
+            //note: it defaults padding and margin both equal to 0 
             rez = {
                 winWidth: maxWidth + current.holderWidth,
                 winHeight: maxHeight + current.holderHeight,
@@ -410,7 +358,7 @@
                 left: left,
             };
 
-            //here pass dimension info as a argument to helper
+            //here pass dimension info as a argument to components
             Popup._trigger('resize',rez);
         },
         _makeEls: function(tag, className, style) {
@@ -436,9 +384,9 @@
             return obj;
         },
         _trigger: function(event) {
-            var help, helpers = Popup.helper;
-            for (var help in helpers) {
-                helpers[help][event] && helpers[help][event](arguments[1]);
+            var component, components = Popup.components;
+            for (var component in components) {
+                components[component][event] && components[component][event](arguments[1]);
             }
         },
         _showLoading: function() {
@@ -468,14 +416,15 @@
             var previous = Popup.current,
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type;
-                
 
-            if (!Popup.settings || Popup.isOpen) { //slider中每一张的切换也要重新读取默认值再做判断。
+            console.log(Popup.settings);
+            if (!Popup.settings || Popup.isOpen) { 
                 Popup.settings = {};
                 $.extend(true,Popup.settings, Popup.defaults);
                 console.log(Popup.settings);
             }
-            console.log(Popup.defaults);
+            
+            //options 
             if (toString.apply(options) === '[object Object]' || options == undefined) {
                 options = options || {};
             } else if (!isNaN(options)) {
@@ -483,12 +432,16 @@
                 options = {};
             }
 
+            //contents
             if (toString.apply(contents) === '[object Array]' && !Popup.isOpen) {
                 var count = contents.length,
                     i = 0;
                 Popup.group = [];
                 for (i; i < count; i++) {
-                    obj = {};
+                    obj = {
+                        url: null,
+                        title: '',
+                    };
                     if (toString.apply(contents[i]) === '[object String]') {
                         obj.url = contents[i];
                     } else if (toString.apply(contents[i]) === '[object Object]') {
@@ -509,7 +462,6 @@
                 $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);
 
                 Popup.current.index = index;
-
             } else if (!Popup.isOpen) {
                 if (arguments.length == 1) { 
                     Popup.current = $.extend(true,Popup.current,Popup.settings, arguments[0].options);
@@ -528,11 +480,14 @@
                 index = 0;
             }
 
-            if (Popup.group && Popup.group.length >= 2) {
+            //here we can see how it works
+            //click image: making Popup.current,Popup.group
+            //click next: extent Popup.current with Popup.group[index]
+            //note: Popup.current only made when firstly click
+            if (Popup.group && Popup.group[1]) {
                 if (arguments.length == 2 && toString.apply(arguments[1]) === '[object Number]') {
-                    console.log(index);
-                    obj = Popup.group[index];
-                    $.extend(Popup.current, obj);
+
+                    Popup.current = $.extend({}, Popup.current, Popup.group[index]);
                     Popup.current.index = index;
                 }
                 Popup.slider = true;
@@ -580,8 +535,9 @@
                 Popup.$container.removeClass(Popup.current.skin);
             }         
 
-            //trigger to remove the component registered on helper object
+            //trigger to remove the component registered on components object
             Popup._trigger('close');
+
             Popup.$container.remove();
 
             Popup.slider = false;
@@ -589,7 +545,7 @@
             Popup.current.isPaused = null;
             
             Popup.isOpen = false;
-            Popup.current = {};
+            Popup.current = null;
             Popup.settings = null; 
             Popup.group = null;  
         },
@@ -605,6 +561,7 @@
             index = index % count;
             Popup.current.index = index;
             console.log(Popup.current.index);
+
             Popup.show({}, index);
         },
         prev: function() {
@@ -648,9 +605,9 @@
         },
         registerComponent:function(name,options) {
             alert('componennt');
-            Popup.helper[name] = {};
-            Popup.helper[name]['isUse'] = false;
-            Popup.helper[name].onReady = function() {
+            Popup.components[name] = {};
+            Popup.components[name]['isUse'] = false;
+            Popup.components[name].onReady = function() {
                 Popup.$custom.append($(options.html).css({
                     'position': 'absolute',
                     'display': 'block'
@@ -761,7 +718,7 @@
             });
 
             console.log(Popup.angle);   
-        }
+        },
     });
 
     //
@@ -936,8 +893,10 @@
         },
     };
 
+    Popup.components = {};
+
     //
-    // here you can add your custom transition & slider effect and types
+    // here you can add your custom transition & slider effect  , types , components 
     //
 
     //transitions
@@ -1061,10 +1020,8 @@
         }
     };
 
-    //
-    //helper function used to extend components
-    //
-    Popup.helper.overlay = {
+    //components 
+    Popup.components.overlay = {
         defaults: {},
         opts: {},
         onReady: function() {  
@@ -1106,7 +1063,7 @@
             Popup.$overlay.remove();
         }
     };   
-    Popup.helper.controls = {
+    Popup.components.controls = {
         defaults: {
             slider: true,
             nav: 'outside',
@@ -1116,7 +1073,7 @@
         active: false,
 
         onReady: function() {
-            this.opts = $.extend({},this.defaults,Popup.current.helper.controls);
+            this.opts = $.extend({},this.defaults,Popup.current.components.controls);
 
             if (!Popup.group) {
                 return
@@ -1206,41 +1163,92 @@
             });
         }
     };
-    Popup.helper.thumbnails = {
-        defaults: {},
+    Popup.components.thumbnails = {
+        defaults: {
+            count: 5,
+        },
         opts: {},
         $thumbnails: null,
+        $thumHolder: null,
+        $inner: null,
+
+        unitWidth: 80,
+        unitHeight: 80,
+        padding: 0,
+        gap: 20,
+
+        visualWidth: null,
 
         onReady: function() {
+
             if (!Popup.group || Popup.current.type !== 'image') {
                 return
             }
-            
-            this.opts = $.extend({},this.defaults,Popup.helper.thumbnails);
 
             //reset holderHeight to give space for thumbnails
             Popup.current.holderWidth = 0;
             Popup.current.holderHeight = 100;
+
+            //for mobile
+            if (Popup.isMobile) {
+                Popup.current.holderWidth = 0;
+                Popup.current.holderHeight = 0;
+            }
+            
+            this.opts = $.extend({},this.defaults,Popup.components.thumbnails);            
            
             this.create();
-            
-            this.open();
         },
         create: function() {
-            var top,
-                gallery = [],
+            var top, visualWidth,totalWidth,
+                unitWidth = this.unitWidth,
+                unitHeight = this.unitHeight,
+                padding = this.padding,
+                gap = this.gap,
+                count = this.opts.count,
                 group = Popup.group,
                 $thumbnails = $('<div>').addClass('popup-thumbnails'),
                 $leftButtom = $('<a href="#">').addClass('popup-thumbnails-left'),
                 $rightButtom = $('<a href="#">').addClass('popup-thumbnails-right'),
-                $thumHolder = $('<div>').addClass('popup-thumbnails-holder').css({'display':'inline-block'}),
-                count = group.length > 5? 5 : group.length;
+                $thumHolder = $('<div>').addClass('popup-thumbnails-holder'),
+                $inner = $('<div>').addClass('popup-thumbails-inner').appendTo($thumHolder),
+                moveEvent = function(direction) {
+                    var left =  $inner.css('left');
 
-            for (var i=0; i<count; i++) {
-                gallery[i] = new Image();
-                gallery[i].src = group[i].url;
-                $('<a href="#">').addClass('popup-thumbnails-img').append(gallery[i]).appendTo($thumHolder);
-            }
+                    totalWidth = $inner.width();
+                    left = parseInt(left);
+
+                    if (direction == 'left') {
+                        $inner.css({
+                            'left': left-visualWidth<0? 0: (left-visualWidth),
+                        });
+                    } else {
+                        $inner.css({
+                            'left': -(left+visualWidth>totalWidth-visualWidth? totalWidth-visualWidth:left+visualWidth),
+                        });
+                    }
+                }
+
+            $.each(Popup.group,function(i) {
+                var url = Popup.group[i].url;
+                $('<img />').attr('src', url).appendTo($('<a href="#">').appendTo($inner)); 
+            });
+
+            count = count > group.length? group.length:count; 
+            visualWidth = count * (unitWidth+2*padding) + (count-1)*gap;
+
+            //set necessary css style
+            $inner.css({
+                'position': 'absolute',
+                'width': group.length * (unitWidth+2*padding) + (group.length-1)*gap,
+            });
+
+            $thumHolder.css({
+                'display':'inline-block',
+                'position':'relative',
+                'width': visualWidth,
+                'height': unitHeight + 2* padding,
+            });
 
             $thumbnails.css({
                 'position': 'fixed',
@@ -1249,13 +1257,65 @@
                 'text-align': 'center',
             }).append($leftButtom,$thumHolder,$rightButtom);
 
-            this.$thumbnails = $thumbnails;
             $thumbnails.appendTo(Popup.$container);
+
+            //bind click to thumb buttom 
+            $leftButtom.on('click',function() {
+                moveEvent('left');
+                return false;
+            });
+            $rightButtom.on('click',function() {
+                moveEvent('right');
+                return false;
+            });
+            $inner.children().on('click',function() {
+                var index = $inner.children().index(this);
+                Popup.show({},index);
+            });
+
+            //save var to obj
+            this.$thumbnails = $thumbnails;
+            this.$thumHolder = $thumHolder;   
+            this.$inner = $inner;
+            this.visualWidth = visualWidth;        
         },
-        open: function() {
+        open: function(index) { 
+            var gallery = Popup.group;
+            this.$inner.children().removeClass('popup-thumbnails-active').eq(index).addClass('popup-thumbnails-active');
         },
+        afterLoad: function() {
+            var index = Popup.current.index;
+
+            if (!Popup.group || Popup.current.type !== 'image') {
+                return
+            }
+            
+            this.open(index); 
+            this.resetPosition(index);           
+        },
+
+        //L:the distance from start to index of img,
+        //v: visualWidth, unit: the length of every img including gap
+        //left = left+(L-w)>0? -(L-w): left,
+        //left = left+L<0? -(L-unit): left,
+        resetPosition: function(index) {
+            var inner = this.$inner,
+                visualWidth = this.visualWidth,
+                length = (index +1)*(this.unitWidth+2*this.padding) + index*this.gap,
+                left = parseInt(inner.css('left'));
+
+            if (left+length-visualWidth > 0) {
+                left = visualWidth - length;
+            } else if (left + length < 0) {
+                left = 80 - length;
+            }
+
+            inner.css({
+                'left': left,
+            });
+        }
     };
-    Popup.helper.title = {
+    Popup.components.title = {
         $title: null,
         onReady: function() {
             if (!Popup.current.title) {
@@ -1264,8 +1324,8 @@
             this.create();
         },
         create: function() {
-            var $title = $('<span>').text(Popup.current.title);
-            $title.appendTo(Popup.$container);
+            var $title = $('<span>').addClass('popup-info-title');
+            $title.appendTo(Popup.$info).text(Popup.current.title);
             this.$title = $title;
         },
         afterLoad: function() {
@@ -1274,9 +1334,12 @@
             } else {
                 this.$title.text(Popup.current.title);
             }           
+        },
+        close: function() {
+            this.$title = null;
         }
     };
-    Popup.helper.count = {
+    Popup.components.count = {
         $count: null,
         total: null,
         onReady: function() {
@@ -1286,7 +1349,7 @@
             this.create();
         },
         create: function() {
-            var $count = $('<span>'),
+            var $count = $('<span>').addClass('popup-info-count'),
                 total = Popup.group.length,
                 current = Popup.current.index+1;
             $count.appendTo(Popup.$info).text(current+"/"+total);
@@ -1295,21 +1358,21 @@
         },
         afterLoad: function() {
             var current = Popup.current.index+1;
-            if (!this.$count) {
-                this.create();
-            } else {
-                this.$count.text(current+"/"+this.total);
-            }            
+            if (!Popup.group) {
+                return
+            }
+           
+            this.$count.text(current+"/"+this.total);           
         }
     };
-    Popup.helper.social = {
+    Popup.components.social = {
         defaults: {
             facebook: true,
             twitter: true,
         },
         opts: {},
         onReady: function() {
-            this.opts = $.extend({},Popup.defaults,Popup.current.helper.social);
+            this.opts = $.extend({},Popup.defaults,Popup.current.components.social);
             this.create();
         },
         create: function() {

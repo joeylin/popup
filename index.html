@@ -48,7 +48,7 @@ Popup.RegisterType('gdoc', {
 });
 jQuery(document).ready(function(){
     $('.type-gdoc').Popup(
-        {type: 'gdoc',title:'This is Google Docs.'}
+        {type: 'gdoc',title:'This is Google Docs',closeBtn:true}
     );
 });
 &lt;/script&gt;
@@ -65,7 +65,7 @@ $.Popup.RegisterType('gdoc', {
 });
 jQuery(document).ready(function(){
     $('.type-gdoc').Popup(
-        {type: 'gdoc',title:'This is Google Docs.'}
+        {type: 'gdoc',title:'This is Google Docs.',closeBtn:true}
     );
 });
 </script>
@@ -161,6 +161,10 @@ href=&quot;video/video.mp4&quot;
 &lt;a class=&quot;popup&quot; href=&quot;img/7.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/7-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-group="gallery"><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-group="gallery"><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/4.jpg" data-popup-group="gallery"><img src="img/4-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/5.jpg" data-popup-group="gallery"><img src="img/5-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/6.jpg" data-popup-group="gallery"><img src="img/6-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/7.jpg" data-popup-group="gallery"><img src="img/7-thumbnail.jpg" alt="" /></a>
@@ -288,7 +292,6 @@ jQuery(document).ready(function(){
     //         }
     //     });
     //     $('.api-skin-small').Popup();
-
     // });
 </script>
             </div>
@@ -325,7 +328,12 @@ jQuery(".api-show-1").on('click',function(){
     {
         height: '400px',
         width: '400px',
-        fullscreen: false
+        components: {
+            rotate: null,
+        },
+        skin: {
+            autoSize: true,
+        }
     });
 });
 </script>
@@ -630,11 +638,13 @@ $(".api-reposition").on('click',function(){
                 <div class="popup-thumbnails">
                     <a href="#" class="popup-thumbnails-left"></a>
                     <div class="popup-thumbnails-holder">
-                        <a href="#"><img src="img/1.jpg"></a>
-                        <a href="#"><img src="img/2.jpg"></a>
-                        <a href="#"><img src="img/3.jpg"></a>
-                        <a href="#"><img src="img/4.jpg"></a>
-                        <a href="#"><img src="img/5.jpg"></a>
+                        <div class='popup-thumbails-holder-inner'>
+                            <a href="#"><img src="img/1.jpg"></a>
+                            <a href="#"><img src="img/2.jpg"></a>
+                            <a href="#"><img src="img/3.jpg"></a>
+                            <a href="#"><img src="img/4.jpg"></a>
+                            <a href="#" class='popup-thumbnails-active'><img src="img/5.jpg"></a>
+                        </div>
                     </div>
                     <a href="#" class="popup-thumbnails-right"></a>
                 </div>

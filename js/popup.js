@@ -20,17 +20,18 @@
             minWidth: 400,
             minHeight: 200,
 
-            holderWidth: 0,
-            holderHeight: 0,
-
-            minTop: 40,
-            minLeft: 10,
-
             playSpeed: 1500,
 
             closeBtn: false,
 
             components: {},
+            skinSetting: {
+                holderWidth: 0,
+                holderHeight: 80,
+
+                minTop: 40,
+                minLeft: 10,
+            },
 
             transition: 'fade',
             transitionEffect: {},
@@ -68,11 +69,6 @@
 
         components: {},
 
-        skins: {
-            custom:{},
-            white: {},
-        },
-
         isMobile: false,
 
         //
@@ -107,13 +103,14 @@
                     }
                 });
             }
+            console.log(metas)
 
             if (metas.options) {
                 metas.options = Popup._string2obj(metas.options);
             }            
 
             if (metas.groupoptions) {
-                $.extend(true,metas.options,Popup._string2obj(metas.groupoptions));
+                metas.options = $.extend(true,Popup._string2obj(metas.groupoptions),metas.options);
             } 
 
             if(!options) {
@@ -123,7 +120,6 @@
             Popup.settings = {};
             $.extend(true,Popup.settings,Popup.defaults, options, metas.options , metas); //要修改
 
-            
             //build Popup.group object
             index = count>=2 ? group.index(self) : 0;
             url = $self.attr('href');
@@ -189,7 +185,7 @@
                             }
                         });
                     }
-                };   
+                }; 
 
             if (!Popup.isOpen) {
 
@@ -217,20 +213,25 @@
                     $close = Popup._makeEls('div','popup-controls-close');
                     $close.css({'position': 'absolute'}).appendTo($controls);
                 }
+
+                //load skin value
+                Popup.current.skin = Popup.current.skin == null? Popup.defaultSkin || 'custom' : Popup.current.skin;
+                $.extend(true,Popup.current.skinSetting,Popup.skins[Popup.current.skin]);
+
+                console.log(Popup.current);
                 
                 //trigger the component registered on components object
                 Popup._trigger('onReady');
 
-                //add container to overlay or body
-                $container.appendTo( Popup.$overlay || 'body' );
-
                 //set skin
-                Popup.current.skin = Popup.current.skin == null? Popup.defaultSkin || 'custom' : Popup.current.skin;
                 if (Popup.$overlay) {
                     Popup.$overlay.addClass(Popup.current.skin);
                 } else {
                     Popup.$container.addClass(Popup.current.skin);
                 }
+
+                //add container to overlay or body
+                $container.appendTo( Popup.$overlay || 'body' );
 
                 //binding event
                 bindEvents();
@@ -245,7 +246,7 @@
             Popup.$content.empty();
             Popup.$content.append(Popup.current.content);
 
-            //give a chance to reset some infos,
+            //give a chance to reset some infos
             Popup._trigger('afterLoad');
 
             //set postion every loading
@@ -291,13 +292,13 @@
                 originWidth = Popup.current.width,
                 originHeight = Popup.current.height,
 
-                maxWidth = $(window).width() - current.holderWidth,
-                maxHeight = $(window).height() - current.holderHeight,
+                maxWidth = $(window).width() - current.skinSetting.holderWidth,
+                maxHeight = $(window).height() - current.skinSetting.holderHeight,
                 minWidth = Popup.current.minWidth,
                 minHeight = Popup.current.minHeight,
 
-                minTop = current.minTop,
-                minLeft = current.minLeft,
+                minTop = current.skinSetting.minTop,
+                minLeft = current.skinSetting.minLeft,
 
                 scale = function(x,y,rate) {
                     var w,h;
@@ -348,12 +349,12 @@
             //give a chance for components component resize
             //note: it defaults padding and margin both equal to 0 
             rez = {
-                winWidth: maxWidth + current.holderWidth,
-                winHeight: maxHeight + current.holderHeight,
+                winWidth: maxWidth + current.skinSetting.holderWidth,
+                winHeight: maxHeight + current.skinSetting.holderHeight,
                 containerWidth: width,
                 containerHeight: height,
-                holderWidth: current.holderWidth,
-                holderHeight: current.holderHeight,
+                holderWidth: current.skinSetting.holderWidth,
+                holderHeight: current.skinSetting.holderHeight,
                 top: top,
                 left: left,
             };
@@ -386,7 +387,11 @@
         _trigger: function(event) {
             var component, components = Popup.components;
             for (var component in components) {
-                components[component][event] && components[component][event](arguments[1]);
+                
+                //here to check wether to close some component
+                if (Popup.current.skinSetting[component] !== null) {
+                    components[component][event] && components[component][event](arguments[1]);
+                }            
             }
         },
         _showLoading: function() {
@@ -895,6 +900,45 @@
 
     Popup.components = {};
 
+    // skin Option: 
+    // controls => holderWidth,holderHeight,minTop,minLeft,ui
+    // thumbnail => count,unitWidth,unitHeight,bottom,left,padding,gap
+    // save these value on Popup.current.skinSetting
+    Popup.skins = {
+        custom: {
+            holderWidth: 0,
+            holderHeight: 0,
+
+            minTop: 40,
+            minLeft: 10,
+
+            controls: {
+                ui: 'outside',
+            },
+        },
+        whiteBorder: {        
+            holderWidth: 0,
+            holderHeight: 20,
+
+            minTop: 20,
+            minLeft: 10,
+
+            controls: {
+                ui: 'inside',
+            },
+
+            thumbnails: null,
+
+            // thumbnails: {
+            //     count: 5,
+
+            //     bottom: 10,
+            //     left: 0,
+            //     padding: 2,
+            // },
+        },
+    }
+
     //
     // here you can add your custom transition & slider effect  , types , components 
     //
@@ -1066,15 +1110,23 @@
     Popup.components.controls = {
         defaults: {
             slider: true,
-            nav: 'outside',
+            ui: 'outside',
             autoPlay: false,
+            action: false,
         },
         opts: {},
         active: false,
 
         onReady: function() {
-            this.opts = $.extend({},this.defaults,Popup.current.components.controls);
+            if(Popup.current.skin) {
+                this.opts = $.extend({},this.defaults,Popup.current.skinSetting.controls);
+            } else {
+                this.opts = this.defaults;
+            }
 
+            console.log(Popup.current.skinSetting.controls)
+            console.log(this.opts);
+            
             if (!Popup.group) {
                 return
             }
@@ -1084,12 +1136,13 @@
             this.active = true;
         },
         create: function() {
-            var $prev = Popup._makeEls('div','popup-controls-prev'),
+            var self = this,
+                $prev = Popup._makeEls('div','popup-controls-prev'),
                 $next = Popup._makeEls('div','popup-controls-next'),
                 $close = Popup._makeEls('div','popup-controls-close'),
                 $play = Popup._makeEls('div','popup-controls-play'),
                 bindEvents = function() {
-                    if(Popup.current.action || Popup.current.autoPlay) {
+                    if(self.opts.action || self.opts.autoPlay) {
                         Popup.$content.on('click',function() {
                             if (Popup.current.isPaused === true) {
                                 slider.play();
@@ -1099,7 +1152,7 @@
                             }
                         });
                     }
-                    if(Popup.current.action) {
+                    if(self.opts.action) {
                         Popup.$content.on('click',function() {
                             play();
                         });
@@ -1131,10 +1184,27 @@
                 $play: $play,
             });
 
+            //optional ui
+            if (self.opts.ui == 'outside') {
+                Popup.$prev.css({
+                    'position': 'fixed',
+                });
+                Popup.$next.css({
+                    'position': 'fixed',
+                });
+            } else if (self.opts.ui == 'inside') {
+                Popup.$prev.css({
+                    'position': 'absolute',
+                });
+                Popup.$next.css({
+                    'position': 'absolute',
+                });
+            }
+
             bindEvents();
         },
         open: function() {
-            if (Popup.current.autoPlay) {
+            if (this.opts.autoPlay) {
                 Popup.$play.css({'display': 'block'});
                 Popup._slider.play();
             }
@@ -1145,11 +1215,16 @@
         },
         resize: function(rez) {
             var top,left;
-            if (!this.active || this.opts.nav !== 'outside') {
+            if (!this.active || this.opts.ui !== 'outside') {
                 return
             }
+
+
             top = (rez.winHeight - rez.holderHeight)/2;
             left = (rez.winWidth -rez.containerWidth)/4;
+
+            console.log(top)
+            console.log(left)
 
             Popup.$prev.css({
                 'position': 'fixed',
@@ -1166,16 +1241,18 @@
     Popup.components.thumbnails = {
         defaults: {
             count: 5,
+
+            unitWidth: 80,
+            unitHeight: 80,
+            bottom: 16,
+            left: 0,
+            padding: 0, //for border
+            gap: 20,
         },
         opts: {},
         $thumbnails: null,
         $thumHolder: null,
         $inner: null,
-
-        unitWidth: 80,
-        unitHeight: 80,
-        padding: 0,
-        gap: 20,
 
         visualWidth: null,
 
@@ -1185,26 +1262,24 @@
                 return
             }
 
-            //reset holderHeight to give space for thumbnails
-            Popup.current.holderWidth = 0;
-            Popup.current.holderHeight = 100;
-
             //for mobile
             if (Popup.isMobile) {
-                Popup.current.holderWidth = 0;
-                Popup.current.holderHeight = 0;
+                Popup.current.skinSetting.holderWidth = 0;
+                Popup.current.skinSetting.holderHeight = 0;
             }
             
-            this.opts = $.extend({},this.defaults,Popup.components.thumbnails);            
+            this.opts = $.extend({},this.defaults,Popup.current.skinSetting.thumbnails);            
            
             this.create();
         },
         create: function() {
             var top, visualWidth,totalWidth,
-                unitWidth = this.unitWidth,
-                unitHeight = this.unitHeight,
-                padding = this.padding,
-                gap = this.gap,
+                unitWidth = this.opts.unitWidth,
+                unitHeight = this.opts.unitHeight,
+                bottom = this.opts.bottom,
+                left = this.opts.left,
+                padding = this.opts.padding,
+                gap = this.opts.gap,
                 count = this.opts.count,
                 group = Popup.group,
                 $thumbnails = $('<div>').addClass('popup-thumbnails'),
@@ -1252,8 +1327,8 @@
 
             $thumbnails.css({
                 'position': 'fixed',
-                'bottom': 16,
-                'left': 0,
+                'bottom': bottom,
+                'left': left,
                 'text-align': 'center',
             }).append($leftButtom,$thumHolder,$rightButtom);
 
@@ -1300,14 +1375,14 @@
         //left = left+L<0? -(L-unit): left,
         resetPosition: function(index) {
             var inner = this.$inner,
-                visualWidth = this.visualWidth,
-                length = (index +1)*(this.unitWidth+2*this.padding) + index*this.gap,
+                visualWidth = this.opts.visualWidth,
+                length = (index +1)*(this.opts.unitWidth+2*this.opts.padding) + index*this.opts.gap,
                 left = parseInt(inner.css('left'));
 
             if (left+length-visualWidth > 0) {
                 left = visualWidth - length;
             } else if (left + length < 0) {
-                left = 80 - length;
+                left = this.opts.unitWidth + 2*this.opts.padding - length;
             }
 
             inner.css({

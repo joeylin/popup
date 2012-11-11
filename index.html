@@ -155,7 +155,7 @@ href=&quot;video/video.mp4&quot;
         <section>
             <h2>Group</h2>
             <section>
-                <h3>Gallery</h3>
+                <h3>Gallery: with custom skin</h3>
                 <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;img/5.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 &lt;a class=&quot;popup&quot; href=&quot;img/6.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/6-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 &lt;a class=&quot;popup&quot; href=&quot;img/7.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/7-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
@@ -171,6 +171,19 @@ href=&quot;video/video.mp4&quot;
                 </div>
             </section>
             <section>
+                <h3>Gallery: with whiteBorder skin</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/2.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/2-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:whiteBorder"
+                    ><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-group="gallery1" ><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-group="gallery1" ><img src="img/3-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            <!-- <section>
                 <h3>Mixed</h3>
                 <p>Our plugin also support mix content to show, what you need do is to set the same data-popup-group name</p>
                 <pre class="has-example"><code class="language-markup"> &lt;a class=&quot;popup&quot; data-popup-group=&quot;mixed&quot; href=&quot;img/4.jpg&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
@@ -182,9 +195,64 @@ href=&quot;video/video.mp4&quot;
                     <a class="popup" data-popup-group="mixed" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf"><img src="img/5-thumbnail.jpg" alt="" /></a>
                     <a class="popup" data-popup-group="mixed" href="http://google.com" data-popup-type="iframe"><img src="img/6-thumbnail.jpg" alt="" /></a>
                 </div>
-            </section>
+            </section> -->
             </section>
         </section>
+        <section>
+            <h2>Skin</h2>
+                <p>Skins are a combination of Javascript Options, CSS and a PNG sprite. To use a skin the only option required is the skin option. How to use Skin, fllow below steps:</p>
+            <section>
+                <h3>Javascript</h3>
+                <p>use Javascript to Popup.skins set for creating a new skin</p>
+                <pre class="has-example"><code class="language-javascript">
+$.extend($.Popup.skins, {
+  'custom' : {
+    ui: 'inside'
+  }
+});
+</code></pre>
+            <script type="text/javascript">
+            </script>
+            <p>After the skin has been created it can be applied using the skin option:</p>
+            <pre class="has-example"><code class="language-javascript">
+&lt;a class="popup" href="img/1.jpg" data-popup-skin="custom"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+</code></pre>
+            <p>When using groups the best way to apply the skin is using the data-popup-group-options:</p>
+            <pre class="has-example"><code class="language-javascript">
+&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'whiteBorder'"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/2.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/2-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+</code></pre>
+            </section> 
+            <section>
+                <h3>CSS</h3>
+                <p>Once the Javascript for a skin is in place a skin will need CSS and a sprite for styling</p>
+                <p>We have a basic css style for every component, fllowing below to create the new style</p>
+                <pre class="has-example"><code class="language-javascript">
+.whiteBorder .popup-thumbnails-holder {
+    //here you can override and inherit .popup-thumbnails-holder
+    //and this style if only for wihteBorder skin
+}
+</code></pre>
+                <div class="example">
+                    <p>click <a href="#">here</a> to check a list of classnames that become available</p>
+                </div>
+                
+            </section>
+            <section>
+                <h3>Set Default Skin</h3>
+                <p>To avoid having to set the skin option all the time the default skin can be changed using $.Popup.setDefaultSkin(). It should be called after the file that defines custom skins, for example:</p>
+                <pre class="has-example"><code class="language-javascript">
+&lt;script type='text/javascript'&gt;
+  // make a custom skin the new default
+  $.Popup.setDefaultSkin('custom');
+&lt;/script&gt;;
+</code></pre>
+
+            </section>
+
+        </section>
+
         <section>
             <h2>Transition</h2>
             <section>
@@ -217,41 +285,6 @@ href=&quot;video/video.mp4&quot;
                     <a class="popup" href="img/4.jpg" data-popup-transition="elastic"><img src="img/4-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
-        </section>
-        <section>
-            <h2>Skin</h2>
-                <p>we previde four skins,and you can write your style skin, all your css style must be written with one class name ,and quote this in the data-popup-skin attribute</p>
-                <pre class="has-example"><code class="language-javascript">
-&lt;a class=&quot;popup&quot; data-popup-skin="white" href=&quot;img/1.jpg&quot;&gt;default&lt;/a&gt;
-&lt;a class=&quot;popup&quot; data-popup-skin="custom" href=&quot;img/1.jpg&quot;&gt;custom&lt;/a&gt;</code></pre>
-                <div class="example">
-                    <a class="popup" data-popup-skin="white" href="img/1.jpg">white</a><br />
-                    <a class="popup" data-popup-skin="custom" href="img/1.jpg">custom</a>
-                </div>
-            <section>
-                <h3>setDefaultSkin</h3>
-                <p>you can set all popup skin in the page useing this method,but it can be overrided by the setting in the element</p>
-                <pre class="has-example"><code class="language-javascript">
-&lt;a class=&quot;api-skin-default&quot; href=&quot;img/1.jpg&quot;&gt;default&lt;/a&gt;
-&lt;a class=&quot;api-skin-custom&quot; href=&quot;img/1.jpg&quot;&gt;custom&lt;/a&gt;
-&lt;script&gt;
-jQuery(document).ready(function(){
-    Popup.setDefaultSkin('custom');
-    $('.api-skin-custom').Popup();
-});
-&lt;/script&gt;
-</code></pre>
-                <div class="example">
-                    <a class="api-skin-custom" href="img/1.jpg">custom</a>
-<script>
-jQuery(document).ready(function(){
-    $.Popup.setDefaultSkin('custom');
-    $('.api-skin-custom').Popup();
-});
-</script>
-                </div>
-            </section> 
-
         </section>
         <section>
             <h2>Component</h2>

@@ -793,7 +793,7 @@
         },
         iframe: {
             match: function(url) {
-                alert('iframe')
+                
                 if (url.match(/youtube\.com\/watch\?v\=(\w+)(&|)/i)||url.match(/vimeo\.com\/(\d+)/i)||url.match(/vid\.ly\/(\d+)/i)||url.match(/\.(ppt|PPT|tif|TIF|pdf|PDF)$/i)) {
                     return true;
                 }
@@ -814,7 +814,7 @@
         },
         swf: {
             match: function(url) {   
-                alert('swf')            
+                           
                 return url.match(/\.(swf)((\?|#).*)?$/i);
             },
             load: function() {
@@ -876,7 +876,7 @@
         },
         inline: {
             match: function(url) {
-                alert('inline')
+                
                 return url.charAt(0) == "#";
             },
             load: function() {

@@ -387,7 +387,7 @@
         _trigger: function(event) {
             var component, components = Popup.components;
             for (var component in components) {
-                
+
                 //here to check wether to close some component
                 if (Popup.current.skinSetting[component] !== null) {
                     components[component][event] && components[component][event](arguments[1]);
@@ -907,7 +907,7 @@
     Popup.skins = {
         custom: {
             holderWidth: 0,
-            holderHeight: 0,
+            holderHeight: 80,
 
             minTop: 40,
             minLeft: 10,
@@ -917,25 +917,23 @@
             },
         },
         whiteBorder: {        
-            holderWidth: 0,
-            holderHeight: 20,
+            holderWidth: 10,
+            holderHeight: 120,
 
             minTop: 20,
-            minLeft: 10,
+            minLeft: 20,
 
             controls: {
                 ui: 'inside',
             },
 
-            thumbnails: null,
+            thumbnails: {
+                count: 5,
 
-            // thumbnails: {
-            //     count: 5,
-
-            //     bottom: 10,
-            //     left: 0,
-            //     padding: 2,
-            // },
+                bottom: 10,
+                left: 0,
+                padding: 2,
+            },
         },
     }
 

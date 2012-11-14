@@ -36,7 +36,7 @@
             <section>
                 <h3>RegisterType</h3>
                 <p>参考 https://github.com/mnelson/diabox/blob/master/Source/diabox.js 的 register_renderable 实现</p>
-                <pre class="has-example"><code class="language-markup">
+                <pre class="has-example testpos"><code class="language-markup">
 &lt;a href=&quot;http://www.samplepdf.com/sample.pdf&quot; class=&quot;type-gdoc&quot;&gt;Open with Google doc&lt;/a&gt;
 &lt;script&gt;
 //gdoc extend remote(iframe) type
@@ -75,11 +75,11 @@ jQuery(document).ready(function(){
                 <h3>Image</h3>
                 <p>If you have data-popup-options,you cant set data-popup-type, you need set this in data-popup-options,it is the collect of all options setting,it neglet other settings outside data-popup-options</p>
                 <pre class="has-example"><code class="language-markup">
-&lt;a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:this is a image,ui:inside,skin:white"&gt;
+&lt;a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'whiteBorder'"&gt;
     &lt;img src="img/1-thumbnail.jpg" alt="" /&gt;
 &lt;/a&gt;</code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:this is a image,ui:inside,skin:white"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'whiteBorder'"><img src="img/1-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
             <section>
@@ -179,7 +179,7 @@ href=&quot;video/video.mp4&quot;
 &lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:whiteBorder"
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'whiteBorder'"
                     ><img src="img/1-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/2.jpg" data-popup-group="gallery1" ><img src="img/2-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/3.jpg" data-popup-group="gallery1" ><img src="img/3-thumbnail.jpg" alt="" /></a>
@@ -273,18 +273,18 @@ $.extend($.Popup.skins, {
                 </div>
             </section>
             <section>
-                <h3>Elastic</h3>
+                <h3>Zoom</h3>
                 <pre class="has-example"><code class="language-markup">
-&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;elastic&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="elastic"><img src="img/1-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/2.jpg" data-popup-transition="elastic"><img src="img/2-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/3.jpg" data-popup-transition="elastic"><img src="img/3-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/4.jpg" data-popup-transition="elastic"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-transition="zoom"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-transition="zoom"><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-transition="zoom"><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/4.jpg" data-popup-transition="zoom"><img src="img/4-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
         </section>
@@ -338,7 +338,7 @@ jQuery(document).ready(function(){
             <section>
                 <h3>show</h3>
                 <pre class="has-example"><code class="language-javascript">
-Popup.show([{
+$.Popup.show([{
     url: 'img/1.jpg'
 },{
     url: 'img/2.jpg',
@@ -347,7 +347,9 @@ Popup.show([{
 {
     height: '400px',
     width: '400px',
-    fullscreen: false
+
+    skin: 'custom',
+    transition: 'zoom'
 });
 </code></pre>
                 <div class="example">
@@ -363,12 +365,9 @@ jQuery(".api-show-1").on('click',function(){
     {
         height: '400px',
         width: '400px',
-        components: {
-            rotate: null,
-        },
-        skin: {
-            autoSize: true,
-        }
+
+        skin: 'custom',
+        transition: 'zoom'
     });
 });
 </script>
@@ -398,10 +397,9 @@ $(".api-show-2").on('click',function(){
                 <pre class="has-example"><code class="language-javascript">
 Popup.show({
     url: 'img/1.jpg',
-    optons: {
+    options: {
         height: '400px',
         width: '400px',
-        fullscreen: false,
         autoSize: true
     }
 });
@@ -412,10 +410,10 @@ Popup.show({
 $(".api-show-3").on('click',function(){
     $.Popup.show({
         url: 'img/1.jpg',
-        optons: {
+        options: {
             height: '400px',
             width: '400px',
-            fullscreen: false,
+
             autoSize: true
         }
     });

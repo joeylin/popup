@@ -5,7 +5,12 @@
     // Plugin constructor
     var Popup = $.Popup = function(element, options) {
         $(element).on('click', function(e) {
-
+            var pos = {
+                x: e.clientX,
+                y: e.clientY,
+            };
+            
+            options = $.extend(true,options,{pos: pos});
             Popup._init(this,options);
             Popup.show();
             return false;
@@ -34,7 +39,7 @@
             },
 
             transition: 'fade',
-            transitionEffect: {},
+            transitionSetting: {},
 
             autoSize: true,
             autoPlay: false, //open autoplay
@@ -44,7 +49,8 @@
 
             selector: null,
             ajax: {
-                dataType: 'text',
+                dataType: 'html',
+                headers  : { 'popup': true }
             },
 
             keyboard: {
@@ -64,8 +70,6 @@
         current: {},
         previous: {},
         coming: {},
-
-        settings: {},
 
         components: {},
 
@@ -127,7 +131,8 @@
             Popup.settings = $.extend({}, Popup.settings, {
                 index: index,
                 url: url,
-                element: element
+                element: element,
+                
             });
 
             if (count >= 2) {
@@ -158,19 +163,14 @@
                         Popup._resize();
                         return false;
                     });
-
-                    //bind close button event
-                    if (Popup.current.closeBtn) {
-                        $close.on('click', function() {
-                            Popup.close();
-                            return false;
-                        });
-                    }
                                    
                     // Key Bindings
-                    if(Popup.current.keys && !Popup.isOpen) { 
-                        $(document).bind('keypress.popup',function(e){
+                    if(Popup.current.keys && !Popup.isOpen && Popup.group) { 
+                        $(document).bind('keydown.popup',function(e){
                             var key = e.keyCode;
+
+                            console.log(key);
+                            console.log(e.which);
 
                             if (key === 27) {
                                 Popup.close();
@@ -209,19 +209,27 @@
                     $custom: $custom,
                 });
 
-                if (Popup.current.closeBtn) {
-                    $close = Popup._makeEls('div','popup-controls-close');
-                    $close.css({'position': 'absolute'}).appendTo($controls);
-                }
-
                 //load skin value
                 Popup.current.skin = Popup.current.skin == null? Popup.defaultSkin || 'custom' : Popup.current.skin;
+
                 $.extend(true,Popup.current.skinSetting,Popup.skins[Popup.current.skin]);
 
-                console.log(Popup.current);
+                if (!Popup.group || !Popup.group[1]) {
+                    Popup.current.skinSetting.holderHeight = 20;
+                }
                 
                 //trigger the component registered on components object
                 Popup._trigger('onReady');
+
+                //add close buttom if controls component is cancelled
+                if (!Popup.$close) {
+                    $close = Popup._makeEls('div','popup-controls-close');
+                    $close.css({'position': 'absolute'}).appendTo($controls);
+                    $close.on('click', function() {
+                        Popup.close();
+                        return false;
+                    });
+                }
 
                 //set skin
                 if (Popup.$overlay) {
@@ -380,7 +388,8 @@
             count = arr.length;
             for (i = 0; i < count; i++) {
                 subArr = arr[i].split(':');
-                obj[subArr[0]] = subArr[1];//.replace("\'","").replace("\"","")
+                console.log($.trim(subArr[1]).slice(1, -1));
+                obj[subArr[0]] = $.trim(subArr[1]).slice(1, -1);
             }
             return obj;
         },
@@ -420,12 +429,11 @@
         show: function(contents, options) {
             var previous = Popup.current,
                 toString = Object.prototype.toString,
-                options, current, index, url, obj, type;
+                options, current, index, url, obj, type; 
 
-            console.log(Popup.settings);
             if (!Popup.settings || Popup.isOpen) { 
                 Popup.settings = {};
-                $.extend(true,Popup.settings, Popup.defaults);
+                $.extend(true,Popup.settings,Popup.defaults);
                 console.log(Popup.settings);
             }
             
@@ -464,17 +472,19 @@
                     Popup.current = {};
                 }
 
-                $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);
+                $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);                    
 
                 Popup.current.index = index;
             } else if (!Popup.isOpen) {
                 if (arguments.length == 1) { 
-                    Popup.current = $.extend(true,Popup.current,Popup.settings, arguments[0].options);
+                    Popup.current = $.extend(true,Popup.current,Popup.settings,arguments[0].options);
+
+                    console.log(Popup.settings);
+                    console.log(arguments[0].options);
+
                     Popup.current.url = arguments[0].url;
                 } else {
                     Popup.current = $.extend(true,Popup.current,Popup.settings, options);
-                    console.log(options);
-                    console.log(Popup.current); 
                 }
             }           
 
@@ -531,7 +541,7 @@
 
             //unbind event
             $(window).unbind('resize');
-            $(document).unbind('keypress.popup');
+            $(document).unbind('keydown.popup');
 
             //delete skin
             if (Popup.$overlay) {
@@ -544,6 +554,7 @@
             Popup._trigger('close');
 
             Popup.$container.remove();
+            Popup.$close = null;
 
             Popup.slider = false;
             Popup.closeAnimate = null;
@@ -907,16 +918,16 @@
     Popup.skins = {
         custom: {
             holderWidth: 0,
-            holderHeight: 80,
+            holderHeight: 100,
 
-            minTop: 40,
+            minTop: 20,
             minLeft: 10,
 
             controls: {
                 ui: 'outside',
             },
         },
-        whiteBorder: {        
+        whiteBorder: {
             holderWidth: 10,
             holderHeight: 120,
 
@@ -946,15 +957,36 @@
         defaults: {
             openSpeed: 150,
             closeSpeed: 150,
-        },       
-        openEffect: function(opts) {            
-            console.log(Popup.current.element);
-            alert('openEffect');
+        },
+        opts: {},
 
-            var el = Popup.current.element,
+        openEffect: function(opts) { 
+            var el = Popup.current.element,pos,
                 origin, startPos,endPos;
-            origin = $(el).find('img').filter(':first');
+
+            this.opts = $.extend({},this.defaults,Popup.current.transitionSetting),    
+            origin = $(el).offset();
             console.log(origin);
+            pos = {
+                x: $(document).scrollLeft(),
+                y: $(document).scrollTop(),
+            }
+            startPos = {
+                x: origin.left - pos.x,
+                y: origin.top - pos.y,
+            };
+            console.log(startPos);
+
+            Popup.$overlay.css({'display': 'block'});
+
+            Popup.$container.css({
+                'width': 0,
+                'height': 0,
+                'top': startPos.y,
+                'left': startPos.x,
+                'display': 'block',
+            });
+
         },
         closeEffect: function() {},
     };
@@ -964,7 +996,7 @@
             closeSpeed: 500,
         },
         openEffect: function(){
-            var opts = $.extend({},this.defaults,Popup.current.transitionEffect);
+            var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
             if (Popup.isOpen) {
                 return
             }
@@ -977,7 +1009,7 @@
         },
         // closeEffect need callback function to close popup
         closeEffect: function() {
-            var opts = $.extend({},this.defaults,Popup.current.transitionEffect);
+            var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
             if (!Popup.isOpen) {
                 return
             }
@@ -1208,7 +1240,10 @@
             }
         },
         close: function() {
-            Popup.$controls.remove();
+            Popup.$content && Popup.$content.unbind('click');
+            Popup.$prev && Popup.$prev.unbind('click');
+            Popup.$next && Popup.$next.unbind('click');
+            Popup.$controls && Popup.$controls.remove();
             this.active = false;
         },
         resize: function(rez) {
@@ -1291,6 +1326,9 @@
                     totalWidth = $inner.width();
                     left = parseInt(left);
 
+                    console.log(left)
+                    console.log(totalWidth)
+
                     if (direction == 'left') {
                         $inner.css({
                             'left': left-visualWidth<0? 0: (left-visualWidth),
@@ -1313,6 +1351,8 @@
             //set necessary css style
             $inner.css({
                 'position': 'absolute',
+                'top': 0,
+                'left': 0,
                 'width': group.length * (unitWidth+2*padding) + (group.length-1)*gap,
             });
 
@@ -1334,6 +1374,7 @@
 
             //bind click to thumb buttom 
             $leftButtom.on('click',function() {
+
                 moveEvent('left');
                 return false;
             });
@@ -1373,7 +1414,7 @@
         //left = left+L<0? -(L-unit): left,
         resetPosition: function(index) {
             var inner = this.$inner,
-                visualWidth = this.opts.visualWidth,
+                visualWidth = this.visualWidth,
                 length = (index +1)*(this.opts.unitWidth+2*this.opts.padding) + index*this.opts.gap,
                 left = parseInt(inner.css('left'));
 

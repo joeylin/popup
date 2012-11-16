@@ -165,6 +165,7 @@
             var $container,$content,$controls,$close,$custom,$info,
                 aspect     = Popup.current.aspect, 
                 type       = Popup.current.type,
+                rez,
                 bindEvents = function() {
                     //binding resize event on window
                     $(window).on('resize',function() {
@@ -210,7 +211,7 @@
                     'position': 'absolute',
                     'display': 'block',
                 });
-                $content = Popup._makeEls('div', 'popup-content');
+                $content = Popup._makeEls('div', 'popup-content').css({'overflow':'hidden'});
                 $info = Popup._makeEls('div','popup-info');
                 $controls = Popup._makeEls('div', 'popup-controls');
                 $custom = Popup._makeEls('div','popup-custom');
@@ -232,7 +233,7 @@
                 Popup._trigger('onReady');
 
                 //add close buttom if controls component is cancelled
-                if (!Popup.$close) {
+                if (!Popup.$close) {                    
                     $close = Popup._makeEls('div','popup-controls-close');
                     $close.css({'position': 'absolute'}).appendTo($controls);
                     $close.on('click', function() {
@@ -254,11 +255,14 @@
                 //binding event
                 bindEvents();
 
-                //trigger open transition
-                Popup.transitions[Popup.current.transition]['openEffect'](Popup.current); 
-                
-                Popup._isOpen = true;
+
+                //calculate necessary dimension before trigger open transition
+                rez = Popup._calculate();
+                Popup._trigger('resize',rez);
+                Popup.transitions[Popup.current.transition]['openEffect'](rez);                                
             }
+
+            //alert('transition');    
 
             //remove old content before loading new content
             Popup.$content.empty();
@@ -267,8 +271,11 @@
             //give a chance to reset some infos
             Popup._trigger('afterLoad');
 
-            //set postion every loading
-            Popup._resize();
+            //set postion every slider loading 
+            if (Popup._isOpen) {
+                Popup._resize();
+            }
+            Popup._isOpen = true;
 
             // //add autoPlay 
             // if (Popup.current.autoPlay === true) {
@@ -1033,13 +1040,12 @@
         },
         opts: {},
 
-        openEffect: function(opts) { 
+        openEffect: function(rez) { 
             var el = Popup.current.element,pos,
                 origin, startPos,endPos;
 
             this.opts = $.extend({},this.defaults,Popup.current.transitionSetting),    
             origin = $(el).offset();
-            console.log(origin);
             pos = {
                 x: $(document).scrollLeft(),
                 y: $(document).scrollTop(),
@@ -1053,26 +1059,54 @@
             Popup.$overlay.css({'display': 'block'});
 
             Popup.$container.css({
-                'width': 0,
-                'height': 0,
                 'top': startPos.y,
                 'left': startPos.x,
                 'display': 'block',
-            });
-
+            }).animate({
+                'top': rez.top,
+                'left': rez.left,
+            },1000);
+            Popup.$content.css({
+                'width': 0,
+                'height': 0,
+            }).animate({
+                'width': rez.containerWidth,
+                'height': rez.containerHeight,
+            },1000);
         },
-        closeEffect: function() {},
+        closeEffect: function() {
+            var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
+            if (!Popup._isOpen) {
+                return
+            }
+            if (Popup.$overlay) {
+                Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
+            } else {
+                Popup.$container.fadeOut(opts.closeSpeed,Popup.close);
+            }
+        },
     };
     Popup.transitions.fade = {
         defaults: {
             openSpeed: 500,
             closeSpeed: 500,
         },
-        openEffect: function(){
+        openEffect: function(rez){
             var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
             if (Popup._isOpen) {
                 return
             }
+
+            Popup.$container.css({
+                top: rez.top,
+                left: rez.left,
+            });
+            //resize set on content
+            Popup.$content.css({
+                width: rez.containerWidth,
+                height: rez.containerHeight,
+            });
+
             if (Popup.$overlay) {
                 Popup.$container.css({'display': 'block'});
                 Popup.$overlay.fadeIn(opts.openSpeed);
@@ -1094,7 +1128,52 @@
         },
     };
     Popup.transitions.dropdown = {
+        defaults: {
+            openSpeed: 150,
+            closeSpeed: 150,
+            span: 20,
+        },
+        opts: {},
 
+        openEffect: function(rez) {
+            var top = rez.top, left = rez.left,
+                width = rez.containerWidth, 
+                height = rez.containerHeight,
+                span = 20;
+            Popup.$overlay.css({
+                'display': 'block',
+            });
+            Popup.$content.css({
+                'width': width,
+                'height': height,
+            });
+            Popup.$container.css({
+                'display': 'block',
+                'top': -height,
+                'left': left,
+            }).animate({
+                'top': top + span,
+            },{
+                duration: 1000,
+                easing: 'swing', 
+            }).animate({
+                'top': top,
+            },{
+                duration: 500,
+                easing: 'swing',
+            });
+        },
+        closeEffect: function() {
+            var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
+            if (!Popup._isOpen) {
+                return
+            }
+            if (Popup.$overlay) {
+                Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
+            } else {
+                Popup.$container.fadeOut(opts.closeSpeed,Popup.close);
+            }
+        },
     };
 
 

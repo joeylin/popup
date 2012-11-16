@@ -13,7 +13,7 @@
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="stylesheet" href="fonts\neuton\stylesheet.css">
         <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/popup.css">
+        <link rel="stylesheet" href="css/skin.css">
         <link rel="stylesheet" href="css/example.css">
         <link rel="stylesheet" href="css/prism.css">
 
@@ -23,6 +23,7 @@
         <script src="js/vendor/prism.js"></script>
         <script src="js/popup.js" type="text/javascript"></script>
         <script>
+
        
         </script>
 
@@ -75,11 +76,11 @@ jQuery(document).ready(function(){
                 <h3>Image</h3>
                 <p>If you have data-popup-options,you cant set data-popup-type, you need set this in data-popup-options,it is the collect of all options setting,it neglet other settings outside data-popup-options</p>
                 <pre class="has-example"><code class="language-markup">
-&lt;a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'whiteBorder'"&gt;
+&lt;a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'skinSimple'"&gt;
     &lt;img src="img/1-thumbnail.jpg" alt="" /&gt;
 &lt;/a&gt;</code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'whiteBorder'"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-transition="fade" data-popup-options="title:'this is a image',ui:'inside',skin:'skinSimple'"><img src="img/1-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
             <section>
@@ -110,10 +111,10 @@ jQuery(document).ready(function(){
                 <h3>Iframe</h3>
                 <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;http://baidu.com&quot; data-popup-type=&quot;iframe&quot;&gt;iframe&lt;/a&gt;</code></pre>
                 <div class="example">
-                    <a class="popup" href="http://baidu.com" data-popup-type="iframe">iframe</a>
+                    <a class="popup" href="http://baidu.com" data-popup-type="iframe" data-popup-options="width:'740',height:'460'">iframe</a>
                 </div>
             </section>
-            <section>
+            <!-- <section>
                 <h3>Videos</h3>
                 <pre class="has-example"><code class="language-markup">&lt;!-- SWF --&gt;
 &lt;a class=&quot;popup&quot; href=&quot;http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf&quot;&gt;swf&lt;/a&gt;
@@ -133,31 +134,31 @@ data-popup-video='{&quot;poster&quot;:&quot;video/poster.jpg&quot;,&quot;preload
 href=&quot;video/video.mp4&quot;
 &gt;Local Video&lt;/a&gt;</code></pre>
                 <div class="example">
-                    <!-- SWF -->
+                    
                     <a class="popup" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf">SWF</a>
-                    <br />
+                    <br /> -->
                     <!-- YouTube -->
-                    <a class="popup" href="http://www.youtube.com/watch?v=AFA-rOls8YA">Youtube</a>
-                    <br />
+                   <!--  <a class="popup" href="http://www.youtube.com/watch?v=AFA-rOls8YA">Youtube</a> -->
+                    <!-- <br /> -->
                     <!-- Vimeo -->
-                    <a class="popup" href="http://vimeo.com/39251390">Vimeo</a>
-                    <br />
+                    <!-- <a class="popup" href="http://vimeo.com/39251390">Vimeo</a>
+                    <br /> -->
                     <!-- Vid.ly -->
-                    <a class="popup" href="http://vid.ly/5u4h3e">Vid.ly</a>
-                    <br />
+                    <!-- <a class="popup" href="http://vid.ly/5u4h3e">Vid.ly</a>
+                    <br /> -->
                     <!-- Local Video -->
-                    <a class="popup"
+                    <!-- <a class="popup"
                     data-popup-vHtml5='{"poster":"video/poster.jpg","preload":"auto","format":"mp4"}'
                     href="http://wearehugh.com/dih5/pr6.mp4"
                     >Local Video</a>
                 </div>
-            </section>
+            </section> -->
 
         </section>
         <section>
             <h2>Group</h2>
             <section>
-                <h3>Gallery: with custom skin</h3>
+                <h3>Gallery: with skinRimless skin</h3>
                 <pre class="has-example"><code class="language-markup">&lt;a class=&quot;popup&quot; href=&quot;img/5.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/5-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 &lt;a class=&quot;popup&quot; href=&quot;img/6.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/6-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 &lt;a class=&quot;popup&quot; href=&quot;img/7.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/7-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
@@ -173,13 +174,13 @@ href=&quot;video/video.mp4&quot;
                 </div>
             </section>
             <section>
-                <h3>Gallery: with whiteBorder skin</h3>
-                <pre class="has-example"><code class="language-markup">&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
-&lt;a class="popup" href="img/2.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/2-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
-&lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" data-popup-skin="whiteBorder"&gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+                <h3>Gallery: with skinSimple skin</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-popup-skin="skinSimple"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/2.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/2-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'whiteBorder'"
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'skinSimple'"
                     ><img src="img/1-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/2.jpg" data-popup-group="gallery1" ><img src="img/2-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/3.jpg" data-popup-group="gallery1" ><img src="img/3-thumbnail.jpg" alt="" /></a>
@@ -208,7 +209,7 @@ href=&quot;video/video.mp4&quot;
                 <p>use Javascript to Popup.skins set for creating a new skin</p>
                 <pre class="has-example"><code class="language-javascript">
 $.extend($.Popup.skins, {
-  'custom' : {
+  'skinRimless' : {
     ui: 'inside'
   }
 });
@@ -217,11 +218,11 @@ $.extend($.Popup.skins, {
             </script>
             <p>After the skin has been created it can be applied using the skin option:</p>
             <pre class="has-example"><code class="language-javascript">
-&lt;a class="popup" href="img/1.jpg" data-popup-skin="custom"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/1.jpg" data-popup-skin="skinRimless"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 </code></pre>
             <p>When using groups the best way to apply the skin is using the data-popup-group-options:</p>
             <pre class="has-example"><code class="language-javascript">
-&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'whiteBorder'"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'skinSimple'"&gt;&lt;img src="img/1-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 &lt;a class="popup" href="img/2.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/2-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 &lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 </code></pre>
@@ -231,7 +232,7 @@ $.extend($.Popup.skins, {
                 <p>Once the Javascript for a skin is in place a skin will need CSS and a sprite for styling</p>
                 <p>We have a basic css style for every component, fllowing below to create the new style</p>
                 <pre class="has-example"><code class="language-javascript">
-.whiteBorder .popup-thumbnails-holder {
+.skinSimple .popup-thumbnails-holder {
     //here you can override and inherit .popup-thumbnails-holder
     //and this style if only for wihteBorder skin
 }
@@ -243,11 +244,11 @@ $.extend($.Popup.skins, {
             </section>
             <section>
                 <h3>Set Default Skin</h3>
-                <p>To avoid having to set the skin option all the time the default skin can be changed using $.Popup.setDefaultSkin(). It should be called after the file that defines custom skins, for example:</p>
+                <p>To avoid having to set the skin option all the time the default skin can be changed using $.Popup.setDefaultSkin(). It should be called after the file that defines skinRimless skins, for example:</p>
                 <pre class="has-example"><code class="language-javascript">
 &lt;script type='text/javascript'&gt;
-  // make a custom skin the new default
-  $.Popup.setDefaultSkin('custom');
+  // make a skinRimless skin the new default
+  $.Popup.setDefaultSkin('skinRimless');
 &lt;/script&gt;;
 </code></pre>
 
@@ -273,22 +274,22 @@ $.extend($.Popup.skins, {
                 </div>
             </section>
             <section>
-                <h3>Zoom</h3>
+                <h3>Dropdown</h3>
                 <pre class="has-example"><code class="language-markup">
-&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="zoom"><img src="img/1-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/2.jpg" data-popup-transition="zoom"><img src="img/2-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/3.jpg" data-popup-transition="zoom"><img src="img/3-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/4.jpg" data-popup-transition="zoom"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-transition="dropdown"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/2.jpg" data-popup-transition="dropdown"><img src="img/2-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-transition="dropdown"><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/4.jpg" data-popup-transition="dropdown"><img src="img/4-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
         </section>
-        <section>
+        <!-- <section>
             <h2>Component</h2>
             <section>
                 <h3>registerComponent</h3>
@@ -331,7 +332,7 @@ jQuery(document).ready(function(){
 </script>
             </div>
             </section>
-        </section>
+        </section> -->
         <section>
             <h2>API Method</h2>
             <p>The alternative to using the HTML based approach is using the Javascript API. The API has all the options of the HTML approach and provides some useful extra functions.</p>
@@ -348,12 +349,12 @@ $.Popup.show([{
     height: '400px',
     width: '400px',
 
-    skin: 'custom',
-    transition: 'zoom'
+    skin: 'skinSimple',
+    transition: 'fade'
 });
 </code></pre>
                 <div class="example">
-                    <a class="api-show-1">click to show popup</a>
+                    <a href="#" class="api-show-1">click to show popup</a>
 <script>
 jQuery(".api-show-1").on('click',function(){
     $.Popup.show([{
@@ -366,23 +367,25 @@ jQuery(".api-show-1").on('click',function(){
         height: '400px',
         width: '400px',
 
-        skin: 'custom',
-        transition: 'zoom'
+        skin: 'skinSimple',
+        transition: 'fade'
     });
+
+    return false;
 });
 </script>
                 </div><!-- end example -->
 
 
                 <pre class="has-example"><code class="language-javascript">
-Popup.show(['img/1.jpg', 'img/2.jpg'], {
+$.Popup.show(['img/1.jpg', 'img/2.jpg'], {
     height: '400px',
     width: '400px',
     fullscreen: false
 });
 </code></pre>
                 <div class="example">
-                    <a class="api-show-2">click to show popup</a>
+                    <a href="#" class="api-show-2">click to show popup</a>
 <script>
 $(".api-show-2").on('click',function(){
     $.Popup.show(['img/1.jpg', 'img/2.jpg'], {
@@ -390,12 +393,13 @@ $(".api-show-2").on('click',function(){
         width: '400px',
         fullscreen: false
     });
+    return false
 });
 </script>
                 </div><!-- end example -->
 
-                <pre class="has-example"><code class="language-javascript">
-Popup.show({
+                <!-- <pre class="has-example"><code class="language-javascript">
+$.Popup.show({
     url: 'img/1.jpg',
     options: {
         height: '400px',
@@ -405,7 +409,7 @@ Popup.show({
 });
 </code></pre>
                 <div class="example">
-                    <a class="api-show-3">click to show popup</a>
+                    <a href="#" class="api-show-3">click to show popup</a>
     <script>
 $(".api-show-3").on('click',function(){
     $.Popup.show({
@@ -419,16 +423,17 @@ $(".api-show-3").on('click',function(){
     });
 });
 </script>
-                </div><!-- end example -->
+                </div> --><!-- end example -->
 
                 <pre class="has-example"><code class="language-javascript">
-Popup.show(['image1.jpg', 'image2.jpg', 'image3.jpg'], 2); // opens at 3th position
+$.Popup.show(['image1.jpg', 'image2.jpg', 'image3.jpg'], 2); // opens at 3th position
 </code></pre>
                 <div class="example">
-                    <a class="api-show-4">show image3 first</a>
+                    <a href="#" class="api-show-4">show image3 first</a>
 <script>
 $(".api-show-4").on('click',function(){
     $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2); // opens at 3th position
+    return false;
 });
 </script>
                 </div><!-- end example -->
@@ -437,13 +442,52 @@ $(".api-show-4").on('click',function(){
             <section>
                 <h3>close</h3>
                 <pre class="has-example"><code class="language-javascript">
-Popup.close();
+$.Popup.close();
+
+$.Popup.show([{
+    url: 'img/1.jpg'
+},{
+    url: 'img/2.jpg',
+    title: 'captions'
+}],
+{
+    height: '400px',
+    width: '400px',
+
+    skin: 'skinSimple',
+    transition: 'fade'
+});
+
+setTimeout(function(){
+  $.Popup.close();
+},3000);
+
+return false;
 </code></pre>
                 <div class="example">
-                    <a class="api-close">click to close</a>
+                    <a href="#" class="api-close">click to close</a>
 <script>
 $(".api-close").on('click',function(){
-    $.Popup.close();
+    $.Popup.show([{
+        url: 'img/1.jpg'
+    },{
+        url: 'img/2.jpg',
+        title: 'captions'
+    }],
+    {
+        height: '400px',
+        width: '400px',
+
+        skin: 'skinSimple',
+        transition: 'fade'
+    });
+
+    setTimeout(function(){
+      $.Popup.close();
+    },3000);
+
+    return false;
+    
 });
 </script>
                 </div>
@@ -453,12 +497,51 @@ $(".api-close").on('click',function(){
                 <p></p>
                 <pre class="has-example"><code class="language-javascript">
 $.Popup.update();
+
+$.Popup.show([{
+    url: 'img/1.jpg'
+},{
+    url: 'img/2.jpg',
+    title: 'captions'
+}],
+{
+    height: '400px',
+    width: '400px',
+
+    skin: 'skinSimple',
+    transition: 'fade'
+});
+
+setTimeout(function(){
+  $.Popup.update();
+},3000);
+
+return false;
 </code></pre>
                 <div class="example">
-                    <a class="api-update">click to update element</a>
+                    <a href="#" class="api-update">click to update element</a>
 <script>
 $(".api-update").on('click',function(){
-    $.Popup.update();
+    $.Popup.show([{
+        url: 'img/1.jpg'
+    },{
+        url: 'img/2.jpg',
+        title: 'captions'
+    }],
+    {
+        height: '400px',
+        width: '400px',
+
+        skin: 'skinSimple',
+        transition: 'fade'
+    });
+
+    setTimeout(function(){
+      $.Popup.update();
+    },3000);
+
+    return false;
+    
 });
 </script>
                 </div>
@@ -467,45 +550,141 @@ $(".api-update").on('click',function(){
                 <h3>destory</h3>
                 <p>Removes all traces of Popup from the document. Not the same as Popup.close(), which tucks popup away for future use.</p>
                 <pre class="has-example"><code class="language-javascript">
-Popup.destory();
+$.Popup.destory();
+
+$.Popup.show([{
+    url: 'img/1.jpg'
+},{
+    url: 'img/2.jpg',
+    title: 'captions'
+}],
+{
+    height: '400px',
+    width: '400px',
+
+    skin: 'skinSimple',
+    transition: 'fade'
+});
+
+setTimeout(function(){
+  $.Popup.destory();
+  alert("$.popup is changed to"+" "+ $.popup);
+},3000);
 </code></pre>
                 <div class="example">
-                    <a class="api-destory">click to destory</a>
+                    <a href="#" class="api-destory">click to destory</a>
 <script>
 $(".api-destory").on('click',function(){
-    Popup.destory();
+    $.Popup.show([{
+        url: 'img/1.jpg'
+    },{
+        url: 'img/2.jpg',
+        title: 'captions'
+    }],
+    {
+        height: '400px',
+        width: '400px',
+
+        skin: 'skinSimple',
+        transition: 'fade'
+    });
+
+    setTimeout(function(){
+      $.Popup.destory();
+      alert("$.popup is changed to "+$.popup);
+    },3000);
+
+    return false;
 });
 </script>
                 </div>
             </section>
             <section>
-                <h3>isOpened</h3>
+                <h3>isOpen</h3>
                 <p>Returns <var>true</var> if the popup is opened.</p>
                 <pre class="has-example"><code class="language-javascript">
-alert(Popup.isOpened());
+$.Popup.isOpen()
+
+$.Popup.show([{
+    url: 'img/1.jpg'
+},{
+    url: 'img/2.jpg',
+    title: 'captions'
+}],
+{
+    height: '400px',
+    width: '400px',
+
+    skin: 'skinSimple',
+    transition: 'fade'
+});
+alert("popup is opened: "+$.Popup.isOpen());
+
+setTimeout(function(){
+  $.Popup.close();
+  alert("popup is opened: "+$.Popup.isOpen());
+},3000);
+
+return false;
 </code></pre>
                 <div class="example">
-                    <a class="api-isOpened">click to check if opened</a>
+                    <a href="#" class="api-isOpened">click to check if opened</a>
 <script>
 $(".api-isOpened").on('click',function(){
-   alert(Popup.isOpened());
+    $.Popup.show([{
+        url: 'img/1.jpg'
+    },{
+        url: 'img/2.jpg',
+        title: 'captions'
+    }],
+    {
+        height: '400px',
+        width: '400px',
+
+        skin: 'skinSimple',
+        transition: 'fade'
+    });
+    alert("popup is opened: "+$.Popup.isOpen());
+
+    setTimeout(function(){
+      $.Popup.close();
+      alert("popup is opened: "+$.Popup.isOpen());
+    },3000);
+
+    return false;
+   
 });
 </script>
                 </div>
             </section>
             <section>
-                <h3>current</h3>
+                <h3>getCurrent</h3>
                 <p>This method is used to fetch the current HTML element that Popup is associated with. Returns a jQuery object containing the element.</p>
                 <pre class="has-example"><code class="language-javascript">
-var $current = Popup.current();
-alert($current.html());
+$.Popup.getCurrent()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    alert($.Popup.getCurrent());
+    $.Popup.next();
+    alert($.Popup.getCurrent());
+    $.Popup.close();
+},3000);
 </code></pre>
                 <div class="example">
-                    <a class="api-current">click to get current</a>
+                    <a href="#" class="api-current">click to get current</a>
 <script>
 $(".api-current").on('click',function(){
-    var $current = $.Popup.current();
-    alert($current.html());
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        alert($.Popup.getCurrent());
+        $.Popup.next();
+        alert($.Popup.getCurrent());
+        $.Popup.close();
+    },3000);
+
+    return false;
+    
 });
 </script>
                 </div>
@@ -514,13 +693,27 @@ $(".api-current").on('click',function(){
                 <h3>hasNext</h3>
                 <p>Returns true if there is another item to display in the current gallery. Note that this will always be true in galleries that are continuous.</p>
                 <pre class="has-example"><code class="language-javascript">
-alert(Popup.hasNext());
+$.Popup.hasNext()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    alert($.Popup.hasNext());
+    $.Popup.next();
+    alert($.Popup.hasNext());
+    $.Popup.close();
+},3000); 
 </code></pre>
                 <div class="example">
                     <a class="api-hasNext">click to check if hasNext</a>
 <script>
 $(".api-hasNext").on('click',function(){
-    alert(Popup.hasNext());
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        alert($.Popup.hasNext());
+        $.Popup.next();
+        alert($.Popup.hasNext());
+        $.Popup.close();
+    },3000);          
 });
 </script>
                 </div>
@@ -528,13 +721,22 @@ $(".api-hasNext").on('click',function(){
             <section>
                 <h3>next</h3>
                 <pre class="has-example"><code class="language-javascript">
-Popup.next();
+$.Popup.next()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    $.Popup.next();
+},3000); 
 </code></pre>
                 <div class="example">
                     <a class="api-next">click to see next</a>
 <script>
 $(".api-next").on('click',function(){
-    $.Popup.next();
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        $.Popup.next();
+    },3000);        
+   
 });
 </script>
                 </div>
@@ -542,28 +744,46 @@ $(".api-next").on('click',function(){
             <section>
                 <h3>prev</h3>
                 <pre class="has-example"><code class="language-javascript">
-Popup.prev();
+$.Popup.prev()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    $.Popup.prev();
+},3000); 
 </code></pre>
                 <div class="example">
                     <a class="api-prev">click to see prev</a>
 <script>
 $(".api-prev").on('click',function(){
-    $.Popup.prev();
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        $.Popup.prev();
+    },3000);        
+
 });
 </script>
                 </div>
             </section>
-            <section>
+            <!-- <section>
                 <h3>play</h3>
                 <p>Resumes the current slideshow (if there is one).</p>
                 <pre class="has-example"><code class="language-javascript">
-$.Popup.play();
+$.Popup.play()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    $.Popup.play();
+},1000);
 </code></pre>
                 <div class="example">
                     <a class="api-play">click to play slideshow</a>
 <script>
 $(".api-play").on('click',function(){
-    $.Popup.play();
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        $.Popup.play();
+    },1000);            
+    
 });
 </script>
                 </div>
@@ -572,13 +792,24 @@ $(".api-play").on('click',function(){
                 <h3>pause</h3>
                 <p>Pauses the current slideshow (if there is one).</p>
                 <pre class="has-example"><code class="language-javascript">
-$.Popup.pause();
+$.Popup.pause()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+$.Popup.play();
+setTimeout(function(){
+    $.Popup.pause();
+},2000); 
 </code></pre>
                 <div class="example">
                     <a class="api-pause">click to pause slideshow</a>
 <script>
 $(".api-pause").on('click',function(){
-    $.Popup.pause();
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    $.Popup.play();
+    setTimeout(function(){
+        $.Popup.pause();
+    },2000);  
+    
 });
 </script>
                 </div>
@@ -587,36 +818,54 @@ $(".api-pause").on('click',function(){
                 <h3>isPaused</h3>
                 <p>Returns <var>true</var> if the popup is currently in a paused state. This can happen if pause is invoked in the middle of a slideshow.</p>
                 <pre class="has-example"><code class="language-javascript">
-alert(Popup.isPaused());
+$.Popup.isPaused()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+$.Popup.play();
+setTimeout(function(){
+    $.Popup.pause();
+},3000);  
+alert("Paused: "+ $.Popup.isPaused());
 </code></pre>
                 <div class="example">
-                    <a class="api-isPaused">click to check if opened</a>
+                    <a class="api-isPaused">click to check if is paused</a>
 <script>
 $(".api-isPaused").on('click',function(){
-   alert(Popup.isPaused());
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    $.Popup.play();
+    setTimeout(function(){
+        $.Popup.pause();
+    },3000);  
+   alert("Paused: "+ $.Popup.isPaused());
 });
 </script>
                 </div>
-            </section>
+            </section> -->
             <section>
                 <h3>jumpto</h3>
                 <pre class="has-example"><code class="language-javascript">
-Popup.jumpto([index]);
+$.Popup.jumpto()
+
+$.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+setTimeout(function(){
+    $.Popup.jumpto(0);
+},3000);
 </code></pre>
                 <div class="example">
-                    <a class="api-jumpto-1">click to jumpto first one</a><br />
-                    <a class="api-jumpto-3">click to jumpto third one</a>
+                    <a class="api-jumpto-1">click to jumpto first one</a>                   
 <script>
-$(".api-play-1").on('click',function(){
-    $.Popup.jumpto(0);
+$(".api-jumpto-1").on('click',function(){
+    $.Popup.show(['img/1.jpg', 'img/2.jpg', 'img/3.jpg'], 2);
+    setTimeout(function(){
+        $.Popup.jumpto(0);
+    },3000);  
+    
 });
-$(".api-play-1").on('click',function(){
-    $.Popup.jumpto(2);
-});
+
 </script>
                 </div>
             </section>
-            <section>
+            <!-- <section>
                 <h3>dimensions</h3>
                 <p>Return an object containing the current dimensions of the popup.</p>
                 <pre class="has-example"><code class="language-javascript">
@@ -665,9 +914,12 @@ $(".api-reposition").on('click',function(){
 });
 </script>
                 </div>
-            </section>  
+            </section>   -->
                
         </section>
+        <div id="test">
+            <img src="img/1.jpg" />
+        </div>
     </div>
            
     <script src="js/main.js" type="text/javascript"></script>
@@ -679,6 +931,45 @@ $(".api-reposition").on('click',function(){
         $(document).ready(function() {
           $('.popup').Popup();           
         });
+
+        var $el = $('#test'),
+            width,height, steps;
+
+        steps = function() {
+            width = $el.width();
+            $el.css({
+                'margin-left': -width/2,
+            })
+        }
+        $el.css({
+            'position': 'fixed',
+            'display': 'inline-block',
+            'top': -20,
+            'left': '50%',
+            'width': 20,
+            'height': 20,
+            'overflow': 'hidden',
+        });
+
+        width = $el.width();
+
+        // $el.animate({
+        //     'top': '50%',
+        //     'width': 210,
+        //     'height': 210,
+        // },{
+        //     duration: 1500,
+        //     easing: 'swing',
+        //     step: steps,
+        // }).animate({
+        //     'top': '40%',
+        //     'width': 200,
+        //     'height': 200,
+        // },{
+        //     duration: 200,
+        //     easing: 'swing',
+        //     step: steps,
+        // });
     </script>
 </body>
 </html>

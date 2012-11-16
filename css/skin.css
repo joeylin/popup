@@ -1,0 +1,375 @@
+/*====== helper style ======*/
+.popup-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: block;
+    width: 24px;
+    height: 24px;
+
+    margin-top: -12px;
+    margin-left: -12px;
+
+    background-image: url("../img/popup-loading.gif");
+}
+
+/*====== thumbnails =======*/
+.popup-thumbnails {
+    display: block;
+
+    position: fixed;
+    bottom: 16px;
+    left: 0;
+
+    width: 100%;
+    min-width: 650px;
+
+    text-align: center;
+}
+.popup-thumbnails-left,.popup-thumbnails-right {
+    display: inline-block;
+    width: 17px;
+    height: 28px;
+    margin-bottom: 20px;
+}
+.popup-thumbnails-left {
+    background: url(../img/thum-left-normal.png) no-repeat 0 0;
+}
+.popup-thumbnails-left:hover {
+    background: url(../img/thum-left-hover.png) no-repeat 0 0;
+}
+.popup-thumbnails-right {
+    background: url(../img/thum-right-normal.png) no-repeat 0 0;
+}
+.popup-thumbnails-right:hover {
+    background: url(../img/thum-right-hover.png) no-repeat 0 0;
+}
+.popup-thumbnails-holder {
+    position: relative;
+
+    display: inline-block;
+    width: 280px;
+    height: 80px;
+    margin: 0 20px;
+
+    overflow: hidden;
+}
+.popup-thumbails-inner {
+    position: absolute;
+    
+    -webkit-transition: all 0.5s linear;
+    -o-transition: all 0.5s linear;
+    -moz-transition: all 0.5s linear;
+    transition: all 0.5s linear;
+
+}
+.popup-thumbnails-holder img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+.popup-thumbnails-holder a {
+    display: block;
+    float: left;
+
+    width: 80px;
+    height: 80px;
+    margin-left: 20px;
+
+    opacity: 0.4;
+    outline: none;
+}
+.popup-thumbnails-holder .popup-thumbnails-active {
+    opacity: 1.0;
+}
+.popup-thumbnails-holder a:first-child {
+    margin-left: 0;
+}
+
+
+/*======= here to add skin ========*/
+/*======= skinRimless =========*/
+.skinRimless {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    cursor: pointer;
+    display: block;
+
+    background: none repeat scroll 0 0 rgba(0,0,0,0.9);
+}
+.skinRimless .popup-container {
+    position: absolute;
+    display: inline-block;
+}
+.skinRimless .popup-content {
+	overflow: hidden;
+	border-radius: 5px;
+    background-color: white;    
+}
+.skinRimless .popup-content img {
+    width: 100%;
+}
+.skinRimless .popup-controls-prev {
+    position: fixed;               
+    top: 16px;
+    left: 20px;
+
+    background: url(../img/buttom-prev-normal.png) no-repeat scroll 0 0 transparent;
+
+    width:30px; 
+    height:30px; 
+    text-indent:-9999px;
+
+}
+.skinRimless .popup-controls-prev:hover {
+    background: url(../img/buttom-prev-hover.png) no-repeat scroll 0 0;
+}
+.skinRimless .popup-controls-next {
+    position: fixed;               
+    top: 16px;
+    right: 50px;
+
+    background: url(../img/buttom-next-normal.png) no-repeat scroll 0 0 transparent;
+    
+    width:30px; 
+    height:30px; 
+    text-indent:-9999px;
+}
+.skinRimless .popup-controls-next:hover {
+    background: url(../img/buttom-next-hover.png) no-repeat scroll 0 0;
+}
+.skinRimless .popup-controls-close {
+    position:absolute; 
+    top:-15px; 
+    right:-15px; 
+
+    display:block;
+
+    background:url(../img/buttom-close-normal.png) no-repeat 0 0; 
+    opacity: 0.7;
+
+    width:30px; 
+    height:30px; 
+    text-indent:-9999px;
+}
+.skinRimless .popup-controls-close:hover {
+    opacity: 1;
+}
+.skinRimless .popup-info-title {   
+    display: block;
+    width: 50%;    
+
+    position: absolute;
+    left: 0;
+    bottom: -25px;
+
+    font: 12px/1.2 Verdana,sans-serif;
+    color: #fff;
+    opacity: 0.6;
+
+}
+.skinRimless .popup-info-count {
+    display: inline-block;
+    padding: 0 5px;
+    line-height: 1.3em;
+
+    position: absolute;
+    bottom: 10px;
+    right: 6px;
+
+    font: 12px/1.2 Verdana,sans-serif;
+    color: #fff;
+
+    background-color: #000;
+    opacity: 0.4;
+
+    border-radius: 6px;
+}
+.skinRimless .popup-info-social {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+
+    display: inline-block;
+}
+.skinRimless .popup-social-facebook {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: url(../img/facebook.png) no-repeat 0 0; 
+}
+.skinRimless .popup-social-twitter {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: url(../img/facebook.png) no-repeat 0 0;
+}
+/*for mobile design*/
+@media only screen and (min-width: 320px) and (max-width: 479px) {
+    .popup-thumbnails {
+        display: none;
+    }
+    .skinRimless .popup-controls-close {
+        top: 0;
+        right: 0;
+    }
+
+    .skinRimless .popup-info-count {
+        right: 0;
+        bottom: -25px;
+        background: none;
+    }
+
+}
+
+/*====== skinSimple =======*/
+.skinSimple {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    cursor: pointer;
+    display: block;
+
+    background: none repeat scroll 0 0 rgba(0,0,0,0.9);
+}
+.skinSimple .popup-container {
+    position: absolute;
+    display: inline-block;
+}
+.skinSimple .popup-content {
+    border-radius: 5px;
+
+    border: 10px solid #fff;
+    border-bottom: 20px solid #fff;
+}
+.skinSimple .popup-content img {
+    width: 100%;
+}
+
+.skinSimple .popup-controls-prev {
+    position: absolute;               
+    top: 50%;
+    left: 0;
+
+    background: url(../img/whiteBorder-prev.png) no-repeat scroll 0 0 transparent;
+
+    width:30px; 
+    height:62px; 
+
+    margin-top: -31px;
+
+    text-indent:-9999px;
+
+}
+.skinSimple .popup-controls-prev:hover {
+}
+.skinSimple .popup-controls-next {
+    position: fixed;               
+    top: 50%;
+    right: 0;
+
+    background: url(../img/whiteBorder-next.png) no-repeat scroll 0 0 transparent;
+    
+    width:30px; 
+    height:62px; 
+
+    margin-top: -31px;
+
+    text-indent:-9999px;
+}
+.skinSimple .popup-controls-next:hover {
+}
+.skinSimple .popup-controls-close {
+    position:absolute; 
+    top:-15px; 
+    right:-15px; 
+
+    display:block;
+
+    background:url(../img/buttom-close-normal.png) no-repeat 0 0; 
+    opacity: 0.7;
+
+    width:30px; 
+    height:30px; 
+    text-indent:-9999px;
+}
+.skinSimple .popup-controls-close:hover {
+    opacity: 1;
+}
+.skinSimple .popup-info-title {   
+    display: block;
+    width: 50%;    
+
+    position: absolute;
+    left: 11px;
+    bottom: 4px;
+
+    font: 12px/1.2 Verdana,sans-serif;
+    color: #000;
+    opacity: 0.6;
+
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+}
+.skinSimple .popup-info-count {
+    display: inline-block;
+    padding: 0 5px;
+    line-height: 1.3em;
+
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+
+    font: 12px/1.2 Verdana,sans-serif;
+    color: #fff;
+
+    background-color: #000;
+    opacity: 0.4;
+
+    border-radius: 6px;
+}
+.skinSimple .popup-info-social {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+
+    display: inline-block;
+}
+.skinSimple .popup-social-facebook {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: url(../img/facebook.png) no-repeat 0 0; 
+}
+.skinSimple .popup-social-twitter {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: url(../img/facebook.png) no-repeat 0 0;
+}
+
+.skinSimple .popup-thumbnails-left {
+    display: none;
+}
+.skinSimple .popup-thumbnails-right {
+    display: none;
+}
+
+.skinSimple .popup-thumbnails-holder img {
+    width: 100%;
+    height: 100%;
+
+    border: 2px solid #fff;
+    border-radius: 5px;
+}

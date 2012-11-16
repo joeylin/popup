@@ -375,7 +375,7 @@ pre {
 	border: 2px solid #C0D0C0;
 	color: #006000;
 	line-height: 1.3em;
-	margin-left: 25px;	
+	/*margin-left: 25px;*/	
 	padding: 11px;
 	
 }
@@ -502,3 +502,22 @@ pre.wrong {
 	p, h2, h3 { orphans: 3; widows: 3; }
 	h2, h3 { page-break-after: avoid; }
 }
+
+
+/*=============add new style ================*/
+
+a.popup img {
+	max-width: 150px;
+	max-height: 150px;
+}
+
+#inline {
+    display: none;
+    margin-left: 20px;
+}
+
+#ajax {
+	padding-left: 20px;
+}
+
+

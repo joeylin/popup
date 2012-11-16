@@ -20,29 +20,39 @@
     $.extend(Popup, {
         //properties
         defaults: {
-            width: 960,
-            height: 600,
+            width: 600,
+            height: 400,
             minWidth: 400,
             minHeight: 200,
+
+            holderWidth: 0,
+            holderHeight: 80,
+
+            minTop: 40,
+            minLeft: 10,
 
             playSpeed: 1500,
 
             closeBtn: false,
 
-            components: {},
-            skinSetting: {
-                holderWidth: 0,
-                holderHeight: 80,
+            components: {
+                thumbnails:{},
+                controls: {},
+                title: {},
+            },
 
-                minTop: 40,
-                minLeft: 10,
+            shake: {
+                distance: 30,
+                duration: 1500,
+                transition: 'linear',
+                loops: 8,
             },
 
             transition: 'fade',
             transitionSetting: {},
 
             autoSize: true,
-            autoPlay: false, //open autoplay
+            autoPlay: false, 
             action: false, // taggle to autoplay by click
 
             isPaused: false,
@@ -53,18 +63,8 @@
                 headers  : { 'popup': true }
             },
 
-            keyboard: {
-                left: true,
-                right: true,
-                esc: false
-            },
-
             keys: true,
             initialTypeOptions: false,
-            loop: true,
-            overlay: {
-                close: false
-            },
             preload: false,
         },
         current: {},
@@ -75,6 +75,8 @@
 
         isMobile: false,
 
+        defaultSkin: 'skinRimless',
+
         //
         //privite method
         //
@@ -83,14 +85,14 @@
 
             var self = element,
                 $self = $(element),
+                defaults,
                 url, index, group, count,metas = {};
-       
+
             $.each($self.data(), function(k, v) {
                 if (/^popup/i.test(k)) {
                     metas[k.toLowerCase().replace(/^popup/i, '')] = v;
                 }
             });
-
 
             group = Popup.elements.filter(function() {
                 var data = $(this).data('popup-group');
@@ -107,7 +109,7 @@
                     }
                 });
             }
-            console.log(metas)
+            console.log(metas);
 
             if (metas.options) {
                 metas.options = Popup._string2obj(metas.options);
@@ -121,9 +123,16 @@
                 options = {};
             }
 
-            Popup.settings = {};
-            $.extend(true,Popup.settings,Popup.defaults, options, metas.options , metas); //要修改
+            options = $.extend({},options,metas.options,metas);   
+            options.skin = options.skin || Popup.defaultSkin; 
 
+            console.log(options);
+            console.log(Popup.skins[options.skin||Popup.defaultSkin]);       
+
+            Popup.settings = {};
+            $.extend(true,Popup.settings,Popup.defaults, options, Popup.skins[options.skin]); //要修改
+
+            console.log(Popup.settings);
             //build Popup.group object
             index = count>=2 ? group.index(self) : 0;
             url = $self.attr('href');
@@ -131,8 +140,7 @@
             Popup.settings = $.extend({}, Popup.settings, {
                 index: index,
                 url: url,
-                element: element,
-                
+                element: element,                
             });
 
             if (count >= 2) {
@@ -165,7 +173,7 @@
                     });
                                    
                     // Key Bindings
-                    if(Popup.current.keys && !Popup.isOpen && Popup.group) { 
+                    if(Popup.current.keys && !Popup._isOpen && Popup.group) { 
                         $(document).bind('keydown.popup',function(e){
                             var key = e.keyCode;
 
@@ -185,9 +193,16 @@
                             }
                         });
                     }
+
+                    // //autoPlay
+                    // if (Popup.current.autoPlay === true) {
+                    //     $container.bind('hover',function(){
+                    //         Popup._slider.pause();
+                    //     });
+                    // }                    
                 }; 
 
-            if (!Popup.isOpen) {
+            if (!Popup._isOpen) {
 
                 //create container 
                 $container = Popup._makeEls('div', 'popup-container');
@@ -209,13 +224,8 @@
                     $custom: $custom,
                 });
 
-                //load skin value
-                Popup.current.skin = Popup.current.skin == null? Popup.defaultSkin || 'custom' : Popup.current.skin;
-
-                $.extend(true,Popup.current.skinSetting,Popup.skins[Popup.current.skin]);
-
                 if (!Popup.group || !Popup.group[1]) {
-                    Popup.current.skinSetting.holderHeight = 20;
+                    Popup.current.holderHeight = 20;
                 }
                 
                 //trigger the component registered on components object
@@ -247,7 +257,7 @@
                 //trigger open transition
                 Popup.transitions[Popup.current.transition]['openEffect'](Popup.current); 
                 
-                Popup.isOpen = true;
+                Popup._isOpen = true;
             }
 
             //remove old content before loading new content
@@ -260,6 +270,12 @@
             //set postion every loading
             Popup._resize();
 
+            // //add autoPlay 
+            // if (Popup.current.autoPlay === true) {
+            //     Popup._slider.play();
+            // }
+
+            //preload
             if (type=="image" && Popup.group && Popup.group[1]) {
                 Popup.types.image.imgPreLoad();
             }                      
@@ -288,7 +304,7 @@
                 Popup.current.isPaused = true;
             }
         },
-        _resize: function() {
+        _calculate: function() {
             var obj,top,left, width, height,
                 result = {},
                 rez = {},
@@ -300,13 +316,13 @@
                 originWidth = Popup.current.width,
                 originHeight = Popup.current.height,
 
-                maxWidth = $(window).width() - current.skinSetting.holderWidth,
-                maxHeight = $(window).height() - current.skinSetting.holderHeight,
+                maxWidth = $(window).width() - current.holderWidth,
+                maxHeight = $(window).height() - current.holderHeight,
                 minWidth = Popup.current.minWidth,
                 minHeight = Popup.current.minHeight,
 
-                minTop = current.skinSetting.minTop,
-                minLeft = current.skinSetting.minLeft,
+                minTop = current.minTop,
+                minLeft = current.minLeft,
 
                 scale = function(x,y,rate) {
                     var w,h;
@@ -327,7 +343,6 @@
                     }
                 };
 
-
             if (current.autoSize) {
                 width = (maxWidth - 2 * minLeft)>originWidth? originWidth: (maxWidth - 2 * minLeft)<minWidth? minWidth: (maxWidth - 2 * minLeft);
                 height = (maxHeight - 2 * minTop)>originHeight? originHeight: (maxHeight - 2 * minTop)<minHeight? minHeight: (maxHeight - 2 * minTop);
@@ -343,6 +358,42 @@
             top = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
             left = (maxWidth - width)/2 < minLeft ? minLeft : (maxWidth - width)/2;
             
+            // //reposition set on container
+            // Popup.$container.css({
+            //     top: top,
+            //     left: left,
+            // });
+            // //resize set on content
+            // Popup.$content.css({
+            //     width: width,
+            //     height: height,
+            // });
+
+            //give a chance for components component resize
+            //note: it defaults padding and margin both equal to 0 
+            rez = {
+                winWidth: maxWidth + current.holderWidth,
+                winHeight: maxHeight + current.holderHeight,
+                containerWidth: width,
+                containerHeight: height,
+                holderWidth: current.holderWidth,
+                holderHeight: current.holderHeight,
+                top: top,
+                left: left,
+            };
+
+            return rez;
+
+            //here pass dimension info as a argument to components
+            Popup._trigger('resize',rez);
+        },
+        _resize: function() {
+            var rez = Popup._calculate(),
+                top = rez.top,
+                left = rez.left,
+                width = rez.containerWidth,
+                height = rez.containerHeight;
+
             //reposition set on container
             Popup.$container.css({
                 top: top,
@@ -353,19 +404,6 @@
                 width: width,
                 height: height,
             });
-
-            //give a chance for components component resize
-            //note: it defaults padding and margin both equal to 0 
-            rez = {
-                winWidth: maxWidth + current.skinSetting.holderWidth,
-                winHeight: maxHeight + current.skinSetting.holderHeight,
-                containerWidth: width,
-                containerHeight: height,
-                holderWidth: current.skinSetting.holderWidth,
-                holderHeight: current.skinSetting.holderHeight,
-                top: top,
-                left: left,
-            };
 
             //here pass dimension info as a argument to components
             Popup._trigger('resize',rez);
@@ -398,7 +436,7 @@
             for (var component in components) {
 
                 //here to check wether to close some component
-                if (Popup.current.skinSetting[component] !== null) {
+                if (Popup.current.components[component] !== null) {
                     components[component][event] && components[component][event](arguments[1]);
                 }            
             }
@@ -408,7 +446,7 @@
             Popup._hideLoading();
 
             // If user will press the escape-button, the request will be canceled
-            $(document).on('keypress.loading',function() {
+            $(document).on('keydown.loading',function() {
                 if ((e.which || e.keyCode) === 27) {
                     Popup.cancel();
                     return false;
@@ -419,8 +457,24 @@
             $loading.appendTo(Popup.$container);
         },
         _hideLoading: function() {
-            $(document).unbind('keypress.loading');
+            $(document).unbind('keydown.loading');
             $('.popup-loading').remove();
+        },
+        _shake: function() {
+            var x = Popup.current.shake.distance,
+                d = Popup.current.shake.duration,
+                t = Popup.current.shake.transition,
+                o = Popup.current.shake.loops,
+                e = Popup.$container,
+                l = Popup.$container.position().left;
+                
+            for (i=0; i<o; i++){
+                e.animate({left: l+x}, d, t);
+                e.animate({left: l-x}, d, t);
+            };
+
+            e.animate({left: l+x}, d, t);
+            e.animate({left: l},   d, t);
         },
 
         //
@@ -431,22 +485,29 @@
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type; 
 
-            if (!Popup.settings || Popup.isOpen) { 
-                Popup.settings = {};
-                $.extend(true,Popup.settings,Popup.defaults);
-                console.log(Popup.settings);
-            }
-            
             //options 
-            if (toString.apply(options) === '[object Object]' || options == undefined) {
-                options = options || {};
-            } else if (!isNaN(options)) {
+            if (toString.apply(options) === '[object Object]') {
+                options = options || {};                
+            } else if (!isNaN(options)) { 
+
+                // only when options === number  
                 index = options;
                 options = {};
+            } 
+
+            
+
+            if (!Popup.settings || Popup._isOpen) { 
+                
+                options.skin = options.skin || Popup.defaultSkin;
+                Popup.settings = {};
+                $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin]);
             }
 
             //contents
-            if (toString.apply(contents) === '[object Array]' && !Popup.isOpen) {
+            if (toString.apply(contents) === '[object Array]' && !Popup._isOpen) {
+
+                // for show([],{}||index);
                 var count = contents.length,
                     i = 0;
                 Popup.group = [];
@@ -472,18 +533,18 @@
                     Popup.current = {};
                 }
 
-                $.extend(true,Popup.current,Popup.defaults, Popup.group[index]);                    
+                $.extend(true,Popup.current,Popup.settings, Popup.group[index]);                  
 
                 Popup.current.index = index;
-            } else if (!Popup.isOpen) {
+            } else if (!Popup._isOpen) {
                 if (arguments.length == 1) { 
+
+                    //for show({...});
                     Popup.current = $.extend(true,Popup.current,Popup.settings,arguments[0].options);
-
-                    console.log(Popup.settings);
-                    console.log(arguments[0].options);
-
                     Popup.current.url = arguments[0].url;
                 } else {
+
+                    //for show();
                     Popup.current = $.extend(true,Popup.current,Popup.settings, options);
                 }
             }           
@@ -494,6 +555,9 @@
             if (index < 0 || (Popup.group && index > Popup.group.length - 1)) {
                 index = 0;
             }
+
+            console.log(current.skin);
+            console.log(options);
 
             //here we can see how it works
             //click image: making Popup.current,Popup.group
@@ -527,7 +591,7 @@
         close: function() {
 
             //if already closed ,return
-            if (!Popup.isOpen) {
+            if (!Popup._isOpen) {
                 return
             }
 
@@ -542,6 +606,7 @@
             //unbind event
             $(window).unbind('resize');
             $(document).unbind('keydown.popup');
+            // Popup.$container.unbind('hover');
 
             //delete skin
             if (Popup.$overlay) {
@@ -556,14 +621,15 @@
             Popup.$container.remove();
             Popup.$close = null;
 
-            Popup.slider = false;
             Popup.closeAnimate = null;
             Popup.current.isPaused = null;
             
-            Popup.isOpen = false;
+            Popup._isOpen = false;
             Popup.current = null;
             Popup.settings = null; 
-            Popup.group = null;  
+            Popup.group = null; 
+
+            return false; 
         },
         next: function() {
             var index = Popup.current.index,
@@ -636,13 +702,14 @@
         update: function() {
             Popup.show({},Popup.current.index);
         },
-        destroy: function() {
+        destory: function() {
+            Popup.close();
             Popup.$overlay.remove();
-            $(window).unbind('resize');
+            
             Popup = null;
         },
         getCurrent: function() {
-            return Popup.current.index;     
+            return Popup.current.index+1;     
         },
         hasNext: function() {
             if(Popup.group && Popup.current.index < Popup.group.length-1) {
@@ -652,16 +719,21 @@
             }
         },
         play: function() {
-            slider.play();
+            Popup.current.autoPlay === true;
+            Popup.next();
         },
         pause: function() {
-            slider.pause();
+            Popup._slider.pause();
         },
         isPaused: function() {
             return Popup.current.isPaused;
         },
-        isPopOut: function() {
-            return Popup.isOpened;
+        isOpen: function() {
+            if (Popup._isOpen) {
+                return true;
+            } else {
+                return false;
+            }   
         },
         jumpto: function(index) {
             if(index<0 && index >Popup.group.length-1) {
@@ -669,72 +741,72 @@
             }
             Popup.show({},index);
         },
-        dimensions: function() {
-            var rez = {
-                width: Popup.current.width,
-                height: Popup.current.height,
-            };
-            return rez;
-        },
-        resize: function(w,h) {
-            var $content = Popup.$content;
-            $content.css({
-                'width': w,
-                'height': h,
-            });
-        },
-        reposition: function(x,y) {
-            var $container = Popup.$container;
-            $container.css({
-                'top': x,
-                'left': y,
-            });
-        },
-        rotate: function(angle) {
-            var rotation,costheta,sintheta,scale,transform,
-                width = $('.popup-content').width(),
-                height = $('.popup-content').height();             
+        // dimensions: function() {
+        //     var rez = {
+        //         width: Popup.current.width,
+        //         height: Popup.current.height,
+        //     };
+        //     return rez;
+        // },
+        // resize: function(w,h) {
+        //     var $content = Popup.$content;
+        //     $content.css({
+        //         'width': w,
+        //         'height': h,
+        //     });
+        // },
+        // reposition: function(x,y) {
+        //     var $container = Popup.$container;
+        //     $container.css({
+        //         'top': x,
+        //         'left': y,
+        //     });
+        // },
+        // rotate: function(angle) {
+        //     var rotation,costheta,sintheta,scale,transform,
+        //         width = $('.popup-content').width(),
+        //         height = $('.popup-content').height();             
 
-            if (Popup.photo == undefined) {
-                return false;
-            } 
+        //     if (Popup.photo == undefined) {
+        //         return false;
+        //     } 
 
-            if (!Popup.angle) {
-                Popup.angle = 0;
-            } 
-            Popup.angle = Popup.angle + angle;
+        //     if (!Popup.angle) {
+        //         Popup.angle = 0;
+        //     } 
+        //     Popup.angle = Popup.angle + angle;
 
-            if (Popup.angle >= 0) { 
-                rotation = Math.PI * Popup.angle / 180; 
-            } else { 
-                rotation = Math.PI * (360+Popup.angle) / 180; 
-            } 
+        //     if (Popup.angle >= 0) { 
+        //         rotation = Math.PI * Popup.angle / 180; 
+        //     } else { 
+        //         rotation = Math.PI * (360+Popup.angle) / 180; 
+        //     } 
 
-            costheta = Math.round(Math.cos(rotation) * 1000) / 1000; 
-            sintheta = Math.round(Math.sin(rotation) * 1000) / 1000;  
+        //     costheta = Math.round(Math.cos(rotation) * 1000) / 1000; 
+        //     sintheta = Math.round(Math.sin(rotation) * 1000) / 1000;  
      
-            Popup.photo.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11="+costheta+",M12="+(-sintheta)+",M21="+sintheta+",M22="+costheta+",SizingMethod='auto expand')"; 
+        //     Popup.photo.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11="+costheta+",M12="+(-sintheta)+",M21="+sintheta+",M22="+costheta+",SizingMethod='auto expand')"; 
 
-            if ((Popup.angle / 90) % 2 == 1 || (Popup.angle / 90) % 2 == -1) {
-                if (width > height) {
-                    scale = height / width;
-                } else if (width < height) {
-                    scale = width / height;
-                }
-            } else {
-                scale = 1;
-            }
+        //     if ((Popup.angle / 90) % 2 == 1 || (Popup.angle / 90) % 2 == -1) {
+        //         if (width > height) {
+        //             scale = height / width;
+        //         } else if (width < height) {
+        //             scale = width / height;
+        //         }
+        //     } else {
+        //         scale = 1;
+        //     }
 
-            transform = 'rotate(' +Popup.angle +'deg)'+' '+'scale('+scale+')';
+        //     transform = 'rotate(' +Popup.angle +'deg)'+' '+'scale('+scale+')';
 
-            $(Popup.photo).css({
-                '-moz-transform'   : transform,
-                '-webkit-transform': transform,
-                '-o-transform'     : transform,
-            });
+        //     $(Popup.photo).css({
+        //         '-moz-transform'   : transform,
+        //         '-webkit-transform': transform,
+        //         '-o-transform'     : transform,
+        //     });
 
-            console.log(Popup.angle);   
-        },
+        //     console.log(Popup.angle);   
+        // },
     });
 
     //
@@ -916,35 +988,36 @@
     // thumbnail => count,unitWidth,unitHeight,bottom,left,padding,gap
     // save these value on Popup.current.skinSetting
     Popup.skins = {
-        custom: {
+        skinRimless: {
             holderWidth: 0,
             holderHeight: 100,
 
             minTop: 20,
             minLeft: 10,
 
-            controls: {
-                ui: 'outside',
-            },
+            components: {
+                controls: {
+                    ui: 'outside',
+                },
+            }           
         },
-        whiteBorder: {
+        skinSimple: {
             holderWidth: 10,
             holderHeight: 120,
 
             minTop: 20,
             minLeft: 20,
 
-            controls: {
-                ui: 'inside',
-            },
-
-            thumbnails: {
-                count: 5,
-
-                bottom: 10,
-                left: 0,
-                padding: 2,
-            },
+            components: {
+                controls: {
+                    ui: 'inside',
+                },
+                thumbnails: {
+                    padding: 2,
+                    bottom: 10,
+                }
+            }
+            
         },
     }
 
@@ -997,7 +1070,7 @@
         },
         openEffect: function(){
             var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
-            if (Popup.isOpen) {
+            if (Popup._isOpen) {
                 return
             }
             if (Popup.$overlay) {
@@ -1010,7 +1083,7 @@
         // closeEffect need callback function to close popup
         closeEffect: function() {
             var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
-            if (!Popup.isOpen) {
+            if (!Popup._isOpen) {
                 return
             }
             if (Popup.$overlay) {
@@ -1020,6 +1093,10 @@
             }
         },
     };
+    Popup.transitions.dropdown = {
+
+    };
+
 
     //slider
     Popup.sliderEffect.fade = {
@@ -1149,12 +1226,12 @@
 
         onReady: function() {
             if(Popup.current.skin) {
-                this.opts = $.extend({},this.defaults,Popup.current.skinSetting.controls);
+                this.opts = $.extend({},this.defaults,Popup.current.components.controls);
             } else {
                 this.opts = this.defaults;
             }
 
-            console.log(Popup.current.skinSetting.controls)
+            console.log(Popup.current.components.controls)
             console.log(this.opts);
             
             if (!Popup.group) {
@@ -1297,11 +1374,11 @@
 
             //for mobile
             if (Popup.isMobile) {
-                Popup.current.skinSetting.holderWidth = 0;
-                Popup.current.skinSetting.holderHeight = 0;
+                Popup.current.holderWidth = 0;
+                Popup.current.holderHeight = 0;
             }
             
-            this.opts = $.extend({},this.defaults,Popup.current.skinSetting.thumbnails);            
+            this.opts = $.extend({},this.defaults,Popup.current.components.thumbnails);            
            
             this.create();
         },

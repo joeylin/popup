@@ -932,47 +932,47 @@ $(".api-reposition").on('click',function(){
           $('.popup').Popup();           
         });
 
-        var $el = $('#test'),
-            width,height, steps;
+        // var $el = $('#test'),
+        //     width,height, steps;
 
-        step = function() {
-            width = $el.width();
-            $el.css({
-                'margin-left': -width/2,
-            })
-        }
-        $el.css({
-            'position': 'fixed',
-            'display': 'inline-block',
-            'top': -20,
-            'left': '50%',
-            'width': 20,
-            'height': 20,
-            'overflow': 'hidden',
-        });
-        $el.find('img').css({
-            'width': "100%"
-        });
+        // step = function() {
+        //     width = $el.width();
+        //     $el.css({
+        //         'margin-left': -width/2,
+        //     })
+        // }
+        // $el.css({
+        //     'position': 'fixed',
+        //     'display': 'inline-block',
+        //     'top': -20,
+        //     'left': '50%',
+        //     'width': 20,
+        //     'height': 20,
+        //     'overflow': 'hidden',
+        // });
+        // $el.find('img').css({
+        //     'width': "100%"
+        // });
 
-        width = $el.width();
+        // width = $el.width();
 
-        $el.animate({
-            'top': '30%',
-            'width': 610,
-            'height': 610,
-        },{
-            duration: 1000,
-            easing: 'swing',
-            step: step,
-        }).animate({
-            'top': '20%',
-            'width': 600,
-            'height': 600,
-        },{
-            duration: 500,
-            easing: 'swing',
-            step: steps,
-        });
+        // $el.animate({
+        //     'top': '30%',
+        //     'width': 610,
+        //     'height': 610,
+        // },{
+        //     duration: 1000,
+        //     easing: 'swing',
+        //     step: step,
+        // }).animate({
+        //     'top': '20%',
+        //     'width': 600,
+        //     'height': 600,
+        // },{
+        //     duration: 500,
+        //     easing: 'swing',
+        //     step: steps,
+        // });
     </script>
 </body>
 </html>

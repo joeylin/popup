@@ -262,7 +262,7 @@
                 Popup.transitions[Popup.current.transition]['openEffect'](rez);                                
             }
 
-            //alert('transition');    
+               
 
             //remove old content before loading new content
             Popup.$content.empty();
@@ -831,7 +831,6 @@
         },
         step: function(now,fx) {},
         getPosition: function(x,y) {
-
         }
     };
 
@@ -1122,6 +1121,7 @@
             }
             if (Popup.$overlay) {
                 Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
+
             } else {
                 Popup.$container.fadeOut(opts.closeSpeed,Popup.close);
             }

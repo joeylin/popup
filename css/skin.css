@@ -106,11 +106,19 @@
 .skinRimless .popup-container {
     position: absolute;
     display: inline-block;
+
+
 }
 .skinRimless .popup-content {
 	overflow: hidden;
 	border-radius: 5px;
-    background-color: white;    
+    background-color: white;  
+
+    /*-webkit-transition: width .5s ease-in, height .5s ease-in;
+    -moz-transition:    width .5s ease-in, height .5s ease-in;
+    -o-transition:      width .5s ease-in, height .5s ease-in;
+    transition:         width .5s ease-in, height .5s ease-in; */
+
 }
 .skinRimless .popup-content img {
     width: 100%;

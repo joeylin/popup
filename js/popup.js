@@ -33,7 +33,8 @@
 
             playSpeed: 1500,
 
-            closeBtn: false,
+            closeBtn: true,
+            winBtn: true, //click overlay to close popup
 
             components: {
                 thumbnails:{},
@@ -50,6 +51,9 @@
 
             transition: 'fade',
             transitionSetting: {},
+
+            sliderEffect: 'fade',
+            sliderSetting: {},
 
             autoSize: true,
             autoPlay: false, 
@@ -82,6 +86,7 @@
         //
 
         _init: function(element,options) {
+            
 
             var self = element,
                 $self = $(element),
@@ -100,7 +105,7 @@
                     return data == metas.group;
                 }
             });
-            
+          
             count = group.length;
             if (count >= 2) {
                 $.each(group, function(i, v) {
@@ -109,8 +114,8 @@
                     }
                 });
             }
-            console.log(metas);
-
+            //console.log(metas);
+alert('start')  
             if (metas.options) {
                 metas.options = Popup._string2obj(metas.options);
             }            
@@ -160,8 +165,11 @@
                     Popup.group.push(obj);
                 });
             }
+            alert("init end")
         },
         _afterLoad: function() {
+            alert('afterload start')
+
             var $container,$content,$controls,$close,$custom,$info,
                 aspect     = Popup.current.aspect, 
                 type       = Popup.current.type,
@@ -233,7 +241,7 @@
                 Popup._trigger('onReady');
 
                 //add close buttom if controls component is cancelled
-                if (!Popup.$close) {                    
+                if (!Popup.$close && Popup.current.closeBtn) {                    
                     $close = Popup._makeEls('div','popup-controls-close');
                     $close.css({'position': 'absolute'}).appendTo($controls);
                     $close.on('click', function() {
@@ -255,27 +263,34 @@
                 //binding event
                 bindEvents();
 
-
                 //calculate necessary dimension before trigger open transition
                 rez = Popup._calculate();
                 Popup._trigger('resize',rez);
-                Popup.transitions[Popup.current.transition]['openEffect'](rez);                                
+                Popup.transitions[Popup.current.transition]['openEffect'](rez); 
+
+                //remove old content before loading new content
+                Popup.$content.empty();
+                Popup.$content.append(Popup.current.content);                            
+            } else {
+
+                //remove old content before loading new content
+
+                // Popup.$content.empty();
+                // Popup.$content.append(Popup.current.content); 
+
+                // Popup._resize();
+
+                rez = Popup._calculate();
+                Popup._trigger('resize',rez);
+                Popup.sliderEffects[Popup.current.sliderEffect]['init'](rez);
+
             }
 
-               
-
-            //remove old content before loading new content
-            Popup.$content.empty();
-            Popup.$content.append(Popup.current.content);
+            Popup._isOpen = true;   
 
             //give a chance to reset some infos
             Popup._trigger('afterLoad');
 
-            //set postion every slider loading 
-            if (Popup._isOpen) {
-                Popup._resize();
-            }
-            Popup._isOpen = true;
 
             // //add autoPlay 
             // if (Popup.current.autoPlay === true) {
@@ -359,7 +374,10 @@
                     width = result.w;
                     height = result.h;
                 }
-            }            
+            } else {
+                width = originWidth;
+                height = originHeight;
+            }          
             
             //centered the container
             top = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
@@ -427,16 +445,7 @@
             return $element;
         },
         _string2obj: function(string) {
-            var obj = {},
-                arr, subArr, count, i = 0;
-            arr = string.split(',');
-            count = arr.length;
-            for (i = 0; i < count; i++) {
-                subArr = arr[i].split(':');
-                console.log($.trim(subArr[1]).slice(1, -1));
-                obj[subArr[0]] = $.trim(subArr[1]).slice(1, -1);
-            }
-            return obj;
+            return eval("("+'{'+string+'}'+")");
         },
         _trigger: function(event) {
             var component, components = Popup.components;
@@ -488,6 +497,8 @@
         //adding public Method
         //
         show: function(contents, options) {
+
+            alert('show start');
             var previous = Popup.current,
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type; 
@@ -593,7 +604,9 @@
             //initialize custom type register
             Popup.types[type].initialize && Popup.types[type].initialize();
 
-            Popup.types[type].load();          
+            Popup.types[type].load();    
+
+            alert('show end')      
         },
         close: function() {
 
@@ -979,20 +992,10 @@
         },   
     };
 
-    Popup.sliderEffect = {
-        defaults: {
-            sliderSpeed: 250,
-            sliderEasing: 'swing',
-            sliderMethod: 'zoom',
-        },
-    };
+    Popup.sliderEffects = {};
 
     Popup.components = {};
 
-    // skin Option: 
-    // controls => holderWidth,holderHeight,minTop,minLeft,ui
-    // thumbnail => count,unitWidth,unitHeight,bottom,left,padding,gap
-    // save these value on Popup.current.skinSetting
     Popup.skins = {
         skinRimless: {
             holderWidth: 0,
@@ -1025,7 +1028,7 @@
             }
             
         },
-    }
+    };
 
     //
     // here you can add your custom transition & slider effect  , types , components 
@@ -1034,8 +1037,8 @@
     //transitions
     Popup.transitions.zoom = {
         defaults: {
-            openSpeed: 150,
-            closeSpeed: 150,
+            openSpeed: 500,
+            closeSpeed: 500,
         },
         opts: {},
 
@@ -1055,7 +1058,7 @@
             };
             console.log(startPos);
 
-            Popup.$overlay.css({'display': 'block'});
+            Popup.$overlay.fadeIn();
 
             Popup.$container.css({
                 'top': startPos.y,
@@ -1130,7 +1133,7 @@
     Popup.transitions.dropdown = {
         defaults: {
             openSpeed: 150,
-            closeSpeed: 150,
+            closeSpeed: 800,
             span: 20,
         },
         opts: {},
@@ -1139,10 +1142,8 @@
             var top = rez.top, left = rez.left,
                 width = rez.containerWidth, 
                 height = rez.containerHeight,
-                span = 20;
-            Popup.$overlay.css({
-                'display': 'block',
-            });
+                span = 40;
+            Popup.$overlay.fadeIn();
             Popup.$content.css({
                 'width': width,
                 'height': height,
@@ -1154,7 +1155,7 @@
             }).animate({
                 'top': top + span,
             },{
-                duration: 1000,
+                duration: 800,
                 easing: 'swing', 
             }).animate({
                 'top': top,
@@ -1164,10 +1165,18 @@
             });
         },
         closeEffect: function() {
-            var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
+            var opts = $.extend({},this.defaults,Popup.current.transitionSetting),
+                height = Popup.$container.height();
             if (!Popup._isOpen) {
                 return
             }
+            Popup.$container.animate({
+                'top': -height,
+            },{
+                duration: 800,
+                easing: 'swing', 
+            });
+
             if (Popup.$overlay) {
                 Popup.$overlay.fadeOut(opts.closeSpeed,Popup.close);
             } else {
@@ -1176,10 +1185,73 @@
         },
     };
 
-
     //slider
-    Popup.sliderEffect.fade = {
+    Popup.sliderEffects.none = {
+        init: function(rez) {
+
+            //reposition set on container
+            Popup.$container.css({
+                top: rez.top,
+                left: rez.left,
+            });
+            //resize set on content
+            Popup.$content.css({
+                width: rez.containerWidth,
+                height: rez.containerHeight,
+            });
+            Popup.$content.empty();
+            Popup.$content.append(Popup.current.content);
+        },
+    }
+    Popup.sliderEffects.zoom = {
+        defaults: {
+            speed: 500,
+            easing: 'swing',
+        },
+        init: function(rez) {
+            var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
+            Popup.$container.stop().animate({
+                top: rez.top,
+                left: rez.left,
+            },{
+                duration: 500,
+                easing: 'swing',
+            });
+            Popup.$content.stop().animate({
+                width: rez.containerWidth,
+                height: rez.containerHeight,
+            },{
+                duration: 500,
+                easing: 'swing',
+            });
+            Popup.$content.empty();
+            Popup.$content.append(Popup.current.content);
+
+        }
     }; 
+    Popup.sliderEffects.fade = {
+        defaults: {
+            speed: 500,
+            easing: 'swing',
+        },
+        init: function(rez) {
+            var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
+            Popup.$container.css({
+                top: rez.top,
+                left: rez.left,
+            });
+            //resize set on content
+            Popup.$content.css({
+                width: rez.containerWidth,
+                height: rez.containerHeight,
+            });
+
+            Popup.$content.empty();
+            Popup.$content.append(Popup.current.content);
+
+        }
+
+    }
 
     //types
     Popup.types.vhtml5 = {
@@ -1263,7 +1335,7 @@
         create: function() {
             var $overlay = Popup._makeEls('div', 'popup-overlay').appendTo('body');
             $overlay.on('click', function(event) {
-                if($(event.target).is('.popup-overlay')) {
+                if($(event.target).is('.popup-overlay') && Popup.current.winBtn) {
                     Popup.close();
                     return false;
                 }                             
@@ -1274,6 +1346,7 @@
                 'width': '100%',
                 'height': '100%',
             });
+            
             Popup.$overlay = $overlay;
         },
         open: function() {

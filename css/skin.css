@@ -35,12 +35,14 @@
 }
 .popup-thumbnails-left {
     background: url(../img/thum-left-normal.png) no-repeat 0 0;
+    outline: none;
 }
 .popup-thumbnails-left:hover {
     background: url(../img/thum-left-hover.png) no-repeat 0 0;
 }
 .popup-thumbnails-right {
     background: url(../img/thum-right-normal.png) no-repeat 0 0;
+    outline: none;
 }
 .popup-thumbnails-right:hover {
     background: url(../img/thum-right-hover.png) no-repeat 0 0;
@@ -105,9 +107,7 @@
 }
 .skinRimless .popup-container {
     position: absolute;
-    display: inline-block;
-
-
+    display: inline-block;data-popup-type
 }
 .skinRimless .popup-content {
 	overflow: hidden;

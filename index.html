@@ -30,8 +30,38 @@
 </head>
 <body>
     <div id="toc"></div>
-    <div class="container">
+    <div class="container">       
         <h1>Popup</h1>
+        <section>
+            <h2>Use Case</h2>
+            <section>
+                <h3>Ajax with button to close the popup</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup"href="license.txt" 
+    data-popup-type="ajax" 
+    data-popup-options="closeBtn:false,winBtn:false,autoSize:false"&gt;Software license agreement&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup"href="license.txt" data-popup-type="ajax" data-popup-options="closeBtn:false,winBtn:false,autoSize:false">Software license agreement</a>
+                </div>
+            </section>
+            <section>
+                <h3>Login Box</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup"href="loginbox.txt" 
+    data-popup-type="ajax" 
+    data-popup-options="winBtn:false,autoSize:false"&gt;login box&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup"href="loginbox.txt" data-popup-type="ajax" data-popup-options="winBtn:false,autoSize:false,width:396,height:120">login box</a>
+                </div>
+            </section>
+            <section>
+                <h3>shake</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup"href="loginbox.txt" 
+    data-popup-type="ajax" 
+    data-popup-options="winBtn:false,autoSize:false"&gt;shake&lt;/a&gt;</code></pre>
+                <div class="example">
+                    <a class="popup"href="shake.txt" data-popup-type="ajax" data-popup-options="winBtn:false,autoSize:false,width:400,height:200">shake</a>
+                </div>
+            </section>
+        </section>
         <section>
             <h2>Types</h2>
             <section>
@@ -259,36 +289,19 @@ $.extend($.Popup.skins, {
         <section>
             <h2>Transition</h2>
             <section>
-                <h3>Fade</h3>
+                <h3>Fade/Dropdown/Zoom</h3>
                 <pre class="has-example"><code class="language-markup">
 &lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;fade&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
+&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;zoom&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
                     <a class="popup" href="img/1.jpg" data-popup-transition="fade"><img src="img/1-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/2.jpg" data-popup-transition="fade"><img src="img/2-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/3.jpg" data-popup-transition="fade"><img src="img/3-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/4.jpg" data-popup-transition="fade"><img src="img/4-thumbnail.jpg" alt="" /></a>
-                </div>
-            </section>
-            <section>
-                <h3>Dropdown</h3>
-                <pre class="has-example"><code class="language-markup">
-&lt;a class=&quot;popup&quot; href=&quot;img/1.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/1-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/2.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/2-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/3.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/3-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-&lt;a class=&quot;popup&quot; href=&quot;img/4.jpg&quot; data-popup-transition=&quot;dropdown&quot;&gt;&lt;img src=&quot;img/4-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
-</code></pre>
-                <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="dropdown"><img src="img/1-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/2.jpg" data-popup-transition="dropdown"><img src="img/2-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/3.jpg" data-popup-transition="dropdown"><img src="img/3-thumbnail.jpg" alt="" /></a>
-                    <a class="popup" href="img/4.jpg" data-popup-transition="dropdown"><img src="img/4-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/3.jpg" data-popup-transition="zoom"><img src="img/3-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
-        </section>
+            
         <!-- <section>
             <h2>Component</h2>
             <section>
@@ -976,3 +989,47 @@ $(".api-reposition").on('click',function(){
     </script>
 </body>
 </html>
+
+<style type="text/css">
+    #loginform label {
+        display: block;
+        font-weight: bold;
+        line-height: 36px;
+    }
+    input[type="text"], input[type="password"] {
+        border: 1px solid #DFDFDF;
+        height: 16px;
+        padding: 5px 10px;
+        width: 260px;
+    }
+    em {
+        background: none repeat scroll 0 0 transparent;
+        border: 0 none;
+        font-size: 100%;
+        margin: 0;
+        outline: 0 none;
+        padding: 0;
+        vertical-align: top;
+    }
+    .button {
+        -moz-border-bottom-colors: none;
+        -moz-border-left-colors: none;
+        -moz-border-right-colors: none;
+        -moz-border-top-colors: none;
+        background: none repeat scroll 0 0 #A5BE00;
+        border-color: -moz-use-text-color -moz-use-text-color #98AF00;
+        border-image: none;
+        border-style: none none solid;
+        border-width: 0 0 4px;
+        color: #FFFFFF;
+        display: inline-block;
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 16px;
+        margin: 0 6px 10px 0;
+        outline: 0 none;
+        padding: 6px 10px 4px;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+</style>

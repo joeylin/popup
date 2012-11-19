@@ -43,10 +43,10 @@
             },
 
             shake: {
-                distance: 30,
-                duration: 1500,
+                distance: 15,
+                duration: 50,
                 transition: 'linear',
-                loops: 8,
+                loops: 4,
             },
 
             transition: 'fade',
@@ -86,7 +86,6 @@
         //
 
         _init: function(element,options) {
-            
 
             var self = element,
                 $self = $(element),
@@ -115,7 +114,7 @@
                 });
             }
             //console.log(metas);
-alert('start')  
+
             if (metas.options) {
                 metas.options = Popup._string2obj(metas.options);
             }            
@@ -131,13 +130,13 @@ alert('start')
             options = $.extend({},options,metas.options,metas);   
             options.skin = options.skin || Popup.defaultSkin; 
 
-            console.log(options);
-            console.log(Popup.skins[options.skin||Popup.defaultSkin]);       
+            // console.log(options);
+            // console.log(Popup.skins[options.skin||Popup.defaultSkin]);       
 
             Popup.settings = {};
             $.extend(true,Popup.settings,Popup.defaults, options, Popup.skins[options.skin]); //要修改
 
-            console.log(Popup.settings);
+            //console.log(Popup.settings);
             //build Popup.group object
             index = count>=2 ? group.index(self) : 0;
             url = $self.attr('href');
@@ -165,10 +164,10 @@ alert('start')
                     Popup.group.push(obj);
                 });
             }
-            alert("init end")
+            
         },
         _afterLoad: function() {
-            alert('afterload start')
+            
 
             var $container,$content,$controls,$close,$custom,$info,
                 aspect     = Popup.current.aspect, 
@@ -476,29 +475,12 @@ alert('start')
             $(document).unbind('keydown.loading');
             $('.popup-loading').remove();
         },
-        _shake: function() {
-            var x = Popup.current.shake.distance,
-                d = Popup.current.shake.duration,
-                t = Popup.current.shake.transition,
-                o = Popup.current.shake.loops,
-                e = Popup.$container,
-                l = Popup.$container.position().left;
-                
-            for (i=0; i<o; i++){
-                e.animate({left: l+x}, d, t);
-                e.animate({left: l-x}, d, t);
-            };
-
-            e.animate({left: l+x}, d, t);
-            e.animate({left: l},   d, t);
-        },
 
         //
         //adding public Method
         //
         show: function(contents, options) {
 
-            alert('show start');
             var previous = Popup.current,
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type; 
@@ -605,8 +587,7 @@ alert('start')
             Popup.types[type].initialize && Popup.types[type].initialize();
 
             Popup.types[type].load();    
-
-            alert('show end')      
+    
         },
         close: function() {
 
@@ -760,6 +741,22 @@ alert('start')
                 index = 0;
             }
             Popup.show({},index);
+        },
+        shake: function() {
+            var x = Popup.current.shake.distance,
+                d = Popup.current.shake.duration,
+                t = Popup.current.shake.transition,
+                o = Popup.current.shake.loops,
+                e = Popup.$container,
+                l = Popup.$container.position().left;
+                
+            for (var i=0; i<o; i++){
+                e.animate({left: l+x}, d, t);
+                e.animate({left: l-x}, d, t);
+            };
+
+            e.animate({left: l+x}, d, t);
+            e.animate({left: l},   d, t);
         },
         // dimensions: function() {
         //     var rez = {

@@ -1,5 +1,7 @@
 <div id="ajax" style="max-width:700px;">
-	<div style="text-align:right;">
+
+<style
+<div style="text-align:right;">
 <form id="loginform" autocomplete="off" method="post" action="ajax_login.php">
 <label>
 <em>Username : </em>

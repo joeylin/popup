@@ -103,3 +103,25 @@ pre[class*="language-"] {
 .token.entity {
 	cursor: help;
 }
+
+
+ /*===========options==========*/
+.options {
+    font-family: Consolas,Monaco,'Andale Mono',monospace;
+}
+table.options th, table.options td {
+    border-bottom: 1px solid #DDDDDD;
+    padding: 10px;
+    text-align: left;
+    font-family: Consolas,Monaco,'Andale Mono',monospace;
+}
+td {
+    vertical-align: top;
+}
+th, td {
+    padding: 5px 10px 5px 20px;
+}
+body, th, td {
+    color: #333333;
+    line-height: 1.4;
+}

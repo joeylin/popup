@@ -72,6 +72,50 @@
             </section>
         </section>
         <section>
+            <h2>Available options</h2>
+            <p>You can pass these options as key/value object to $.Popup() method. It is also possible to modify defaults directly at Popup JS file </p>
+            <div class="options">
+                <table class="options" cellspacing="0" cellpadding="0">
+                    <colgroup>
+                        <col width="140">
+                        <col width="">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                        
+                        <tr>
+                            <td> width </td>
+                            <td>
+                            Default width for 'iframe' , 'swf' ,'inline', 'ajax'  if 'autoSize' is set to 'false'. Can be numeric or 'auto'
+                                <br>
+                                <span style="color:#888">Number; Default value: 600  </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> height </td>
+                            <td>
+                            Space inside Popup around content. Can be set as array - [top, right, bottom, left].
+                                <br>
+                                <span style="color:#888">Integer, Array; Default value: 15 </span>
+                            </td>
+                        </tr>
+                       
+                        <tr>
+                            <td> padding </td>
+                            <td>
+                            Space inside Popup around content. Can be set as array - [top, right, bottom, left].
+                                <br>
+                                <span style="color:#888">Integer, Array; Default value: 15 </span>
+                            </td>
+                        </tr>
+                    </tbody>    
+                </table>    
+            </div>
+        </section>
+        <section>
             <h2>Types</h2>
             <section>
                 <h3>RegisterType</h3>
@@ -119,7 +163,7 @@ jQuery(document).ready(function(){
     &lt;img src="img/1-thumbnail.jpg" alt="" /&gt;
 &lt;/a&gt;</code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-transition="zoom" data-popup-options="title:'this is a image',ui:'inside',skin:'skinSimple'"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-transition="zoom" data-popup-options="title:'this is a image',skin:'skinSimple'"><img src="img/1-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
             <section>
@@ -153,45 +197,70 @@ jQuery(document).ready(function(){
                     <a class="popup" href="http://baidu.com" data-popup-type="iframe" data-popup-options="width:'740',height:'460'">iframe</a>
                 </div>
             </section>
-            <!-- <section>
+            <section>
                 <h3>Videos</h3>
                 <pre class="has-example"><code class="language-markup">&lt;!-- SWF --&gt;
-&lt;a class=&quot;popup&quot; href=&quot;http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf&quot;&gt;swf&lt;/a&gt;
-
+&lt;a class="popup" 
+href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf"&gt;SWF&lt;/a&gt;
+&lt;br /&gt;
+&lt;!-- YouKu --&gt;
+&lt;a class="popup" 
+data-popup-type="video" 
+data-popup-options="closeBtn:true,winBtn:false,autoSize:false,width:480,height:400" 
+href="http://v.youku.com/v_show/id_XNDI1MDkyMDQ"&gt;YouKu&lt;/a&gt;
+&lt;br /&gt;
 &lt;!-- YouTube --&gt;
-&lt;a class=&quot;popup&quot; href=&quot;http://www.youtube.com/watch?v=AFA-rOls8YA&quot;&gt;Youtube&lt;/a&gt;
-
+&lt;a class="popup" 
+data-popup-type='video'
+href="http://www.youtube.com/watch?v=AFA-rOls8YA"&gt;Youtube&lt;/a&gt;
+&lt;br /&gt;
 &lt;!-- Vimeo --&gt;
-&lt;a class=&quot;popup&quot; href=&quot;http://vimeo.com/39251390&quot;&gt;Vimeo&lt;/a&gt;
- 
-&lt;!-- Vid.ly --&gt;
-&lt;a class=&quot;popup&quot; href=&quot;http://vid.ly/5u4h3e&quot;&gt;Vid.ly&lt;/a&gt;
-
+&lt;a class="popup" 
+data-popup-type='video'
+href="http://vimeo.com/39251390"&gt;Vimeo&lt;/a&gt;
+&lt;br /&gt;
+<!-- &lt;!-- Vid.ly --&gt;
+&lt;a class="popup" 
+data-popup-type='video'
+href="http://vid.ly/5u4h3e"&gt;Vid.ly&lt;/a&gt;
+&lt;br /&gt; -->
 &lt;!-- Local Video --&gt;
-&lt;a class=&quot;popup&quot;
-data-popup-video='{&quot;poster&quot;:&quot;video/poster.jpg&quot;,&quot;preload&quot;:&quot;auto&quot;,&quot;format&quot;:&quot;mp4&quot;}'
-href=&quot;video/video.mp4&quot;
+&lt;a class="popup"
+data-popup-type='vhtml5'
+href="video/movie.ogg,video/movie.mp4,video/movie.webm"
 &gt;Local Video&lt;/a&gt;</code></pre>
-                <div class="example">
-                    
-                    <a class="popup" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf">SWF</a>
-                    <br /> -->
+                <div class="example">                   
+                    <a class="popup" 
+                    href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf">SWF</a>
+                    <br />
+                    <!-- YouKu -->
+                    <a class="popup" 
+                    data-popup-type="video" 
+                    data-popup-options="closeBtn:true,winBtn:false,autoSize:false,width:480,height:400" 
+                    href="http://v.youku.com/v_show/id_XNDI1MDkyMDQ">YouKu</a>
+                    <br />
                     <!-- YouTube -->
-                   <!--  <a class="popup" href="http://www.youtube.com/watch?v=AFA-rOls8YA">Youtube</a> -->
-                    <!-- <br /> -->
+                    <a class="popup" 
+                    data-popup-type='video'
+                    href="http://www.youtube.com/watch?v=AFA-rOls8YA">Youtube</a>
+                    <br />
                     <!-- Vimeo -->
-                    <!-- <a class="popup" href="http://vimeo.com/39251390">Vimeo</a>
-                    <br /> -->
+                    <a class="popup" 
+                    data-popup-type='video'
+                    href="http://vimeo.com/39251390">Vimeo</a>
+                    <br />
                     <!-- Vid.ly -->
-                    <!-- <a class="popup" href="http://vid.ly/5u4h3e">Vid.ly</a>
+                    <!-- <a class="popup" 
+                    data-popup-type='video'
+                    href="http://vid.ly/5u4h3e">Vid.ly</a>
                     <br /> -->
                     <!-- Local Video -->
-                    <!-- <a class="popup"
-                    data-popup-vHtml5='{"poster":"video/poster.jpg","preload":"auto","format":"mp4"}'
-                    href="http://wearehugh.com/dih5/pr6.mp4"
+                    <a class="popup"
+                    data-popup-type='vhtml5'
+                    href="video/movie.ogg,video/movie.mp4,video/movie.webm"
                     >Local Video</a>
                 </div>
-            </section> -->
+            </section>
 
         </section>
         <section>

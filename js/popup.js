@@ -12,6 +12,10 @@
             
             options = $.extend(true,options,{pos: pos});
             Popup._init(this,options);
+
+            //clear options after used
+            options = null;
+
             Popup.show();
             return false;
         });
@@ -20,21 +24,30 @@
     $.extend(Popup, {
         //properties
         defaults: {
-            width: 600,
-            height: 400,
+            width: 760,
+            height: 428,
             minWidth: 400,
             minHeight: 200,
 
+            minTop: 40,
+            minLeft: 10,
             holderWidth: 0,
             holderHeight: 80,
 
-            minTop: 40,
-            minLeft: 10,
-
+            autoSize: true,
+            autoPlay: false, 
+            action: false, // taggle to autoplay by click      
+            
             playSpeed: 1500,
-
+            isPaused: false,
+            imgBg: '#222',
             closeBtn: true,
             winBtn: true, //click overlay to close popup
+
+            transition: 'fade',
+            transitionSetting: {},
+            sliderEffect: 'fade',
+            sliderSetting: {},
 
             components: {
                 thumbnails:{},
@@ -47,39 +60,179 @@
                 duration: 50,
                 transition: 'linear',
                 loops: 4,
-            },
+            },                 
 
-            transition: 'fade',
-            transitionSetting: {},
-
-            sliderEffect: 'fade',
-            sliderSetting: {},
-
-            autoSize: true,
-            autoPlay: false, 
-            action: false, // taggle to autoplay by click
-
-            isPaused: false,
-
-            selector: null,
+            selector: null, //need to fix
             ajax: {
                 dataType: 'html',
                 headers  : { 'popup': true }
+            },
+            swf: {
+                allowscriptaccess: 'always',
+                allowfullscreen: 'true',
+                wmode: 'transparent',
+            },
+            vhtml5: {
+                width: "100%",
+                height: "100%",
+
+                preload: "load",
+                controls: "controls",
+                poster: '',
+                
+                type: {
+                    mp4: "video/mp4",
+                    webm: "video/webm",
+                    ogg: "video/ogg",
+                },
+                source: [
+                    // {
+                    //     src: 'video/movie.mp4',
+                    //     type: 'mp4', // mpc,webm,ogv
+                    // },
+                    // {
+                    //     src: 'video/movie.webm',
+                    //     type: 'webm',
+                    // },
+                    // {
+                    //     src: 'video/movie.ogg',
+                    //     type: 'ogg',
+                    // }
+                ],
             },
 
             keys: true,
             initialTypeOptions: false,
             preload: false,
         },
-        current: {},
-        previous: {},
-        coming: {},
-
-        components: {},
 
         isMobile: false,
-
         defaultSkin: 'skinRimless',
+        
+        current: {},
+        previous: {},
+        components: {},
+        videoregs: {
+            swf: {
+              reg: /[^\.]\.(swf)\s*$/i
+            },
+            youku: {
+                reg: /v\.youku\.com\/v_show/i,
+                split: 'id_',
+                index: 1,
+                url: "http://player.youku.com/player.php/sid/%id%/v.swf"
+            },
+            vhtml5: {
+              reg: /\.(mp4|webm|ogv)$/i,
+              vhtml5: 1,
+            },
+            vimeo: {
+              reg: /vimeo\.com/i,
+              split: '/',
+              index: 3,
+              iframe: 1,
+              url: "http://player.vimeo.com/video/%id%?hd=1&amp;autoplay=1&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1"
+            },
+            youtube: {
+              reg: /youtube\.com\/watch/i,
+              split: '=',
+              index: 1,
+              iframe: 1,
+              url: "http://www.youtube.com/embed/%id%?autoplay=1&amp;fs=1&amp;rel=0"
+            },
+            metacafe: {
+              reg: /metacafe\.com\/watch/i,
+              split: '/',
+              index: 4,
+              url: "http://www.metacafe.com/fplayer/%id%/.swf?playerVars=autoPlay=yes"
+            },
+            dailymotion: {
+              reg: /dailymotion\.com\/video/i,
+              split: '/',
+              index: 4,
+              url: "http://www.dailymotion.com/swf/video/%id%?additionalInfos=0&amp;autoStart=1"
+            },
+            google: {
+              reg: /google\.com\/videoplay/i,
+              split: '=',
+              index: 1,
+              url: "http://video.google.com/googleplayer.swf?autoplay=1&amp;hl=en&amp;docId=%id%"
+            },
+            megavideo: {
+              reg: /megavideo.com/i,
+              split: '=',
+              index: 1,
+              url: "http://www.megavideo.com/v/%id%"
+            },
+            gametrailers: {
+              reg: /gametrailers.com/i,
+              split: '/',
+              index: 5,
+              url: "http://www.gametrailers.com/remote_wrap.php?mid=%id%"
+            },
+            collegehumornew: {
+              reg: /collegehumor.com\/video\//i,
+              split: 'video/',
+              index: 1,
+              url: "http://www.collegehumor.com/moogaloop/moogaloop.jukebox.swf?autostart=true&amp;fullscreen=1&amp;use_node_id=true&amp;clip_id=%id%"
+            },
+            collegehumor: {
+              reg: /collegehumor.com\/video:/i,
+              split: 'video:',
+              index: 1,
+              url: "http://www.collegehumor.com/moogaloop/moogaloop.swf?autoplay=true&amp;fullscreen=1&amp;clip_id=%id%"
+            },
+            ustream: {
+              reg: /ustream.tv/i,
+              split: '/',
+              index: 4,
+              url: "http://www.ustream.tv/flash/video/%id%?loc=%2F&amp;autoplay=true&amp;vid=%id%&amp;disabledComment=true&amp;beginPercent=0.5331&amp;endPercent=0.6292&amp;locale=en_US"
+            },
+            twitvid: {
+              reg: /twitvid.com/i,
+              split: '/',
+              index: 3,
+              url: "http://www.twitvid.com/player/%id%"
+            },
+            wordpress: {
+              reg: /v.wordpress.com/i,
+              split: '/',
+              index: 3,
+              url: "http://s0.videopress.com/player.swf?guid=%id%&amp;v=1.01"
+            },
+            vzaar: {
+              reg: /vzaar.com\/videos/i,
+              split: '/',
+              index: 4,
+              url: "http://view.vzaar.com/%id%.flashplayer?autoplay=true&amp;border=none"
+            }
+        },
+        mapsreg: {
+            bing: {
+                reg: /bing.com\/maps/i,
+                split: '?',
+                index: 1,
+                url: "http://www.bing.com/maps/embed/?emid=3ede2bc8-227d-8fec-d84a-00b6ff19b1cb&amp;w=%width%&amp;h=%height%&amp;%id%"
+            },
+            streetview: {
+                reg: /maps.google.com(.*)layer=c/i,
+                split: '?',
+                index: 1,
+                url: "http://maps.google.com/?output=svembed&amp;%id%"
+            },
+            googlev2: {
+                reg: /maps.google.com\/maps\ms/i,
+                split: '?',
+                index: 1,
+                url: "http://maps.google.com/maps/ms?output=embed&amp;%id%"
+            },
+            google: {
+                reg: /maps.google.com/i,
+                split: '?',
+                index: 1,
+                url: "http://maps.google.com/maps?%id%&amp;output=embed"
+            }
+        },
 
         //
         //privite method
@@ -127,16 +280,13 @@
                 options = {};
             }
 
-            options = $.extend({},options,metas.options,metas);   
+            options = $.extend(true,options,metas.options,metas);   
             options.skin = options.skin || Popup.defaultSkin; 
-
-            // console.log(options);
-            // console.log(Popup.skins[options.skin||Popup.defaultSkin]);       
+     
 
             Popup.settings = {};
-            $.extend(true,Popup.settings,Popup.defaults, options, Popup.skins[options.skin]); //要修改
+            $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin],options); //要修改
 
-            //console.log(Popup.settings);
             //build Popup.group object
             index = count>=2 ? group.index(self) : 0;
             url = $self.attr('href');
@@ -146,6 +296,7 @@
                 url: url,
                 element: element,                
             });
+
 
             if (count >= 2) {
                 Popup.group = [];
@@ -163,12 +314,9 @@
                     });
                     Popup.group.push(obj);
                 });
-            }
-            
+            }          
         },
         _afterLoad: function() {
-            
-
             var $container,$content,$controls,$close,$custom,$info,
                 aspect     = Popup.current.aspect, 
                 type       = Popup.current.type,
@@ -218,7 +366,7 @@
                     'position': 'absolute',
                     'display': 'block',
                 });
-                $content = Popup._makeEls('div', 'popup-content').css({'overflow':'hidden'});
+                $content = Popup._makeEls('div', 'popup-content').css({overflow:'hidden',textAlign:'center',position: 'relative',});
                 $info = Popup._makeEls('div','popup-info');
                 $controls = Popup._makeEls('div', 'popup-controls');
                 $custom = Popup._makeEls('div','popup-custom');
@@ -231,6 +379,8 @@
                     $controls: $controls,
                     $custom: $custom,
                 });
+
+
 
                 if (!Popup.group || !Popup.group[1]) {
                     Popup.current.holderHeight = 20;
@@ -256,6 +406,11 @@
                     Popup.$container.addClass(Popup.current.skin);
                 }
 
+                //to make transition more smooth
+                if (Popup.current.type == 'image') {
+                    Popup.$content.css({backgroundColor: Popup.current.imgBg});
+                }
+
                 //add container to overlay or body
                 $container.appendTo( Popup.$overlay || 'body' );
 
@@ -264,6 +419,10 @@
 
                 //calculate necessary dimension before trigger open transition
                 rez = Popup._calculate();
+
+                console.log(Popup.current.width);
+                console.log(Popup.current.height);
+
                 Popup._trigger('resize',rez);
                 Popup.transitions[Popup.current.transition]['openEffect'](rez); 
 
@@ -282,8 +441,8 @@
                 rez = Popup._calculate();
                 Popup._trigger('resize',rez);
                 Popup.sliderEffects[Popup.current.sliderEffect]['init'](rez);
-
             }
+
 
             Popup._isOpen = true;   
 
@@ -347,7 +506,6 @@
 
                 scale = function(x,y,rate) {
                     var w,h;
-
                     w = y * rate;
                     h = x / rate;
 
@@ -374,24 +532,13 @@
                     height = result.h;
                 }
             } else {
-                width = originWidth;
-                height = originHeight;
-            }          
-            
+                width = Popup.settings.width;
+                height = Popup.settings.height;
+            }  
+
             //centered the container
             top = (maxHeight - height)/2 < minTop ? minTop : (maxHeight - height)/2;
             left = (maxWidth - width)/2 < minLeft ? minLeft : (maxWidth - width)/2;
-            
-            // //reposition set on container
-            // Popup.$container.css({
-            //     top: top,
-            //     left: left,
-            // });
-            // //resize set on content
-            // Popup.$content.css({
-            //     width: width,
-            //     height: height,
-            // });
 
             //give a chance for components component resize
             //note: it defaults padding and margin both equal to 0 
@@ -416,7 +563,8 @@
                 top = rez.top,
                 left = rez.left,
                 width = rez.containerWidth,
-                height = rez.containerHeight;
+                height = rez.containerHeight,
+                img = Popup.$content.find('img');
 
             //reposition set on container
             Popup.$container.css({
@@ -428,6 +576,11 @@
                 width: width,
                 height: height,
             });
+
+            console.log(Popup.current.width);
+            console.log(Popup.current.height);
+
+            
 
             //here pass dimension info as a argument to components
             Popup._trigger('resize',rez);
@@ -480,10 +633,11 @@
         //adding public Method
         //
         show: function(contents, options) {
-
             var previous = Popup.current,
                 toString = Object.prototype.toString,
                 options, current, index, url, obj, type; 
+
+            Popup.previous = previous;
 
             //options 
             if (toString.apply(options) === '[object Object]') {
@@ -493,9 +647,7 @@
                 // only when options === number  
                 index = options;
                 options = {};
-            } 
-
-            
+            }            
 
             if (!Popup.settings || Popup._isOpen) { 
                 
@@ -537,14 +689,14 @@
 
                 Popup.current.index = index;
             } else if (!Popup._isOpen) {
-                if (arguments.length == 1) { 
+                if (arguments.length === 1) { 
 
-                    //for show({...});
+                    //for public api show();
                     Popup.current = $.extend(true,Popup.current,Popup.settings,arguments[0].options);
                     Popup.current.url = arguments[0].url;
                 } else {
 
-                    //for show();
+                    //for private function show();
                     Popup.current = $.extend(true,Popup.current,Popup.settings, options);
                 }
             }           
@@ -556,15 +708,12 @@
                 index = 0;
             }
 
-            console.log(current.skin);
-            console.log(options);
-
             //here we can see how it works
             //click image: making Popup.current,Popup.group
             //click next: extent Popup.current with Popup.group[index]
             //note: Popup.current only made when firstly click
             if (Popup.group && Popup.group[1]) {
-                if (arguments.length == 2 && toString.apply(arguments[1]) === '[object Number]') {
+                if (arguments.length === 2 && toString.apply(arguments[1]) === '[object Number]') {
 
                     Popup.current = $.extend({}, Popup.current, Popup.group[index]);
                     Popup.current.index = index;
@@ -574,7 +723,7 @@
 
             // trigger types verifaction.
             $.each(Popup.types,function(key,value) {
-                if (Popup.types[key].match && Popup.types[key].match(current.url)) {
+                if (Popup.types[key].match && Popup.types[key].match(current.url.split(',')[0])) {
                     type = key;
                     return false;
                 }
@@ -586,8 +735,7 @@
             //initialize custom type register
             Popup.types[type].initialize && Popup.types[type].initialize();
 
-            Popup.types[type].load();    
-    
+            Popup.types[type].load();        
         },
         close: function() {
 
@@ -758,72 +906,6 @@
             e.animate({left: l+x}, d, t);
             e.animate({left: l},   d, t);
         },
-        // dimensions: function() {
-        //     var rez = {
-        //         width: Popup.current.width,
-        //         height: Popup.current.height,
-        //     };
-        //     return rez;
-        // },
-        // resize: function(w,h) {
-        //     var $content = Popup.$content;
-        //     $content.css({
-        //         'width': w,
-        //         'height': h,
-        //     });
-        // },
-        // reposition: function(x,y) {
-        //     var $container = Popup.$container;
-        //     $container.css({
-        //         'top': x,
-        //         'left': y,
-        //     });
-        // },
-        // rotate: function(angle) {
-        //     var rotation,costheta,sintheta,scale,transform,
-        //         width = $('.popup-content').width(),
-        //         height = $('.popup-content').height();             
-
-        //     if (Popup.photo == undefined) {
-        //         return false;
-        //     } 
-
-        //     if (!Popup.angle) {
-        //         Popup.angle = 0;
-        //     } 
-        //     Popup.angle = Popup.angle + angle;
-
-        //     if (Popup.angle >= 0) { 
-        //         rotation = Math.PI * Popup.angle / 180; 
-        //     } else { 
-        //         rotation = Math.PI * (360+Popup.angle) / 180; 
-        //     } 
-
-        //     costheta = Math.round(Math.cos(rotation) * 1000) / 1000; 
-        //     sintheta = Math.round(Math.sin(rotation) * 1000) / 1000;  
-     
-        //     Popup.photo.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11="+costheta+",M12="+(-sintheta)+",M21="+sintheta+",M22="+costheta+",SizingMethod='auto expand')"; 
-
-        //     if ((Popup.angle / 90) % 2 == 1 || (Popup.angle / 90) % 2 == -1) {
-        //         if (width > height) {
-        //             scale = height / width;
-        //         } else if (width < height) {
-        //             scale = width / height;
-        //         }
-        //     } else {
-        //         scale = 1;
-        //     }
-
-        //     transform = 'rotate(' +Popup.angle +'deg)'+' '+'scale('+scale+')';
-
-        //     $(Popup.photo).css({
-        //         '-moz-transform'   : transform,
-        //         '-webkit-transform': transform,
-        //         '-o-transform'     : transform,
-        //     });
-
-        //     console.log(Popup.angle);   
-        // },
     });
 
     //
@@ -854,16 +936,45 @@
 
                 img.onload = function() {
                     var width = img.width,
-                        height = img.height;
+                        height = img.height,
+                        $inner = $('<div>');
                     this.onload = this.onerror = null;
 
                     Popup.current.width = width;
                     Popup.current.height = height;
 
                     Popup.current.aspect = width / height;
-                    Popup.current.autoSize = true;
 
-                    Popup.current.content = img;
+
+                    //for centering image
+                    if (!Popup.current.autoSize) {
+                        if (width>height) {
+                            $(img).css({
+                                width: '100%',
+                                height: 'auto',
+                            });
+                        } else {
+                            $(img).css({
+                                height: '100%',
+                                width: 'auto',
+                            });
+                        }
+                    } 
+
+                    $inner.addClass('popup-content-inner').css({
+                        width: '100%',
+                        height: '100%',
+                        position:'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 1,
+                    }).append(img);
+
+                    console.log(img);
+                    console.log($inner);
+                    
+
+                    Popup.current.content = $inner;
 
                     Popup._hideLoading();
 
@@ -890,62 +1001,111 @@
                 }
             }
         },
-        iframe: {
-            match: function(url) {
-                
-                if (url.match(/youtube\.com\/watch\?v\=(\w+)(&|)/i)||url.match(/vimeo\.com\/(\d+)/i)||url.match(/vid\.ly\/(\d+)/i)||url.match(/\.(ppt|PPT|tif|TIF|pdf|PDF)$/i)) {
-                    return true;
-                }
+        inline: {
+            match: function(url) {                
+                return url.charAt(0) == "#";
             },
             load: function() {
-                var $iframe, iframe = {
-                    'width': '100%',
-                    'height': '100%',
-                    'border': 'none'
-                };
-                $iframe = Popup._makeEls('iframe', 'popup-content-iframe', iframe);
+                var $inline = $(Popup.current.url).clone().css({
+                    'display': 'block'
+                });
 
-                Popup.$iframe = $iframe.attr('src', Popup.current.url);
-                Popup.current.content = Popup.$iframe;
+                Popup.current.content = $('<div>').addClass('popup-content-inner').css({'width':'100%','height': '100%'}).html($inline);
+                Popup._afterLoad();
+            }
+        }, 
+        vhtml5: {
+            match: function(url) {
+                return url.match(/\.(mp4|webm|ogg)$/i);
+            },
+            load: function() {
+                var $video,
+                    source,index,type,arr,
+                    url = Popup.current.url,
+                    vhtml5 = Popup.current.vhtml5;
+
+  
+                $video = Popup._makeEls('video','popup-content-video').attr({
+                    'width': vhtml5.width,
+                    'height': vhtml5.height,
+                    'preload': vhtml5.preload,
+                    'controls': vhtml5.controls,
+                    'poster': vhtml5.poster, 
+                });
+
+                
+
+                arr = url.split(',');
+                console.log(arr,vhtml5);
+                alert('load')
+                $.each($(arr),function(i,v) {
+                    var type;
+                    type = $.trim( v.split('.')[1] );
+                    source += '<source src="' + v + '" type="' + vhtml5.type[type] + '"></source>';
+                });
+
+                $.each(vhtml5.source,function(i,arr){
+                    source += '<source src="' + arr.src + '" type="' + vhtml5.type[arr.type] + '"></source>';
+                });
+
+                $(source).appendTo($video);
+
+                Popup.current.content = $video;
+
 
                 Popup._afterLoad();
             }
         },
         swf: {
-            match: function(url) {   
-                           
+            match: function(url) {                              
                 return url.match(/\.(swf)((\?|#).*)?$/i);
             },
             load: function() {
-                var $object, $swf, object = {
-                    'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
-                    'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
-                    'width': '100%',
-                    'height': '100%'
-                },
-                swf = {
-                    'allowscriptaccess': 'always',
-                    'allowfullscreen': 'true',
-                    'wmode': 'transparent',
-                    'type': 'application/x-shockwave-flash',
-                    'src': Popup.current.url
-                };
+                var $object, $swf, content = '',
+                    embed = '',
+                    swf = Popup.current.swf;
+              
+                $object = $('<object class="popup-content-object" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + Popup.current.url + '"></param></object>');
 
-                $object = Popup._makeEls('object', 'popup-content-object', swf);
-                $object.append($('<param value="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf" name="movie"><param value="transparent" name="wmode"><param value="true" name="allowfullscreen"><param value="always" name="allowscriptaccess">'))
+                $.each(swf, function(name, val) {
+                    content += '<param name="' + name + '" value="' + val + '"></param>';
+                    embed   += ' ' + name + '="' + val + '"';
+                });
 
-                $swf = $('<embed></embed>').css({
-                    'width': '100%',
-                    'height': '100%'
-                }).attr(swf);
-                $swf.appendTo($object);
+                $(content).appendTo($object);
+
+                $swf = $('<embed src="' + Popup.current.url + '" type="application/x-shockwave-flash"  width="100%" height="100%"' + embed + '></embed>').appendTo($object);
 
                 Popup.current.content = Popup.$swf = $object;
 
                 Popup._afterLoad();
             }
         },
-        //ajax need user to set type and dataType manually
+        //you should set type when using iframe && ajax,they cant auto match, 
+        iframe: {
+            match: function(url) {                           
+                if (url.match(/\.(ppt|PPT|tif|TIF|pdf|PDF)$/i)) {
+                    return true;
+                }
+            },
+            load: function() {  
+                var $iframe, 
+                    iframe = Popup.current.iframe;  
+
+                $iframe = $('<iframe name="popup-frame" class="popup-content-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>'); 
+                $iframe.css({
+                    'width': '100%',
+                    'height': '100%',
+                    'border': 'none'
+                }); 
+                Popup.$iframe = $iframe.attr('src', Popup.current.url);
+                Popup.current.content = Popup.$iframe;
+
+
+
+                Popup._afterLoad();
+            }
+        },      
         ajax: {
             load: function() {
                 var content,current = Popup.current;
@@ -973,20 +1133,53 @@
                 }));
             }
         },
-        inline: {
-            match: function(url) {
-                
-                return url.charAt(0) == "#";
-            },
-            load: function() {
-                var $inline = $(Popup.current.url).clone().css({
-                    'display': 'block'
-                });
+        
+        //video && map are composite type,you should set type when using them
+        //they dont have their own loading method,they process url,and then load with other types' load method 
+        video: {
+            match: function(url){
+                var videoid,
+                    href = url,
+                    type = Popup.current.type;
 
-                Popup.current.content = $('<div>').addClass('popup-content-inner').css({'width':'100%','height': '100%'}).html($inline);
-                Popup._afterLoad();
-            }
-        },   
+                if (Popup.current.type !== 'video') { return false }
+
+                $.each(Popup.videoregs, $.proxy(function(i, e) {  
+                    if (href.split('?')[0].match(e.reg)) {
+
+                        if (e.split) {
+                            videoid = href.split(e.split)[e.index].split('?')[0].split('&')[0];
+                            Popup.current.url = e.url.replace("%id%", videoid);
+                        }
+                        console.log(Popup.current.url);
+                        alert('video')
+                        Popup.current.type = e.iframe ? 'iframe' : e.vhtml5 ? 'vhtml5' : 'swf';
+
+                        return false;
+                    }
+                }, this));
+
+                return true;
+            },
+        },
+        map: {
+            match: function(url){
+                var href = url,id;
+                if (Popup.current.type !== 'map') { return false; }
+                $.each(Popup.mapsreg, function(i, e) {
+                    if (href.match(e.reg)) {
+                        Popup.current.type = 'iframe';
+                        if (e.split) {
+                            id = href.split(e.split)[e.index];
+                            href = e.url.replace("%id%", id).replace("%width%", Popup.current.width).replace("%height%", Popup.current.height);
+                        }
+
+                        return false;
+                    }
+                });
+                return true;
+            },      
+        },
     };
 
     Popup.sliderEffects = {};
@@ -1001,6 +1194,9 @@
             minTop: 20,
             minLeft: 10,
 
+            autoSize: true,
+            sliderEffect: 'none',
+
             components: {
                 controls: {
                     ui: 'outside',
@@ -1013,6 +1209,9 @@
 
             minTop: 20,
             minLeft: 20,
+
+            autoSize: true,
+            sliderEffect: 'none',
 
             components: {
                 controls: {
@@ -1053,21 +1252,20 @@
                 x: origin.left - pos.x,
                 y: origin.top - pos.y,
             };
-            console.log(startPos);
 
             Popup.$overlay.fadeIn();
 
             Popup.$container.css({
-                'top': startPos.y,
-                'left': startPos.x,
-                'display': 'block',
+                top: startPos.y,
+                left: startPos.x,
+                display: 'block',
             }).animate({
-                'top': rez.top,
-                'left': rez.left,
+                top: rez.top,
+                left: rez.left,
             },1000);
             Popup.$content.css({
-                'width': 0,
-                'height': 0,
+                width: 0,
+                height: 0,
             }).animate({
                 'width': rez.containerWidth,
                 'height': rez.containerHeight,
@@ -1199,7 +1397,7 @@
             Popup.$content.empty();
             Popup.$content.append(Popup.current.content);
         },
-    }
+    };
     Popup.sliderEffects.zoom = {
         defaults: {
             speed: 500,
@@ -1207,6 +1405,10 @@
         },
         init: function(rez) {
             var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
+
+            Popup.$content.empty();
+            Popup.$content.append(Popup.current.content);
+
             Popup.$container.stop().animate({
                 top: rez.top,
                 left: rez.left,
@@ -1220,9 +1422,11 @@
             },{
                 duration: 500,
                 easing: 'swing',
+                complete: function() {
+
+                }
             });
-            Popup.$content.empty();
-            Popup.$content.append(Popup.current.content);
+            
 
         }
     }; 
@@ -1237,86 +1441,68 @@
                 top: rez.top,
                 left: rez.left,
             });
+            
             //resize set on content
             Popup.$content.css({
                 width: rez.containerWidth,
                 height: rez.containerHeight,
             });
+            Popup.previous.content.css({
+                zIndex: 2,
+            });
 
-            Popup.$content.empty();
             Popup.$content.append(Popup.current.content);
 
-        }
-
-    }
-
-    //types
-    Popup.types.vhtml5 = {
+            Popup.previous.content.animate({
+                'opacity': 0,
+            },{
+                duration: 500,
+                easing: 'swing',
+                complete: function(){
+                    console.log($(this));
+                    
+                    $(this).remove();
+                }
+            });
+            //Popup.$content.append(Popup.current.content);
+        },
+    };
+    Popup.sliderEffects.slide = {
         defaults: {
-            preload: "load",
-            controls: "controls",
-            width: "320",
-            height: "240",
-            mp4: {
-                type: "video/mp4; codecs=avc1.42E01E, mp4a.40.2",
-            },
-            webm: {
-                type: "video/webm; codecs=vp8, vorbis",
-            },
-            ogv: {
-                type: "video/ogg; codecs=theora, vorbis",
-            }
+            speed: 500,
+            easing: 'swing',
         },
-        match: function(url) {
-            return url.match(/\.(mp4|webm|ogv)$/i);
-        },
-        load: function() {
-            var $video,$source,$object,url,index,type;
-            $video = makeEls('video','popup-content-video');
-            $video.attr({
-                'width': Popup.current.vhtml5.width,
-                'height': Popup.current.vhtml5.height,
-                'preload':Popup.current.vhtml5.preload,
-                'controls':Popup.current.vhtml5.controls,
-                'poster': Popup.current.vhtml5.poster, 
+        init: function(rez) {
+            var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
+            Popup.$container.css({
+                top: rez.top,
+                left: rez.left,
+            });
+            
+            //resize set on content
+            Popup.$content.css({
+                width: rez.containerWidth,
+                height: rez.containerHeight,
+            });
+            Popup.previous.content.css({
+                zIndex: 2,
             });
 
+            Popup.$content.append(Popup.current.content);
 
-            url = Popup.current.url.toLowerCase().split(',');
-
-            for(var i=0;i<url.length;i++) {
-
-                index = url[i].lastIndexOf(".")+1;
-                type = url[i].slice(index);
-
-                $source = makeEls('source');
-                $source.attr({
-                    'type':Popup.current.vhtml5[type].type,
-                    'src': url[i]
-                }); //不可以的话，去掉type。
-                $source.appendTo($video);
-            }
-
-            $object = makeEls('object');
-            $object.attr({
-                'classid': 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
-                'codebase': 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0',
-                'width': '100%',
-                'height': '100%'
+            Popup.previous.content.animate({
+                'opacity': 0,
+            },{
+                duration: 500,
+                easing: 'swing',
+                complete: function(){
+                    console.log($(this));
+                    
+                    $(this).remove();
+                }
             });
-
-            // url = Popup.current.url.toLowerCase();
-            // index = url.lastIndexOf(".")+1;
-            // type = url.slice(index);
-            // $source = makeEls('source');
-            // $source.attr({
-            //     'type': Popup.current.vhtml5.format || Popup.current.vhtml5[type].type,
-            //     'src': url,
-            // });
-            // $source.appendTo($video);
-            Popup.current.content = $video;
-            afterLoad();
-        }
+           
+        },
     };
 
     //components 
@@ -1334,30 +1520,24 @@
             $overlay.on('click', function(event) {
                 if($(event.target).is('.popup-overlay') && Popup.current.winBtn) {
                     Popup.close();
+                    $(this).css({
+                        cursor: 'pointer',
+                    })
                     return false;
                 }                             
             }).css({
-                'position': 'fixed',
-                'top': 0,
-                'left': 0,
-                'width': '100%',
-                'height': '100%',
+                display: 'none',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
             });
             
             Popup.$overlay = $overlay;
         },
         open: function() {
-            Popup.$overlay.css({
-
-                'display': 'none',
-
-                'position': 'fix',
-                'top': 0,
-                'left': 0,
-
-                'width': '100%',
-                'height': '100%',                
-            });
+            
         },
         close: function() {
             Popup.$overlay.remove();
@@ -1664,7 +1844,7 @@
             this.create();
         },
         create: function() {
-            var $title = $('<span>').addClass('popup-info-title');
+            var $title = $('<span>').addClass('popup-info-title').css({zIndex:10});
             $title.appendTo(Popup.$info).text(Popup.current.title);
             this.$title = $title;
         },
@@ -1679,7 +1859,7 @@
             this.$title = null;
         }
     };
-    Popup.components.count = {
+    Popup.components.counter = {
         $count: null,
         total: null,
         onReady: function() {
@@ -1689,10 +1869,10 @@
             this.create();
         },
         create: function() {
-            var $count = $('<span>').addClass('popup-info-count'),
+            var $count = $('<span>').addClass('popup-info-counter'),
                 total = Popup.group.length,
                 current = Popup.current.index+1;
-            $count.appendTo(Popup.$info).text(current+"/"+total);
+            $count.appendTo(Popup.$info).text(current+"/"+total).css({zIndex:10});
             this.$count = $count;   
             this.total = total; 
         },
@@ -1732,6 +1912,7 @@
     $.fn.Popup = function(options) {
         var self = this;
         Popup.elements = $(self);
+
         return self.each(function() {
             if (!$.data(self, 'popup')) {
                 $.data(self, 'popup', new Popup(self, options));

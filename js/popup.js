@@ -1151,8 +1151,6 @@
                             videoid = href.split(e.split)[e.index].split('?')[0].split('&')[0];
                             Popup.current.url = e.url.replace("%id%", videoid);
                         }
-                        console.log(Popup.current.url);
-                        alert('video')
                         Popup.current.type = e.iframe ? 'iframe' : e.vhtml5 ? 'vhtml5' : 'swf';
 
                         return false;

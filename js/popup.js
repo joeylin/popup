@@ -317,111 +317,13 @@
             }          
         },
         _afterLoad: function() {
-            var $container,$content,$controls,$close,$custom,$info,
-                aspect     = Popup.current.aspect, 
-                type       = Popup.current.type,
-                rez,
-                bindEvents = function() {
-                    //binding resize event on window
-                    $(window).on('resize',function() {
-                        Popup._resize();
-                        return false;
-                    });
-                                   
-                    // Key Bindings
-                    if(Popup.current.keys && !Popup._isOpen && Popup.group) { 
-                        $(document).bind('keydown.popup',function(e){
-                            var key = e.keyCode;
-
-                            console.log(key);
-                            console.log(e.which);
-
-                            if (key === 27) {
-                                Popup.close();
-                                return false;
-                            }
-                            if(Popup.slider==true && key === 37) {
-                                Popup.prev();
-                                return false;
-                            } else if (Popup.slider==true && key === 39) {
-                                Popup.next();
-                                return false;
-                            }
-                        });
-                    }
-
-                    // //autoPlay
-                    // if (Popup.current.autoPlay === true) {
-                    //     $container.bind('hover',function(){
-                    //         Popup._slider.pause();
-                    //     });
-                    // }                    
-                }; 
+            var rez,
+                type = Popup.current.type;             
 
             if (!Popup._isOpen) {
 
-                //create container 
-                $container = Popup._makeEls('div', 'popup-container');
-                $container.css({
-                    'position': 'absolute',
-                    'display': 'block',
-                });
-                $content = Popup._makeEls('div', 'popup-content').css({overflow:'hidden',textAlign:'center',position: 'relative',});
-                $info = Popup._makeEls('div','popup-info');
-                $controls = Popup._makeEls('div', 'popup-controls');
-                $custom = Popup._makeEls('div','popup-custom');
-                $container.append($content,$info,$controls,$custom);
-
-                $.extend(Popup,{
-                    $container: $container,
-                    $content: $content,
-                    $info: $info,
-                    $controls: $controls,
-                    $custom: $custom,
-                });
-
-
-
-                if (!Popup.group || !Popup.group[1]) {
-                    Popup.current.holderHeight = 20;
-                }
-                
-                //trigger the component registered on components object
-                Popup._trigger('onReady');
-
-                //add close buttom if controls component is cancelled
-                if (!Popup.$close && Popup.current.closeBtn) {                    
-                    $close = Popup._makeEls('div','popup-controls-close');
-                    $close.css({'position': 'absolute'}).appendTo($controls);
-                    $close.on('click', function() {
-                        Popup.close();
-                        return false;
-                    });
-                }
-
-                //set skin
-                if (Popup.$overlay) {
-                    Popup.$overlay.addClass(Popup.current.skin);
-                } else {
-                    Popup.$container.addClass(Popup.current.skin);
-                }
-
-                //to make transition more smooth
-                if (Popup.current.type == 'image') {
-                    Popup.$content.css({backgroundColor: Popup.current.imgBg});
-                }
-
-                //add container to overlay or body
-                $container.appendTo( Popup.$overlay || 'body' );
-
-                //binding event
-                bindEvents();
-
                 //calculate necessary dimension before trigger open transition
                 rez = Popup._calculate();
-
-                console.log(Popup.current.width);
-                console.log(Popup.current.height);
 
                 Popup._trigger('resize',rez);
                 Popup.transitions[Popup.current.transition]['openEffect'](rez); 
@@ -431,13 +333,7 @@
                 Popup.$content.append(Popup.current.content);                            
             } else {
 
-                //remove old content before loading new content
-
-                // Popup.$content.empty();
-                // Popup.$content.append(Popup.current.content); 
-
-                // Popup._resize();
-
+                //slider
                 rez = Popup._calculate();
                 Popup._trigger('resize',rez);
                 Popup.sliderEffects[Popup.current.sliderEffect]['init'](rez);
@@ -609,6 +505,19 @@
                 }            
             }
         },
+        _loadfail: function(string) {
+            var $inner = $('<div><p>Sorry! cant find '+string+',</P></div>');
+            console.log('load failed');
+            $inner.css({width:'100%',height:'100%',textAlign:'center',color:'#fff'});
+            $.extend(Popup.current,{
+                width: 600,
+                height: 400,
+                content: $inner,
+            });
+
+            //Popup._hideLoading();
+            Popup._afterLoad();
+        },
         _showLoading: function() {
             var $loading;
             Popup._hideLoading();
@@ -633,13 +542,51 @@
         //adding public Method
         //
         show: function(contents, options) {
-            var previous = Popup.current,
-                toString = Object.prototype.toString,
-                options, current, index, url, obj, type; 
+            var $container,$content,$controls,$close,$custom,$info,
+                options, current, index, url, obj, type, 
+                previous = Popup.current,
+                toString = Object.prototype.toString;
+
+            function bindEvents() {
+                //binding resize event on window
+                $(window).on('resize',function() {
+                    Popup._resize();
+                    return false;
+                });
+                               
+                // Key Bindings
+                if(Popup.current.keys && !Popup._isOpen && Popup.group) { 
+                    $(document).bind('keydown.popup',function(e){
+                        var key = e.keyCode;
+
+                        console.log(key);
+                        console.log(e.which);
+
+                        if (key === 27) {
+                            Popup.close();
+                            return false;
+                        }
+                        if(Popup.slider==true && key === 37) {
+                            Popup.prev();
+                            return false;
+                        } else if (Popup.slider==true && key === 39) {
+                            Popup.next();
+                            return false;
+                        }
+                    });
+                }
+
+                // //autoPlay
+                // if (Popup.current.autoPlay === true) {
+                //     $container.bind('hover',function(){
+                //         Popup._slider.pause();
+                //     });
+                // }                    
+            };
 
             Popup.previous = previous;
 
-            //options 
+            //process options 
             if (toString.apply(options) === '[object Object]') {
                 options = options || {};                
             } else if (!isNaN(options)) { 
@@ -656,7 +603,7 @@
                 $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin]);
             }
 
-            //contents
+            //process contents
             if (toString.apply(contents) === '[object Array]' && !Popup._isOpen) {
 
                 // for show([],{}||index);
@@ -734,6 +681,64 @@
 
             //initialize custom type register
             Popup.types[type].initialize && Popup.types[type].initialize();
+
+            //build frame
+            if (!Popup._isOpen) {
+                //create container 
+                $container = Popup._makeEls('div', 'popup-container');
+                $container.css({
+                    'position': 'absolute',
+                    'display': 'block',
+                });
+                $content = Popup._makeEls('div', 'popup-content').css({overflow:'hidden',textAlign:'center',position: 'relative',});
+                $info = Popup._makeEls('div','popup-info');
+                $controls = Popup._makeEls('div', 'popup-controls');
+                $custom = Popup._makeEls('div','popup-custom');
+                $container.append($content,$info,$controls,$custom);
+
+                $.extend(Popup,{
+                    $container: $container,
+                    $content: $content,
+                    $info: $info,
+                    $controls: $controls,
+                    $custom: $custom,
+                });
+
+                if (!Popup.group || !Popup.group[1]) {
+                    Popup.current.holderHeight = 20;
+                }
+                
+                //trigger the component registered on components object
+                Popup._trigger('onReady');
+
+                //add close buttom if controls component is cancelled
+                if (!Popup.$close && Popup.current.closeBtn) {                    
+                    $close = Popup._makeEls('div','popup-controls-close');
+                    $close.css({'position': 'absolute'}).appendTo($controls);
+                    $close.on('click', function() {
+                        Popup.close();
+                        return false;
+                    });
+                }
+
+                //set skin
+                if (Popup.$overlay) {
+                    Popup.$overlay.addClass(Popup.current.skin);
+                } else {
+                    Popup.$container.addClass(Popup.current.skin);
+                }
+
+                //to make transition more smooth
+                if (Popup.current.type == 'image') {
+                    Popup.$content.css({backgroundColor: Popup.current.imgBg});
+                }
+
+                //add container to overlay or body
+                $container.appendTo( Popup.$overlay || 'body' );
+
+                //binding event
+                bindEvents();                        
+            }
 
             Popup.types[type].load();        
         },
@@ -942,9 +947,7 @@
 
                     Popup.current.width = width;
                     Popup.current.height = height;
-
                     Popup.current.aspect = width / height;
-
 
                     //for centering image
                     if (!Popup.current.autoSize) {
@@ -970,19 +973,17 @@
                         zIndex: 1,
                     }).append(img);
 
-                    console.log(img);
-                    console.log($inner);
-                    
-
                     Popup.current.content = $inner;
 
                     Popup._hideLoading();
-
                     Popup._afterLoad();
                 };
+
                 img.onerror = function() {
-                    alert('error');
                     this.onload = this.onerror = null;
+
+                    Popup._loadfail('image');   
+
                     return "can't find Image !";
                 };
                 img.src = Popup.current.url;
@@ -1033,11 +1034,7 @@
                     'poster': vhtml5.poster, 
                 });
 
-                
-
                 arr = url.split(',');
-                console.log(arr,vhtml5);
-                alert('load')
                 $.each($(arr),function(i,v) {
                     var type;
                     type = $.trim( v.split('.')[1] );
@@ -1260,14 +1257,14 @@
             }).animate({
                 top: rez.top,
                 left: rez.left,
-            },1000);
+            },400);
             Popup.$content.css({
                 width: 0,
                 height: 0,
             }).animate({
                 'width': rez.containerWidth,
                 'height': rez.containerHeight,
-            },1000);
+            },400);
         },
         closeEffect: function() {
             var opts = $.extend({},this.defaults,Popup.current.transitionSetting);
@@ -1719,6 +1716,7 @@
                 gap = this.opts.gap,
                 count = this.opts.count,
                 group = Popup.group,
+                index = Popup.current.index,
                 $thumbnails = $('<div>').addClass('popup-thumbnails'),
                 $leftButtom = $('<a href="#">').addClass('popup-thumbnails-left'),
                 $rightButtom = $('<a href="#">').addClass('popup-thumbnails-right'),
@@ -1730,9 +1728,6 @@
                     totalWidth = $inner.width();
                     left = parseInt(left);
 
-                    console.log(left)
-                    console.log(totalWidth)
-
                     if (direction == 'left') {
                         $inner.css({
                             'left': left-visualWidth<0? 0: (left-visualWidth),
@@ -1742,12 +1737,7 @@
                             'left': -(left+visualWidth>totalWidth-visualWidth? totalWidth-visualWidth:left+visualWidth),
                         });
                     }
-                }
-
-            $.each(Popup.group,function(i) {
-                var url = Popup.group[i].url;
-                $('<img />').attr('src', url).appendTo($('<a href="#">').appendTo($inner)); 
-            });
+                };
 
             count = count > group.length? group.length:count; 
             visualWidth = count * (unitWidth+2*padding) + (count-1)*gap;
@@ -1773,6 +1763,32 @@
                 'left': left,
                 'text-align': 'center',
             }).append($leftButtom,$thumHolder,$rightButtom);
+
+            //load image
+            $.each(Popup.group,function(i) {
+                var url = Popup.group[i].url,
+                    $wrap = $('<a href="#">');
+
+                if(url == undefined) { 
+                    return 
+                }
+
+                $wrap.addClass('loading').appendTo($inner);
+
+                if(i === index) {
+                    //this to make transition more smooth
+                    $wrap.addClass('popup-thumbnails-active');
+                }
+
+                $('<img />').load(function(){   
+                    $wrap.removeClass('loading');         
+                    $(this).appendTo($wrap);
+                }).error(function(){
+                    $wrap.removeClass('loading');
+                    $wrap.removeClass('popup-thumbnails-active');
+                    $(this).appendTo($wrap);
+                }).attr('src', url); 
+            });
 
             $thumbnails.appendTo(Popup.$container);
 

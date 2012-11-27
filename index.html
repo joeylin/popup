@@ -102,15 +102,174 @@
                                 <span style="color:#888">Integer, Array; Default value: 15 </span>
                             </td>
                         </tr>
-                       
                         <tr>
-                            <td> padding </td>
                             <td>
-                            Space inside Popup around content. Can be set as array - [top, right, bottom, left].
-                                <br>
-                                <span style="color:#888">Integer, Array; Default value: 15 </span>
+                                minWidth                        
+                            </td>
+                            <td>
+                                Minimum width popup should be allowed to resize to                          <br />
+                                <span style="color:#888">Number; Default value: 400                         </span>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                minHeight                       
+                            </td>
+                            <td>
+                                Minimum height popup should be allowed to resize to                         <br />
+                                <span style="color:#888">Number; Default value: 200                         </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>minTop</td>
+                            <td>Maximum width popup should be allowed to resize to                          
+                                <br />
+                                <span style="color:#888">Number; Default value: window width                            </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>minLeft</td>
+                            <td>Maximum height popup should be allowed to resize to                         
+                                <br />
+                                <span style="color:#888">Number; Default value: window height                           </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>autoSize/td>
+                            <td>
+                                If true, then resize with the window the container will resize to fit the window                         
+                                <br />
+                                <span style="color:#888">Boolean; Default value: true                         </span>
+                            </td>
+                        </tr>
+                        
+                        
+                        <tr>
+                            <td>holderWidth</td>
+                            <td>this dimesion is set to keep window's left area for custom component                        
+                                <br />
+                                <span style="color:#888">Number; Default value: 10                          </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>holderHeight</td>
+                            <td>this dimesion is set to keep window's buttom area for custom component                           
+                                <br />
+                                <span style="color:#888">Number; Default value: 100                         </span>
+                            </td>
+                        </tr>
+                    <tr>
+                
+                    <tr>
+                        <td>closeBtn</td>
+                        <td>If set to true, close button will be displayed                          
+                            <br />
+                            <span style="color:#888">Boolean; Default value: true                           </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>winBtn</td>
+                        <td>If set to true, popup will be closed when user clicks the blank space                           
+                            <br />
+                            <span style="color:#888">Boolean; Default value: false                          </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>autoPlay</td>
+                        <td>If set to true, slideshow will start after opening the first gallery item                           
+                            <br />
+                            <span style="color:#888">Boolean; Default value: false                          </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>playSpeed</td>
+                        <td>Slideshow speed in milliseconds                        
+                            <br />
+                            <span style="color:#888">Integer; Default value: 3000                           </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>components</td>
+                        <td>Options for components, if one of properties set to null,this component will be closed
+                            <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    thumbnails:{}, 
+    controls: {},
+    title: {},
+    counter: {},
+    social: {},
+}</pre></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>thumbnails</td>
+                        <td>Options for components type "thumbnails" 
+                            <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    count: 5,       //the number of thumbnails images
+    unitWidth: 80,  //width of every thumbnails
+    unitHeight: 80, //height of every thumbnails
+    bottom: 16,     //bottom,left postion the thumbnails on the screen
+    left: 0,
+    padding: 0,     // the distance keeps for thumbnail padding margin or border
+    gap: 20,        //the gap between two thumbnais
+}</pre></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>ajax</td>
+                        <td>Options for ajax request                            
+                            <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    dataType : 'html',
+    headers  : { 'X-popup': true }
+}</pre></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>swf</td>
+                        <td>Options for content type "swf" <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    wmode: 'transparent',
+    allowfullscreen   : 'true',
+    allowscriptaccess : 'always'
+}</pre></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>vhtml5</td>
+                        <td>Options for content type "vhtml5" <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    width: "100%",
+    height: "100%",
+
+    preload: "load",
+    controls: "controls",
+    poster: '',
+    
+    type: {
+        mp4: "video/mp4",
+        webm: "video/webm",
+        ogg: "video/ogg",
+    },
+    source: []
+}</pre></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>shake</td>
+                        <td>Options for shake effect <br />
+                            <span style="color:#888">Object; Default value: <pre class="prettyprint">{
+    distance: 15,
+    duration: 50,
+    transition: 'linear',
+    loops: 4,
+}</pre></span>
+                        </td>
+                    </tr>
+                    <tr>
                     </tbody>    
                 </table>    
             </div>
@@ -1040,6 +1199,7 @@ $(".api-reposition").on('click',function(){
         //     'width': 20,
         //     'height': 20,
         //     'overflow': 'hidden',
+        //     'border': '2px solid #000',
         // });
         // $el.find('img').css({
         //     'width': "100%"

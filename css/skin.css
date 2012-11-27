@@ -1,17 +1,9 @@
 /*====== helper style ======*/
 .popup-loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    display: block;
-    width: 24px;
-    height: 24px;
-
-    margin-top: -12px;
-    margin-left: -12px;
-
-    background-image: url("../img/popup-loading.gif");
+    background: url("../img/popup-loading.gif") no-repeat 50% 50% ;
+}
+.loading {
+    background: url("../img/popup-loading.gif") no-repeat 50% 50% ;
 }
 
 /*====== thumbnails =======*/

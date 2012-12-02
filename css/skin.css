@@ -24,6 +24,7 @@
     width: 17px;
     height: 28px;
     margin-bottom: 20px;
+
 }
 .popup-thumbnails-left {
     background: url(../img/thum-left-normal.png) no-repeat 0 0;
@@ -45,7 +46,7 @@
     display: inline-block;
     width: 280px;
     height: 80px;
-    margin: 0 20px;
+    margin: 0 40px;
 
     overflow: hidden;
 }
@@ -82,7 +83,7 @@
 }
 
 
-/*======= here to add skin ========*/
+/*===== here to add skin ======*/
 /*======= skinRimless =========*/
 .skinRimless {
     position: fixed;
@@ -104,48 +105,44 @@
 	overflow: hidden;
 	border-radius: 5px;
     background-color: white;  
-
-    /*-webkit-transition: width .5s ease-in, height .5s ease-in;
-    -moz-transition:    width .5s ease-in, height .5s ease-in;
-    -o-transition:      width .5s ease-in, height .5s ease-in;
-    transition:         width .5s ease-in, height .5s ease-in; */
-
 }
 .skinRimless .popup-content img {
     width: 100%;
+
+    -webkit-transition: width .5s ease-in, height .5s ease-in;
+    -moz-transition:    width .5s ease-in, height .5s ease-in;
+    -o-transition:      width .5s ease-in, height .5s ease-in;
+    transition:         width .5s ease-in, height .5s ease-in; 
+}
+
+.skinRimless .popup-controls-prev,
+.skinRimless .popup-controls-next {
+    position: fixed;
+    width: 150px; 
+    height: 100px;
+    
+    margin-top: -50px; 
+
+    text-indent:-9999px;
+    z-index: 9999;
+    cursor: pointer;
+
+    -moz-transition: top 0.3s ease-in,left 0.3s ease-in,right 0.3s ease-in;
+    -webkit-transition: top 0.3s ease-in,left 0.3s ease-in,right 0.3s ease-in;
+    -o-transition: top 0.3s ease-in,left 0.3s ease-in,right 0.3s ease-in;
+    transition: top 0.3s ease-in,left 0.3s ease-in,right 0.3s ease-in;
 }
 .skinRimless .popup-controls-prev {
-    position: fixed;               
-
-    background: url(../img/buttom-prev-normal.png) no-repeat scroll 42px 31px transparent;
-    cursor: pointer;
-
-    width: 150px; 
-    height: 100px;
-    margin-top: -50px; 
-    margin-left: -100px;
-    text-indent:-9999px;
-    z-index: 9999;
-
+    background: url(../img/buttom-prev-normal.png) no-repeat scroll 50% 50% transparent;
 }
 .skinRimless .popup-controls-prev:hover {
-    background: url(../img/buttom-prev-hover.png) no-repeat scroll 42px 31px;
+    background: url(../img/buttom-prev-hover.png) no-repeat scroll 50% 50%;
 }
 .skinRimless .popup-controls-next {
-    position: fixed;               
-
-    background: url(../img/buttom-next-normal.png) no-repeat scroll 42px 31px transparent;
-    cursor: pointer;
-
-    width: 150px; 
-    height: 100px;
-    margin-top: -50px; 
-    margin-right: -100px;
-    text-indent:-9999px;
-    z-index: 9999;
+    background: url(../img/buttom-next-normal.png) no-repeat scroll 50% 50% transparent;
 }
 .skinRimless .popup-controls-next:hover {
-    background: url(../img/buttom-next-hover.png) no-repeat scroll 42px 31px;
+    background: url(../img/buttom-next-hover.png) no-repeat scroll 50% 50%;
 }
 .skinRimless .popup-controls-close {
     position:absolute; 

@@ -33,13 +33,13 @@
             minLeft: 10,
             holderWidth: 0,
             holderHeight: 80,
-
-            autoSize: true,
-            autoPlay: false, 
+             
             action: false, // taggle to autoplay by click      
-            
+            autoPlay: false,
             playSpeed: 1500,
             isPaused: false,
+
+            autoSize: true,
             imgBg: '#222',
             closeBtn: true,
             winBtn: true, //click overlay to close popup
@@ -297,9 +297,9 @@
                 element: element,                
             });
 
-
             if (count >= 2) {
                 Popup.group = [];
+                Popup.groupoptions = metas.groupoptions? Popup._string2obj(metas.groupoptions):null; 
                 group.each(function(i, v) {
                     var $url, $type, obj = {};
 
@@ -310,7 +310,7 @@
                         index: i,
                         url: $url,
                         type: $type,
-                        element: v
+                        element: v,
                     });
                     Popup.group.push(obj);
                 });
@@ -346,10 +346,10 @@
             Popup._trigger('afterLoad');
 
 
-            // //add autoPlay 
-            // if (Popup.current.autoPlay === true) {
-            //     Popup._slider.play();
-            // }
+            //add autoPlay 
+            if (Popup.current.autoPlay === true) {
+                Popup._slider.play();
+            }
 
             //preload
             if (type=="image" && Popup.group && Popup.group[1]) {
@@ -384,6 +384,8 @@
             var obj,top,left, width, height,
                 result = {},
                 rez = {},
+
+
 
                 current = Popup.current,
                 aspect = current.aspect,
@@ -430,6 +432,9 @@
             } else {
                 width = Popup.settings.width;
                 height = Popup.settings.height;
+
+                console.log(width);
+                console.log(height);
             }  
 
             //centered the container
@@ -448,6 +453,8 @@
                 top: top,
                 left: left,
             };
+
+            console.log(rez);
 
             return rez;
 
@@ -593,6 +600,8 @@
 
                 // only when options === number  
                 index = options;
+
+                console.log(Popup.groupoptions);
                 options = {};
             }            
 
@@ -600,12 +609,11 @@
                 
                 options.skin = options.skin || Popup.defaultSkin;
                 Popup.settings = {};
-                $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin]);
+                $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin],Popup.groupoptions);
             }
 
             //process contents
             if (toString.apply(contents) === '[object Array]' && !Popup._isOpen) {
-
                 // for show([],{}||index);
                 var count = contents.length,
                     i = 0;
@@ -637,16 +645,16 @@
                 Popup.current.index = index;
             } else if (!Popup._isOpen) {
                 if (arguments.length === 1) { 
-
                     //for public api show();
                     Popup.current = $.extend(true,Popup.current,Popup.settings,arguments[0].options);
                     Popup.current.url = arguments[0].url;
                 } else {
-
-                    //for private function show();
-                    Popup.current = $.extend(true,Popup.current,Popup.settings, options);
+                    //for private function show() and show({},index);
+                    Popup.current = $.extend(true,Popup.current,Popup.settings,options);
                 }
-            }           
+            }  
+
+
 
             Popup.current.aspect = null;
             current = Popup.current;
@@ -661,8 +669,7 @@
             //note: Popup.current only made when firstly click
             if (Popup.group && Popup.group[1]) {
                 if (arguments.length === 2 && toString.apply(arguments[1]) === '[object Number]') {
-
-                    Popup.current = $.extend({}, Popup.current, Popup.group[index]);
+                    Popup.current = $.extend({}, Popup.current, Popup.groupoptions,Popup.group[index]);
                     Popup.current.index = index;
                 }
                 Popup.slider = true;
@@ -767,7 +774,12 @@
                 Popup.$overlay.removeClass(Popup.current.skin);
             } else {
                 Popup.$container.removeClass(Popup.current.skin);
-            }         
+            }  
+
+            //stop autoplay first before close
+            if ( Popup.current.isPaused === false) {
+                Popup._slider.pause();
+            }        
 
             //trigger to remove the component registered on components object
             Popup._trigger('close');
@@ -822,7 +834,7 @@
             }
             Popup.ajax = null;
         },
-        RegisterType: function(name,options) {
+        registerType: function(name,options) {
             Popup.types[name] = {};
             Popup.types[name].initialize = function() {
                 options.initialize(Popup.current);
@@ -930,7 +942,7 @@
         getPosition: function(x,y) {
         }
     };
-
+    
     Popup.types = {
         image: {
             match: function(url) {
@@ -1086,21 +1098,18 @@
                 }
             },
             load: function() {  
-                var $iframe, 
-                    iframe = Popup.current.iframe;  
-
-                $iframe = $('<iframe name="popup-frame" class="popup-content-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>'); 
-                $iframe.css({
+                var iframe = '<iframe name="popup-frame" class="popup-content-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>';  
+                
+               //$iframe
+                Popup.$iframe = $(iframe).css({
                     'width': '100%',
                     'height': '100%',
                     'border': 'none'
-                }); 
-                Popup.$iframe = $iframe.attr('src', Popup.current.url);
+                }).attr('src', Popup.current.url); 
+                            
                 Popup.current.content = Popup.$iframe;
-
-
-
-                Popup._afterLoad();
+                Popup._afterLoad(); 
+                
             }
         },      
         ajax: {
@@ -1108,9 +1117,8 @@
                 var content,current = Popup.current;
                 Popup.ajax = $.ajax($.extend({},current.ajax,{
                     url: current.url,
-                    error: function() {
-                        alert('ajax load fail !');
-                        Popup._hideLoading();
+                    error: function() {                        
+                        Popup._loadfail('ajax');
                     },
                     success: function(data,textStatus) {
                         if (textStatus === 'success') {
@@ -1132,7 +1140,7 @@
         },
         
         //video && map are composite type,you should set type when using them
-        //they dont have their own loading method,they process url,and then load with other types' load method 
+        //they dont have their own loading method,they process url,and then load with basic types' load method 
         video: {
             match: function(url){
                 var videoid,
@@ -1216,13 +1224,12 @@
                     padding: 2,
                     bottom: 10,
                 }
-            }
-            
+            }            
         },
     };
 
     //
-    // here you can add your custom transition & slider effect  , types , components 
+    // here you can add your custom transition & slider effect , types , components 
     //
 
     //transitions
@@ -1384,6 +1391,7 @@
                 top: rez.top,
                 left: rez.left,
             });
+
             //resize set on content
             Popup.$content.css({
                 width: rez.containerWidth,
@@ -1411,7 +1419,7 @@
                 duration: 500,
                 easing: 'swing',
             });
-            Popup.$content.stop().animate({
+            Popup.$content.find('img').stop().animate({
                 width: rez.containerWidth,
                 height: rez.containerHeight,
             },{
@@ -1495,8 +1503,7 @@
                     
                     $(this).remove();
                 }
-            });
-           
+            });           
         },
     };
 
@@ -1653,12 +1660,8 @@
                 return
             }
 
-
             top = (rez.winHeight - rez.holderHeight)/2;
-            left = (rez.winWidth -rez.containerWidth)/4;
-
-            console.log(top)
-            console.log(left)
+            left = (rez.winWidth -rez.containerWidth - rez.holderWidth)/4;
 
             Popup.$prev.css({
                 'position': 'fixed',

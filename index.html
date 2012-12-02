@@ -40,7 +40,7 @@
     data-popup-type="ajax" 
     data-popup-options="closeBtn:false,winBtn:false,autoSize:false"&gt;Software license agreement&lt;/a&gt;</code></pre>
                 <div class="example">
-                    <a class="popup"href="license.txt" data-popup-type="ajax" data-popup-options="closeBtn:false,winBtn:false,autoSize:false">Software license agreement</a>
+                    <a class="popup"href="license1.txt" data-popup-type="ajax" data-popup-options="closeBtn:false,winBtn:false,autoSize:false">Software license agreement</a>
                 </div>
             </section>
             <section>
@@ -187,6 +187,13 @@
                         <td>Slideshow speed in milliseconds                        
                             <br />
                             <span style="color:#888">Integer; Default value: 3000                           </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>skin</td>
+                        <td>choose the specific skin provided by popup, we have  skinRimless and skinSimple                     
+                            <br />
+                            <span style="color:#888">String; Default value: skinRimless                           </span>
                         </td>
                     </tr>
                     <tr>
@@ -431,13 +438,33 @@ href="video/movie.ogg,video/movie.mp4,video/movie.webm"
 &lt;a class=&quot;popup&quot; href=&quot;img/7.jpg&quot; data-popup-group=&quot;gallery&quot;&gt;&lt;img src=&quot;img/7-thumbnail.jpg&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-group="gallery"><img src="img/1-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery" data-Popup-group-options="autoSize:false,width:760,height:479,sliderEffect:'fade'"><img src="img/1-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/2.jpg" data-popup-group="gallery"><img src="img/2-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/3.jpg" data-popup-group="gallery"><img src="img/3-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/4.jpg" data-popup-group="gallery"><img src="img/4-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/5.jpg" data-popup-group="gallery"><img src="img/5-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/6.jpg" data-popup-group="gallery"><img src="img/6-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/7.jpg" data-popup-group="gallery"><img src="img/7-thumbnail.jpg" alt="" /></a>
+                </div>
+            </section>
+            <section>
+                <h3>Gallery: fixed container with fade sliderEffect</h3>
+                <pre class="has-example"><code class="language-markup">&lt;a class="popup" href="img/fix-1.jpg" 
+     data-popup-group="gallery2" 
+     data-Popup-group-options="autoSize:false,width:760,height:479,sliderEffect:'fade'"&gt;&lt;img style="width:100px,height:100px" src="img/fix-1.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/fix-2.jpg" 
+     data-popup-group="gallery2"&gt;&lt;img style="width:100px,height:100px" src="img/fix-2.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/fix-3.jpg" 
+     data-popup-group="gallery2"&gt;&lt;img style="width:100px,height:100px" src="img/fix-3.jpg" alt="" /&gt;&lt;/a&gt;
+&lt;a class="popup" href="img/fix-4.jpg" 
+     data-popup-group="gallery2"&gt;&lt;img style="width:100px,height:100px" src="img/fix-4.jpg" alt="" /&gt;&lt;/a&gt;
+</code></pre>
+                <div class="example">
+                    <a class="popup" href="img/fix-1.jpg" data-popup-group="gallery2" 
+                    data-Popup-group-options="autoSize:false,width:760,height:479,sliderEffect:'fade'"><img style="width:100px,height:100px" src="img/fix-1.jpg" alt="" /></a>
+                    <a class="popup" href="img/fix-2.jpg" data-popup-group="gallery2"><img style="width:100px,height:100px" src="img/fix-2.jpg" alt="" /></a>
+                    <a class="popup" href="img/fix-3.jpg" data-popup-group="gallery2"><img style="width:100px,height:100px" src="img/fix-3.jpg" alt="" /></a>
+                    <a class="popup" href="img/fix-4.jpg" data-popup-group="gallery2"><img style="width:100px,height:100px" src="img/fix-4.jpg" alt="" /></a>
                 </div>
             </section>
             <section>

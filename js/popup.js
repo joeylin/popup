@@ -283,7 +283,6 @@
             options = $.extend(true,options,metas.options,metas);   
             options.skin = options.skin || Popup.defaultSkin; 
      
-
             Popup.settings = {};
             $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin],options); //要修改
 
@@ -318,14 +317,14 @@
         },
         _afterLoad: function() {
             var rez,
-                type = Popup.current.type;             
+                type = Popup.current.type;  
 
-            if (!Popup._isOpen) {
+            //calculate necessary dimension before trigger open transition
+            rez = Popup._calculate();
+            Popup._trigger('resize',rez);
 
-                //calculate necessary dimension before trigger open transition
-                rez = Popup._calculate();
-
-                Popup._trigger('resize',rez);
+            if (!Popup._isOpen) {               
+                
                 Popup.transitions[Popup.current.transition]['openEffect'](rez); 
 
                 //remove old content before loading new content
@@ -334,11 +333,8 @@
             } else {
 
                 //slider
-                rez = Popup._calculate();
-                Popup._trigger('resize',rez);
                 Popup.sliderEffects[Popup.current.sliderEffect]['init'](rez);
             }
-
 
             Popup._isOpen = true;   
 
@@ -381,26 +377,30 @@
             }
         },
         _calculate: function() {
-            var obj,top,left, width, height,
+            var top,left, width, height,
+                maxWidth,maxHeight,
                 result = {},
                 rez = {},
-
-
+                obj = {},
 
                 current = Popup.current,
                 aspect = current.aspect,
 
                 //save original image dimension,
-                originWidth = Popup.current.width,
-                originHeight = Popup.current.height,
+                originWidth = current.width,
+                originHeight = current.height,
 
-                maxWidth = $(window).width() - current.holderWidth,
-                maxHeight = $(window).height() - current.holderHeight,
-                minWidth = Popup.current.minWidth,
-                minHeight = Popup.current.minHeight,
-
+                winWidth = $(window).width(), 
+                winHeight = $(window).height(),
+                
+                //here create new vars to save some current properties
+                //so we will not change the current value and can reuse it in calcultion
+                minWidth = current.minWidth,
+                minHeight = current.minHeight,
                 minTop = current.minTop,
                 minLeft = current.minLeft,
+                holderWidth = current.holderWidth,
+                holderHeight = current.holderHeight,
 
                 scale = function(x,y,rate) {
                     var w,h;
@@ -419,6 +419,17 @@
                         h: h,
                     }
                 };
+
+            //here design for mobile
+            if (Popup._resposive(winWidth)) {                               
+                obj = Popup.current._mobile(holderWidth,holderHeight);
+                holderWidth = obj.w;
+                holderHeight = obj.h;
+                //mintop,minleft need to be processed
+            } 
+
+            maxWidth =  winWidth - holderWidth;
+            maxHeight = winHeight - holderHeight;   
 
             if (current.autoSize) {
                 width = (maxWidth - 2 * minLeft)>originWidth? originWidth: (maxWidth - 2 * minLeft)<minWidth? minWidth: (maxWidth - 2 * minLeft);
@@ -444,17 +455,15 @@
             //give a chance for components component resize
             //note: it defaults padding and margin both equal to 0 
             rez = {
-                winWidth: maxWidth + current.holderWidth,
-                winHeight: maxHeight + current.holderHeight,
+                winWidth: winWidth,
+                winHeight: winHeight,
                 containerWidth: width,
                 containerHeight: height,
-                holderWidth: current.holderWidth,
-                holderHeight: current.holderHeight,
+                holderWidth: holderWidth,
+                holderHeight: holderHeight,
                 top: top,
                 left: left,
             };
-
-            console.log(rez);
 
             return rez;
 
@@ -479,11 +488,6 @@
                 width: width,
                 height: height,
             });
-
-            console.log(Popup.current.width);
-            console.log(Popup.current.height);
-
-            
 
             //here pass dimension info as a argument to components
             Popup._trigger('resize',rez);
@@ -543,6 +547,17 @@
         _hideLoading: function() {
             $(document).unbind('keydown.loading');
             $('.popup-loading').remove();
+        },
+        _resposive: function(width) {
+            var lower = 320,
+                upper = 479,
+                width = parseInt(width);
+
+            if (lower < width && upper >width ) {
+                return true;
+            }    else {
+                return false;
+            }
         },
 
         //
@@ -654,8 +669,6 @@
                 }
             }  
 
-
-
             Popup.current.aspect = null;
             current = Popup.current;
 
@@ -688,6 +701,10 @@
 
             //initialize custom type register
             Popup.types[type].initialize && Popup.types[type].initialize();
+
+            $('body').css({
+                overflow: 'hidden',
+            });
 
             //build frame
             if (!Popup._isOpen) {
@@ -764,6 +781,11 @@
 
             Popup.cancel();
 
+            //recover body setting
+            $('body').css({
+                overflow: 'scroll',
+            });
+
             //unbind event
             $(window).unbind('resize');
             $(document).unbind('keydown.popup');
@@ -834,37 +856,6 @@
             }
             Popup.ajax = null;
         },
-        registerType: function(name,options) {
-            Popup.types[name] = {};
-            Popup.types[name].initialize = function() {
-                options.initialize(Popup.current);
-            };
-
-            Popup.types[name].load = function() {
-                if(options.extends) {
-                    Popup.types[options.extends].load();
-                } else {
-                    alert('you need set extends for options');
-                }
-            };
-        },
-        setDefaultSkin: function(name) {            
-            Popup.defaultSkin = name;
-        },
-        registerComponent:function(name,options) {
-            alert('componennt');
-            Popup.components[name] = {};
-            Popup.components[name]['isUse'] = false;
-            Popup.components[name].onReady = function() {
-                Popup.$custom.append($(options.html).css({
-                    'position': 'absolute',
-                    'display': 'block'
-                }));
-                if (typeof options.func == "function") {
-                    options.func();
-                }
-            }
-        },
         update: function() {
             Popup.show({},Popup.current.index);
         },
@@ -923,6 +914,39 @@
             e.animate({left: l+x}, d, t);
             e.animate({left: l},   d, t);
         },
+
+        //open api
+        registerType: function(name,options) {
+            Popup.types[name] = {};
+            Popup.types[name].initialize = function() {
+                options.initialize(Popup.current);
+            };
+
+            Popup.types[name].load = function() {
+                if(options.extends) {
+                    Popup.types[options.extends].load();
+                } else {
+                    alert('you need set extends for options');
+                }
+            };
+        },
+        setDefaultSkin: function(name) {            
+            Popup.defaultSkin = name;
+        },
+        registerComponent:function(name,options) {
+            alert('componennt');
+            Popup.components[name] = {};
+            Popup.components[name]['isUse'] = false;
+            Popup.components[name].onReady = function() {
+                Popup.$custom.append($(options.html).css({
+                    'position': 'absolute',
+                    'display': 'block'
+                }));
+                if (typeof options.func == "function") {
+                    options.func();
+                }
+            }
+        },
     });
 
     //
@@ -939,8 +963,7 @@
             closeMethod: 'zoom',
         },
         step: function(now,fx) {},
-        getPosition: function(x,y) {
-        }
+        getPosition: function(x,y) {}
     };
     
     Popup.types = {
@@ -974,6 +997,11 @@
                                 width: 'auto',
                             });
                         }
+                    } else {
+                        $(img).css({
+                            width: '100%',
+                            height: '100%',
+                        });
                     } 
 
                     $inner.addClass('popup-content-inner').css({
@@ -1191,11 +1219,10 @@
 
     Popup.skins = {
         skinRimless: {
-            holderWidth: 0,
-            holderHeight: 100,
-
             minTop: 20,
             minLeft: 10,
+            holderWidth: 0,
+            holderHeight: 100,
 
             autoSize: true,
             sliderEffect: 'none',
@@ -1204,14 +1231,28 @@
                 controls: {
                     ui: 'outside',
                 },
-            }           
+            },
+            //ajust layout for mobile device
+            _mobile: function(holderWidth,holderHeight,minTop,minLeft) {
+                holderWidth = 0;
+                holderHeight = 10;
+                Popup.current.autoSize = true; 
+                Popup.$content.find('img').css({width:'100%',height:'100%'});
+                return {
+                    w: holderWidth,
+                    h: holderHeight,
+                    t: minTop,
+                    l: minLeft,
+                }
+            }    
+                   
         },
         skinSimple: {
-            holderWidth: 10,
+            holderWidth: 20,
             holderHeight: 120,
 
             minTop: 20,
-            minLeft: 20,
+            minLeft: 0,
 
             autoSize: true,
             sliderEffect: 'none',
@@ -1224,7 +1265,20 @@
                     padding: 2,
                     bottom: 10,
                 }
-            }            
+            },
+            
+            _mobile: function(holderWidth,holderHeight,minTop,minLeft) {
+                holderWidth = 20;
+                holderHeight = 20;
+                Popup.current.autoSize = true; 
+                Popup.$content.find('img').css({width:'100%',height:'100%'});
+                return {
+                    w: holderWidth,
+                    h: holderHeight,
+                    t: minTop,
+                    l: minLeft,
+                }
+            }           
         },
     };
 
@@ -1385,7 +1439,6 @@
     //slider
     Popup.sliderEffects.none = {
         init: function(rez) {
-
             //reposition set on container
             Popup.$container.css({
                 top: rez.top,
@@ -1419,7 +1472,7 @@
                 duration: 500,
                 easing: 'swing',
             });
-            Popup.$content.find('img').stop().animate({
+            Popup.$content.stop().animate({
                 width: rez.containerWidth,
                 height: rez.containerHeight,
             },{
@@ -1477,33 +1530,7 @@
         },
         init: function(rez) {
             var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
-            Popup.$container.css({
-                top: rez.top,
-                left: rez.left,
-            });
-            
-            //resize set on content
-            Popup.$content.css({
-                width: rez.containerWidth,
-                height: rez.containerHeight,
-            });
-            Popup.previous.content.css({
-                zIndex: 2,
-            });
-
-            Popup.$content.append(Popup.current.content);
-
-            Popup.previous.content.animate({
-                'opacity': 0,
-            },{
-                duration: 500,
-                easing: 'swing',
-                complete: function(){
-                    console.log($(this));
-                    
-                    $(this).remove();
-                }
-            });           
+            alert('waiting to fix');
         },
     };
 

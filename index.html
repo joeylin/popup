@@ -290,7 +290,7 @@
 &lt;a href=&quot;http://www.samplepdf.com/sample.pdf&quot; class=&quot;type-gdoc&quot;&gt;Open with Google doc&lt;/a&gt;
 &lt;script&gt;
 //gdoc extend remote(iframe) type
-Popup.RegisterType('gdoc', {
+Popup.registerType('gdoc', {
     extends: 'iframe',
     initialize : function(options){
         options.url = &quot;http://docs.google.com/viewer?embedded=true&amp;url=&quot; + options.url;
@@ -307,7 +307,7 @@ jQuery(document).ready(function(){
                     <a href="http://www.samplepdf.com/sample.pdf" class="type-gdoc">Open with Google doc</a>
 <script>
 //gdoc extend remote(iframe) type
-$.Popup.RegisterType('gdoc', {
+$.Popup.registerType('gdoc', {
     extends: 'iframe',
     initialize : function(options){
         options.url = "http://docs.google.com/viewer?embedded=true&url=" + options.url;
@@ -474,10 +474,11 @@ href="video/movie.ogg,video/movie.mp4,video/movie.webm"
 &lt;a class="popup" href="img/3.jpg" data-popup-group="gallery1" &gt;&lt;img src="img/3-thumbnail.jpg" alt="" /&gt;&lt;/a&gt;
 </code></pre>
                 <div class="example">
-                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'skinSimple'"
+                    <a class="popup" href="img/1.jpg" data-popup-group="gallery1" data-Popup-group-options="skin:'skinSimple',sliderEffect:'zoom'"
                     ><img src="img/1-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/2.jpg" data-popup-group="gallery1" ><img src="img/2-thumbnail.jpg" alt="" /></a>
                     <a class="popup" href="img/3.jpg" data-popup-group="gallery1" ><img src="img/3-thumbnail.jpg" alt="" /></a>
+                    <a class="popup" href="img/12.jpg" data-popup-group="gallery1" ><img src="img/2-thumbnail.jpg" alt="" /></a>
                 </div>
             </section>
             <!-- <section>

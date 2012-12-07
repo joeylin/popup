@@ -1,3 +1,6 @@
+/*!popup - v0.1 - 2012-12-5
+* https://github.com/joeylin/popup
+* Copyright (c) 2012 AmazingSurge; Licensed CC BY-NC 3.0 */
 ;
 (function($, document, window, undefined) {
     // Optional, but considered best practice by some
@@ -1523,16 +1526,7 @@
             //Popup.$content.append(Popup.current.content);
         },
     };
-    Popup.sliderEffects.slide = {
-        defaults: {
-            speed: 500,
-            easing: 'swing',
-        },
-        init: function(rez) {
-            var opts = $.extend({},this.defaults,Popup.current.sliderSetting);
-            alert('waiting to fix');
-        },
-    };
+    
 
     //components 
     Popup.components.overlay = {

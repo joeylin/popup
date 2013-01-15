@@ -7,25 +7,24 @@
     "use strict";
     // Plugin constructor
     var Popup = $.Popup = function(element, options) {
+
+        //store options on a new obj,so it will not be changed
         $(element).on('click', function(e) {
-            var pos = {
-                x: e.clientX,
-                y: e.clientY,
-            };
+            var opts,
+                pos = {
+                    x: e.clientX,
+                    y: e.clientY,
+                };
             
-            options = $.extend(true,options,{pos: pos});
-            Popup._init(this,options);
-
-            //clear options after used
-            options = null;
-
+            opts = $.extend(true,options,{pos: pos});
+            Popup._init(this,opts);
             Popup.show();
             return false;
         });
     };
-    
+        
     $.extend(Popup, {
-        //properties
+        
         defaults: {
             width: 760,
             height: 428,
@@ -248,12 +247,14 @@
                 defaults,
                 url, index, group, count,metas = {};
 
+            //get user options on DOM protperties and store them on metas object
             $.each($self.data(), function(k, v) {
                 if (/^popup/i.test(k)) {
                     metas[k.toLowerCase().replace(/^popup/i, '')] = v;
                 }
             });
 
+            //filter the same popup-group name with the current click element as a group
             group = Popup.elements.filter(function() {
                 var data = $(this).data('popup-group');
                 if (metas.group) {
@@ -269,7 +270,6 @@
                     }
                 });
             }
-            //console.log(metas);
 
             if (metas.options) {
                 metas.options = Popup._string2obj(metas.options);
@@ -285,7 +285,7 @@
 
             options = $.extend(true,options,metas.options,metas);   
             options.skin = options.skin || Popup.defaultSkin; 
-     
+              
             Popup.settings = {};
             $.extend(true,Popup.settings,Popup.defaults,Popup.skins[options.skin],options); //要修改
 
@@ -299,6 +299,7 @@
                 element: element,                
             });
 
+            //adding index and get config for every member of group 
             if (count >= 2) {
                 Popup.group = [];
                 Popup.groupoptions = metas.groupoptions? Popup._string2obj(metas.groupoptions):null; 
@@ -316,7 +317,8 @@
                     });
                     Popup.group.push(obj);
                 });
-            }          
+            }  
+            console.log(Popup.settings.type);    
         },
         _afterLoad: function() {
             var rez,
@@ -353,7 +355,7 @@
             //preload
             if (type=="image" && Popup.group && Popup.group[1]) {
                 Popup.types.image.imgPreLoad();
-            }                      
+            }                    
 
             //reset some properties after load
             Popup.current.type = null;
@@ -698,19 +700,26 @@
                     return false;
                 }
             });
-                        
+
+            console.log(current.type,type);
+                                  
             type = current.type || type;
             Popup.current.type = type;
+           
+            console.log(type);
 
             //initialize custom type register
             Popup.types[type].initialize && Popup.types[type].initialize();
 
-            $('body').css({
-                overflow: 'hidden',
-            });
+            console.log(Popup.types);
 
-            //build frame
+            // $('body').css({
+            //     overflow: 'hidden',
+            // });
+
+            //build popup frame
             if (!Popup._isOpen) {
+
                 //create container 
                 $container = Popup._makeEls('div', 'popup-container');
                 $container.css({
@@ -767,7 +776,9 @@
                 bindEvents();                        
             }
 
-            Popup.types[type].load();        
+            Popup.types[type].load();  
+
+            console.log(type);            
         },
         close: function() {
 
@@ -926,6 +937,7 @@
             };
 
             Popup.types[name].load = function() {
+
                 if(options.extends) {
                     Popup.types[options.extends].load();
                 } else {
@@ -1437,7 +1449,7 @@
                 Popup.$container.fadeOut(opts.closeSpeed,Popup.close);
             }
         },
-    };
+    }; 
 
     //slider
     Popup.sliderEffects.none = {
@@ -1699,7 +1711,6 @@
     Popup.components.thumbnails = {
         defaults: {
             count: 5,
-
             unitWidth: 80,
             unitHeight: 80,
             bottom: 16,
@@ -1742,8 +1753,8 @@
                 group = Popup.group,
                 index = Popup.current.index,
                 $thumbnails = $('<div>').addClass('popup-thumbnails'),
-                $leftButtom = $('<a href="#">').addClass('popup-thumbnails-left'),
-                $rightButtom = $('<a href="#">').addClass('popup-thumbnails-right'),
+                $leftButtom = $('<div>').addClass('popup-thumbnails-left'),
+                $rightButtom = $('<div>').addClass('popup-thumbnails-right'),
                 $thumHolder = $('<div>').addClass('popup-thumbnails-holder'),
                 $inner = $('<div>').addClass('popup-thumbails-inner').appendTo($thumHolder),
                 moveEvent = function(direction) {
@@ -1817,21 +1828,28 @@
             $thumbnails.appendTo(Popup.$container);
 
             //bind click to thumb buttom 
-            $leftButtom.on('click',function() {
+            //note: Here has problem of DOM rendering on Opera
+            // change to stop spread symtax
+            $leftButtom.on('click',function(event) {
 
                 moveEvent('left');
-                return false;
+                event.stopPropagation();
+                
             });
             $rightButtom.on('click',function() {
                 moveEvent('right');
-                return false;
+                event.stopPropagation();
+                
             });
-            $inner.children().on('click',function() {
+            $inner.children().on('click',function(event) {
                 var index = $inner.children().index(this);
                 Popup.show({},index);
+                
+                
+                
             });
 
-            //save var to obj
+            //store thumbnail DOM to obj
             this.$thumbnails = $thumbnails;
             this.$thumHolder = $thumHolder;   
             this.$inner = $inner;
@@ -1860,7 +1878,7 @@
             var inner = this.$inner,
                 visualWidth = this.visualWidth,
                 length = (index +1)*(this.opts.unitWidth+2*this.opts.padding) + index*this.opts.gap,
-                left = parseInt(inner.css('left'));
+                left = parseInt(inner.css('left')); 
 
             if (left+length-visualWidth > 0) {
                 left = visualWidth - length;
@@ -1957,6 +1975,7 @@
             }
         });
     };
+    
 })(jQuery, document, window);
 
 

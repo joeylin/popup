@@ -1708,6 +1708,7 @@
             });
         }
     };
+    //need to change
     Popup.components.thumbnails = {
         defaults: {
             count: 5,
@@ -1774,6 +1775,8 @@
                     }
                 };
 
+            console.log("thumbnails");    
+
             count = count > group.length? group.length:count; 
             visualWidth = count * (unitWidth+2*padding) + (count-1)*gap;
 
@@ -1831,22 +1834,16 @@
             //note: Here has problem of DOM rendering on Opera
             // change to stop spread symtax
             $leftButtom.on('click',function(event) {
-
                 moveEvent('left');
-                event.stopPropagation();
-                
+                event.stopPropagation();              
             });
             $rightButtom.on('click',function() {
                 moveEvent('right');
-                event.stopPropagation();
-                
+                event.stopPropagation();                
             });
             $inner.children().on('click',function(event) {
                 var index = $inner.children().index(this);
-                Popup.show({},index);
-                
-                
-                
+                Popup.show({},index); 
             });
 
             //store thumbnail DOM to obj
